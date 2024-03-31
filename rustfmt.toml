@@ -1,3 +1,4 @@
+edition = "2021"
 max_width = 80
 newline_style = "Unix"
 chain_width = 80

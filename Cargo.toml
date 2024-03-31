@@ -2,6 +2,12 @@
 name = "codon"
 version = "1.0.0"
 edition = "2021"
+authors = ["Dominik Wilkowski <Hi@Dominik-Wilkowski.com>", "Joshua Padman <joshua@padman.id.au>"]
+license = "GPL-3.0-or-later"
+description = "A vault GUI for your offline passwords"
+homepage = "https://github.com/dominikwilkowski/codon"
+repository = "https://github.com/dominikwilkowski/codon"
+keywords = ["biotech", "agriculture", "aquaculture", "chemicals", "nano bio polymers", "leptos", "ssr"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
