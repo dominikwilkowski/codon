@@ -1,6 +1,7 @@
 # Codon
 
-> A sequence of three nucleotides in mRNA that specifies a particular amino acid or termination signal during protein synthesis.
+> A sequence of three nucleotides in mRNA that specifies a particular amino acid
+> or termination signal during protein synthesis.
 
 
 ## Running the project
@@ -10,18 +11,21 @@ cargo leptos watch
 ```
 
 
-### Required Tools
+### Setup
 
+Required:
 - `nightly` Rust
 - `cargo-generate`
-- `sass`
 
-If you run into any trouble, you may need to install one or more of these tools.
-
+You need to install:
 1. `rustup toolchain install nightly --allow-downgrade` – make sure you have Rust nightly
 2. `rustup target add wasm32-unknown-unknown` – add the ability to compile Rust to WebAssembly
 3. `cargo install cargo-generate` – install `cargo-generate` binary (should be installed automatically in future)
-4. `npm install -g sass` – install `dart-sass` (should be optional in future)
+
+For the end2end tests:
+- `cd end2end && npm i` – To install the dev dependencies
+- `npx playwright install --with-deps` – To install the browsers playwright needs
+- 
 
 
 ### Compiling for Release
