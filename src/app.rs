@@ -33,6 +33,6 @@ fn HomePage() -> impl IntoView {
 
 	view! {
 		<h1>"Welcome to Codon"</h1>
-		<button on:click=on_click>"Click Me: " {count.get()}</button>
+		<button on:click=on_click>"Click Me: " {count}</button>
 	}
 }
