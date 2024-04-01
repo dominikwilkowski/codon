@@ -5,13 +5,10 @@ use leptos_router::*;
 
 #[component]
 pub fn App() -> impl IntoView {
-	// Provides context that manages stylesheets, titles, meta tags, etc.
 	provide_meta_context();
 
 	view! {
 		<Stylesheet id="leptos" href="/pkg/codon.css"/>
-
-		// sets the document title
 		<Title text="Welcome to Codon"/>
 
 		// content for this welcome page
@@ -29,15 +26,13 @@ pub fn App() -> impl IntoView {
 	}
 }
 
-/// Renders the home page of your application.
 #[component]
 fn HomePage() -> impl IntoView {
-	// Creates a reactive value to update the button
-	let (count, set_count) = create_signal(0);
-	let on_click = move |_| set_count.update(|count| *count += 1);
+	let count = create_rw_signal(0);
+	let on_click = move |_| count.update(|count| *count += 1);
 
 	view! {
 		<h1>"Welcome to Codon"</h1>
-		<button on:click=on_click>"Click Me: " {count}</button>
+		<button on:click=on_click>"Click Me: " {count.get()}</button>
 	}
 }
