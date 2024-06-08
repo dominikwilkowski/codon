@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:latest
+    container_name: codon-postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: codon-admin
+      POSTGRES_DB: codon
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - pgnetwork
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: codon-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: codon@email.com
+      PGADMIN_DEFAULT_PASSWORD: codon-admin
+      PGADMIN_DISABLE_POSTFIX: True
+    ports:
+      - "8080:80"
+    volumes:
+      - ./pgadmin_servers.json:/pgadmin4/servers.json
+    depends_on:
+      - codon-postgres
+    networks:
+      - pgnetwork
+networks:
+  pgnetwork:
+    driver: bridge
