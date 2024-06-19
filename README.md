@@ -3,11 +3,26 @@
 > A sequence of three nucleotides in mRNA that specifies a particular amino acid
 > or termination signal during protein synthesis.
 
+## Running
 
-## Running the project
+TODO
+
+
+## Deployment
+
+TODO
+
+
+## Development
 
 ```sh
 cargo leptos watch
+```
+
+Run the formatter before committing code:
+
+```sh
+leptosfmt */**/*.rs && cargo fmt -- -l && cargo clippy
 ```
 
 
@@ -16,11 +31,13 @@ cargo leptos watch
 Required:
 - `nightly` Rust
 - `cargo-generate`
+- `leptosfmt`
 
 You need to install:
 1. `rustup toolchain install nightly --allow-downgrade` – make sure you have Rust nightly
 2. `rustup target add wasm32-unknown-unknown` – add the ability to compile Rust to WebAssembly
-3. `cargo install cargo-generate` – install `cargo-generate` binary (should be installed automatically in future)
+3. `cargo install cargo-generate` – install `cargo-generate` binary
+4. `cargo install leptosfmt` – install the formatter for the `view!` macros
 
 For the end2end tests:
 - `cd end2end && npm i` – To install the dev dependencies
@@ -34,7 +51,8 @@ For the end2end tests:
 cargo leptos build --release
 ```
 
-Will generate your server binary in target/server/release and your site package in target/site
+Will generate your server binary in `target/server/release` and your site
+package in `target/site`
 
 
 ### Testing Your Project
