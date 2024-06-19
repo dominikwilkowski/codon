@@ -37,7 +37,8 @@ You need to install:
 1. `rustup toolchain install nightly --allow-downgrade` – make sure you have Rust nightly
 2. `rustup target add wasm32-unknown-unknown` – add the ability to compile Rust to WebAssembly
 3. `cargo install cargo-generate` – install `cargo-generate` binary
-4. `cargo install leptosfmt` – install the formatter for the `view!` macros
+4. `cargo install --locked cargo-leptos` – install the leptos build tool
+5. `cargo install leptosfmt` – install the formatter for the `view!` macros
 
 For the end2end tests:
 - `cd end2end && npm i` – To install the dev dependencies
