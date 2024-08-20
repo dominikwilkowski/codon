@@ -43,7 +43,9 @@ You need to install:
 For the end2end tests:
 - `cd end2end && npm i` – To install the dev dependencies
 - `npx playwright install --with-deps` – To install the browsers playwright needs
-- 
+
+For upgrading to latest leptos:
+- `cargo install cargo-generate`, `cargo install cargo-leptos` and `cargo install leptosfmt` to upgrade to latest global installs
 
 
 ### Compiling for Release
@@ -66,9 +68,23 @@ cargo leptos end-to-end
 cargo leptos end-to-end --release
 ```
 
+If a test fails it might still have the leptos server running in the background.
+This will cause the next run to also fail because the IP address and port is already being used:
+```
+called `Result::unwrap()` on an `Err` value: Os { code: 48, kind: AddrInUse, message: "Address already in use" }
+```
+
+To avoid this make sure you detect what process is still running and kill it:
+
+```sh
+λ ps -e|grep codon
+52333 ttys032    0:00.09 target/debug/codon # our process with PID we need to kill
+52379 ttys042    0:00.00 grep codon         # this grep search
+λ kill 52333
+```
+
 
 ## Licensing
 
 Copyleft (c) 2023
 Licensed under the [GNU GPL-3.0-or-later](https://github.com/dominikwilkowski/codon/blob/main/LICENSE).
-
