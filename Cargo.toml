@@ -2,12 +2,23 @@
 name = "codon"
 version = "1.0.0"
 edition = "2021"
-authors = ["Dominik Wilkowski <Hi@Dominik-Wilkowski.com>", "Joshua Padman <joshua@padman.id.au>"]
+authors = [
+	"Dominik Wilkowski <Hi@Dominik-Wilkowski.com>",
+	"Joshua Padman <joshua@padman.id.au>",
+]
 license = "GPL-3.0-or-later"
 description = "A vault GUI for your offline passwords"
 homepage = "https://github.com/dominikwilkowski/codon"
 repository = "https://github.com/dominikwilkowski/codon"
-keywords = ["biotech", "agriculture", "aquaculture", "chemicals", "nano bio polymers", "leptos", "ssr"]
+keywords = [
+	"biotech",
+	"agriculture",
+	"aquaculture",
+	"chemicals",
+	"nano bio polymers",
+	"leptos",
+	"ssr",
+]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -26,19 +37,23 @@ wasm-bindgen = "=0.2.92"
 thiserror = "1"
 tracing = { version = "0.1", optional = true }
 http = "1"
+sqlx = { version = "0.8.0", features = [
+	"runtime-tokio-rustls",
+	"postgres",
+], optional = true }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
 ssr = [
-    "dep:axum",
-    "dep:tokio",
-    "dep:tower",
-    "dep:tower-http",
-    "dep:leptos_axum",
-    "leptos/ssr",
-    "leptos_meta/ssr",
-    "leptos_router/ssr",
-    "dep:tracing",
+	"dep:axum",
+	"dep:tokio",
+	"dep:tower",
+	"dep:tower-http",
+	"dep:leptos_axum",
+	"leptos/ssr",
+	"leptos_meta/ssr",
+	"leptos_router/ssr",
+	"dep:tracing",
 ]
 
 # Defines a size-optimized profile for the WASM bundle in release mode

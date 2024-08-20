@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   postgres:
     image: postgres:latest
@@ -13,19 +12,15 @@ services:
       - "5432:5432"
     networks:
       - pgnetwork
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: codon-pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: codon@email.com
-      PGADMIN_DEFAULT_PASSWORD: codon-admin
-      PGADMIN_DISABLE_POSTFIX: True
+  adminer:
+    image: adminer
+    restart: always
     ports:
-      - "8080:80"
+      - 8888:8080
     volumes:
-      - ./pgadmin_servers.json:/pgadmin4/servers.json
+      - ./adminer.css:/var/www/html/adminer.css
     depends_on:
-      - codon-postgres
+      - postgres
     networks:
       - pgnetwork
 networks:
