@@ -2,10 +2,15 @@
 #[tokio::main]
 async fn main() {
 	use axum::Router;
-	use codon::app::*;
+	use codon::app::{ssr::db, App};
 	use codon::fileserv::file_and_error_handler;
 	use leptos::*;
 	use leptos_axum::{generate_route_list, LeptosRoutes};
+
+	let conn = db().await.expect("Couldn't connect to database");
+	if let Err(error) = sqlx::migrate!().run(&conn).await {
+		eprintln!("{error:#?}");
+	}
 
 	// Setting get_configuration(None) means we'll be using cargo-leptos's env values
 	// For deployment these variables are:

@@ -334,11 +334,13 @@ version = "1.0.0"
 dependencies = [
  "axum",
  "console_error_panic_hook",
+ "futures",
  "http",
  "leptos",
  "leptos_axum",
  "leptos_meta",
  "leptos_router",
+ "serde",
  "sqlx",
  "thiserror",
  "tokio",
