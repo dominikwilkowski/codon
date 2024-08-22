@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"format": "prettier --write \"**/*.{js,json,ts}\""
+		"format": "npx @biomejs/biome format --config-path ./biom.json --css-formatter-enabled=true --write ../"
 	},
 	"keywords": [],
 	"author": "",
@@ -12,7 +12,6 @@
 	"devDependencies": {
 		"@playwright/test": "^1.44.1",
 		"@types/node": "^20.12.12",
-		"prettier": "^3.3.3",
 		"typescript": "^5.4.5"
 	}
 }

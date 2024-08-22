@@ -29,11 +29,11 @@ For upgrading to latest leptos:
 ### Container
 To start the podman container run:
 ```sh
-cd dev/psql-compose && podman compose up -d
+cd dev/psql-compose && podman compose up -d && cd ../..
 ```
 To stop it run:
 ```sh
-podman compose down
+cd dev/psql-compose && podman compose down && cd ../..
 ```
 
 ### Leptos
@@ -52,6 +52,10 @@ stylance --watch --output-file ./style/bundle.css ./
 Run the leptos formatter via:
 ```sh
 leptosfmt */**/*.rs
+```
+You should also run the biom formatter for all test and css files:
+```sh
+cd end2end && npm run format && cd ..
 ```
 
 ## Compiling for Release
