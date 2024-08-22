@@ -1,0 +1,33 @@
+.wrapper {
+	display: grid;
+}
+
+.wrapper h1,
+.wrapper p {
+	margin: 1rem auto;
+}
+
+.outer_ul {
+	list-style: none;
+	margin: 1rem auto;
+	padding: 0;
+	text-align: left;
+	display: inline-grid;
+}
+
+.inner_ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	display: inline-block;
+}
+
+.inner_ul li {
+	display: inline-block;
+}
+
+.inner_ul li + li {
+	margin-left: 0.5rem;
+}

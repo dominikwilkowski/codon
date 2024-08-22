@@ -1,9 +1,27 @@
+pub mod db;
+pub mod error_template;
+pub mod home {
+	pub mod home;
+}
+pub mod samples {
+	pub mod samples;
+}
+pub mod nav {
+	pub mod nav;
+}
+pub mod app {
+	pub mod app;
+}
+
+#[cfg(feature = "ssr")]
+pub mod fileserv;
+
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
+	use crate::{app::app::App, db::ssr::db, fileserv::file_and_error_handler};
+
 	use axum::Router;
-	use codon::app::{ssr::db, App};
-	use codon::fileserv::file_and_error_handler;
 	use leptos::*;
 	use leptos_axum::{generate_route_list, LeptosRoutes};
 
@@ -14,7 +32,7 @@ async fn main() {
 
 	// Setting get_configuration(None) means we'll be using cargo-leptos's env values
 	// For deployment these variables are:
-	// <https://github.com/leptos-rs/start-axum#executing-a-server-on-a-remote-machine-without-the-toolchain>
+	// https://github.com/leptos-rs/start-axum#executing-a-server-on-a-remote-machine-without-the-toolchain
 	// Alternately a file can be specified such as Some("Cargo.toml")
 	// The file would need to be included with the executable when moved to deployment
 	let conf = get_configuration(None).await.unwrap();

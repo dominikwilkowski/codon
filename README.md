@@ -1,33 +1,8 @@
 # Codon
-
 > A sequence of three nucleotides in mRNA that specifies a particular amino acid
 > or termination signal during protein synthesis.
 
-## Running
-
-TODO
-
-
-## Deployment
-
-TODO
-
-
-## Development
-
-```sh
-cargo leptos watch
-```
-
-Run the formatter before committing code:
-
-```sh
-leptosfmt */**/*.rs && cargo fmt -- -l && cargo clippy
-```
-
-
-### Setup
-
+## Setup
 Required:
 - `nightly` Rust
 - `cargo-generate`
@@ -39,6 +14,7 @@ You need to install:
 3. `cargo install cargo-generate` – install `cargo-generate` binary
 4. `cargo install --locked cargo-leptos` – install the leptos build tool
 5. `cargo install leptosfmt` – install the formatter for the `view!` macros
+6. `cargo install stylance-cli` - install the stylance cli tool to watch for changes in our css modules
 
 For the end2end tests:
 - `cd end2end && npm i` – To install the dev dependencies
@@ -47,19 +23,48 @@ For the end2end tests:
 For upgrading to latest leptos:
 - `cargo install cargo-generate`, `cargo install cargo-leptos` and `cargo install leptosfmt` to upgrade to latest global installs
 
+## Development
+💡  _All following commands ae run from the root of this repo_
 
-### Compiling for Release
+### Container
+To start the podman container run:
+```sh
+cd dev/psql-compose && podman compose up -d
+```
+To stop it run:
+```sh
+podman compose down
+```
 
+### Leptos
+Watch for changes in leptos:
+```sh
+cargo leptos watch
+```
+
+### Styles
+Watch for changes in styles:
+```sh
+stylance --watch --output-file ./style/bundle.css ./
+```
+
+### Formatting
+Run the leptos formatter via:
+```sh
+leptosfmt */**/*.rs
+```
+
+## Compiling for Release
 ```sh
 cargo leptos build --release
 ```
-
 Will generate your server binary in `target/server/release` and your site
 package in `target/site`
 
+## Deployment
+TODO
 
-### Testing Your Project
-
+## Testing Your Project
 ```sh
 cargo leptos end-to-end
 ```
@@ -73,9 +78,7 @@ This will cause the next run to also fail because the IP address and port is alr
 ```
 called `Result::unwrap()` on an `Err` value: Os { code: 48, kind: AddrInUse, message: "Address already in use" }
 ```
-
 To avoid this make sure you detect what process is still running and kill it:
-
 ```sh
 λ ps -e|grep codon
 52333 ttys032    0:00.09 target/debug/codon # our process with PID we need to kill
@@ -83,8 +86,6 @@ To avoid this make sure you detect what process is still running and kill it:
 λ kill 52333
 ```
 
-
 ## Licensing
-
 Copyleft (c) 2023
 Licensed under the [GNU GPL-3.0-or-later](https://github.com/dominikwilkowski/codon/blob/main/LICENSE).

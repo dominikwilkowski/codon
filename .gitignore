@@ -21,3 +21,7 @@ playwright/.cache/
 
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
+
+# stylance build artifacts
+style/stylance/
+style/bundle.css
