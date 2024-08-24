@@ -16,19 +16,19 @@ pub fn App() -> impl IntoView {
 	provide_meta_context();
 
 	view! {
-		<Stylesheet id="leptos" href="/pkg/codon.css"/>
-		<Title text="Welcome to Codon"/>
+		<Stylesheet id="leptos" href="/pkg/codon.css" />
+		<Title text="Welcome to Codon" />
 
 		<Router fallback=|| {
-			let mut outside_errors = Errors::default();
-			outside_errors.insert_with_default_key(AppError::NotFound);
-			view! { <ErrorTemplate outside_errors/> }.into_view()
+				let mut outside_errors = Errors::default();
+				outside_errors.insert_with_default_key(AppError::NotFound);
+				view! { <ErrorTemplate outside_errors /> }.into_view()
 		}>
 			<main>
-				<Nav/>
+				<Nav />
 				<Routes>
-					<Route path="" view=HomePage/>
-					<Route path="/samples" view=Samples/>
+					<Route path="" view=HomePage />
+					<Route path="/samples" view=Samples />
 				</Routes>
 			</main>
 		</Router>

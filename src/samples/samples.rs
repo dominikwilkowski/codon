@@ -20,48 +20,48 @@ pub fn Samples() -> impl IntoView {
 	view! {
 		<div class=css::wrapper>
 			<h1>Samples</h1>
-			<Transition fallback=move || view! {<p>"Loading..."</p> }>
-				<ErrorBoundary fallback=|errors| view!{<ErrorTemplate errors=errors/>}>
+			<Transition fallback=move || view! { <p>"Loading..."</p> }>
+				<ErrorBoundary fallback=|errors| {
+						view! { <ErrorTemplate errors=errors /> }
+				}>
 					{move || {
-						let existing_todos = {
-							move || {
-								samples.get()
-									.map(move |todos| match todos {
-										Err(e) => {
-											view! { <pre class="error">"Server Error: " {e.to_string()}</pre>}.into_view()
-										}
-										Ok(samples) => {
-											if samples.is_empty() {
-												view! { <p>"No samples were found."</p> }.into_view()
-											} else {
-												samples
-													.into_iter()
-													.map(move |sample| {
-														view! {
-															<li>
-																<ul class=css::inner_ul>
-																	<li>{sample.id}</li>
-																	<li>{sample.sample_type}</li>
-																	<li>{sample.analyst}</li>
-																</ul>
-															</li>
-														}
+							let existing_todos = {
+									move || {
+											samples
+													.get()
+													.map(move |todos| match todos {
+															Err(e) => {
+																	view! {
+																		<pre class="error">"Server Error: " {e.to_string()}</pre>
+																	}
+																			.into_view()
+															}
+															Ok(samples) => {
+																	if samples.is_empty() {
+																			view! { <p>"No samples were found."</p> }.into_view()
+																	} else {
+																			samples
+																					.into_iter()
+																					.map(move |sample| {
+																							view! {
+																								<li>
+																									<ul class=css::inner_ul>
+																										<li>{sample.id}</li>
+																										<li>{sample.sample_type}</li>
+																										<li>{sample.analyst}</li>
+																									</ul>
+																								</li>
+																							}
+																					})
+																					.collect_view()
+																	}
+															}
 													})
-													.collect_view()
-											}
-										}
-								})
-								.unwrap_or_default()
-							}
-						};
-
-						view! {
-							<ul class=css::outer_ul>
-								{existing_todos}
-							</ul>
-						}
-					}
-				}
+													.unwrap_or_default()
+									}
+							};
+							view! { <ul class=css::outer_ul>{existing_todos}</ul> }
+					}}
 				</ErrorBoundary>
 			</Transition>
 		</div>

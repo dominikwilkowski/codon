@@ -8,8 +8,12 @@ pub fn Nav() -> impl IntoView {
 	view! {
 		<nav class=css::nav>
 			<ul>
-				<li><A href="/">"Homepage"</A></li>
-				<li><A href="/samples">"Samples"</A></li>
+				<li>
+					<A href="/">"Homepage"</A>
+				</li>
+				<li>
+					<A href="/samples">"Samples"</A>
+				</li>
 			</ul>
 		</nav>
 	}
