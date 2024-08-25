@@ -44,6 +44,7 @@ sqlx = { version = "0.8", features = [
 	"postgres",
 ], optional = true }
 stylance = { version = "0.5.1", features = ["nightly"] }
+dotenvy = "0.15.7"
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]

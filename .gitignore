@@ -25,3 +25,6 @@ playwright/.cache/
 # stylance build artifacts
 style/stylance/
 style/bundle.css
+
+# environment files
+.env

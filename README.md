@@ -24,6 +24,8 @@ For upgrading to latest leptos:
 - `cargo install cargo-generate`, `cargo install cargo-leptos` and `cargo install leptosfmt` to upgrade to latest global installs
 
 ## Development
+Fill out the `.env.example` file and rename it to `.env` before running the app.
+
 💡  _All following commands ae run from the root of this repo_
 
 ### Container

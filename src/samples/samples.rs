@@ -70,7 +70,7 @@ pub fn Samples() -> impl IntoView {
 
 #[server]
 pub async fn get_samples() -> Result<Vec<SampleData>, ServerFnError> {
-	use crate::db::ssr::db;
+	use crate::db::ssr::get_db;
 
 	use futures::TryStreamExt;
 	// use http::request::Parts;
@@ -82,11 +82,9 @@ pub async fn get_samples() -> Result<Vec<SampleData>, ServerFnError> {
 	//   println!("Uri = {:?}", req_parts.uri);
 	// }
 
-	let conn = db().await?;
-
 	let mut samples = Vec::new();
 	let mut rows =
-		sqlx::query_as::<_, SampleData>("SELECT * FROM samples").fetch(&conn);
+		sqlx::query_as::<_, SampleData>("SELECT * FROM samples").fetch(get_db());
 	while let Some(row) = rows.try_next().await? {
 		samples.push(row);
 	}

@@ -19,15 +19,24 @@ pub mod fileserv;
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
-	use crate::{app::app::App, db::ssr::db, fileserv::file_and_error_handler};
+	use sqlx::migrate::Migrator;
+	static MIGRATOR: Migrator = sqlx::migrate!("./migrations");
+
+	use crate::{
+		app::app::App,
+		db::ssr::{get_db, init_db},
+		fileserv::file_and_error_handler,
+	};
 
 	use axum::Router;
 	use leptos::*;
 	use leptos_axum::{generate_route_list, LeptosRoutes};
 
-	let conn = db().await.expect("Couldn't connect to database");
-	if let Err(error) = sqlx::migrate!().run(&conn).await {
-		eprintln!("{error:#?}");
+	// Init the pool into static
+	init_db().await.expect("Initialization of database failed");
+
+	if let Err(e) = MIGRATOR.run(get_db()).await {
+		eprintln!("{e:?}");
 	}
 
 	// Setting get_configuration(None) means we'll be using cargo-leptos's env values
