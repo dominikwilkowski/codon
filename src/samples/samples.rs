@@ -115,6 +115,7 @@ pub fn SampleItem(
 	edit_sample: MultiAction<EditSample, Result<(), ServerFnError>>,
 ) -> impl IntoView {
 	let show_edit = create_rw_signal(false);
+	let input_ref = create_node_ref();
 
 	view! {
 		{move || {
@@ -131,9 +132,17 @@ pub fn SampleItem(
 								}
 							>
 								<input type="hidden" name="id" value=id />
-								<input type="text" name="sample_type" value=sample_type_edit />
+								<input
+									type="text"
+									name="sample_type"
+									value=sample_type_edit
+									node_ref=input_ref
+								/>
 								<input type="text" name="analyst" value=analyst_edit />
 								<input type="submit" value="Save" />
+								<button on:click=move |_| {
+										show_edit.set(false);
+								}>Cancel</button>
 							</MultiActionForm>
 						}
 								.into_view()
@@ -145,7 +154,10 @@ pub fn SampleItem(
 								<li>{analyst}</li>
 								<li>
 									<button on:click=move |_| {
-											show_edit.set(true)
+											show_edit.set(true);
+											if let Some(input) = input_ref.get() {
+													input.focus().unwrap();
+											}
 									}>Edit</button>
 								</li>
 								<li>
