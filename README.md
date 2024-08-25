@@ -29,13 +29,14 @@ Fill out the `.env.example` file and rename it to `.env` before running the app.
 💡  _All following commands ae run from the root of this repo_
 
 ### Container
-To start the podman container run:
+Create a vm with [podman](https://podman.io) and name it `codon`.
+To start the podman container for this app, run:
 ```sh
-cd dev/psql-compose && podman compose up -d && cd ../..
+cd dev/psql-compose && podman machine start codon && podman compose up -d && cd ../..
 ```
 To stop it run:
 ```sh
-cd dev/psql-compose && podman compose down && cd ../..
+cd dev/psql-compose && podman compose down && podman machine stop codon && cd ../..
 ```
 
 ### Leptos
