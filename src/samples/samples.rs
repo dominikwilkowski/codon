@@ -1,6 +1,7 @@
 use crate::error_template::ErrorTemplate;
 
 use leptos::*;
+use leptos_router::*;
 use serde::{Deserialize, Serialize};
 
 stylance::import_style!(css, "samples.module.css");
@@ -15,12 +16,47 @@ pub struct SampleData {
 
 #[component]
 pub fn Samples() -> impl IntoView {
-	let samples = create_resource(move || (), move |_| get_samples());
+	let delete_sample = create_server_action::<DeleteSample>();
+	let edit_sample = create_server_multi_action::<EditSample>();
+	let add_sample = create_server_action::<AddSample>();
+	let samples = create_resource(
+		move || {
+			(
+				add_sample.version().get(),
+				edit_sample.version().get(),
+				delete_sample.version().get(),
+			)
+		},
+		move |_| get_samples(),
+	);
+
+	let (sample_type_value, set_sample_type_value) = create_signal(String::new());
+	let (analyst_value, set_analyst_value) = create_signal(String::new());
+
+	create_effect(move |_| {
+		match add_sample.value().get() {
+			None => {},
+			Some(Ok(())) => {
+				set_sample_type_value.set(String::new());
+				set_analyst_value.set(String::new());
+			},
+			Some(Err(_)) => {},
+		};
+	});
 
 	view! {
 		<div class=css::wrapper>
 			<h1>Samples</h1>
-			<Transition fallback=move || view! { <p>"Loading..."</p> }>
+			<ActionForm action=add_sample class=css::add_form>
+				<input type="text" name="sample_type" prop:value=sample_type_value />
+				<input type="text" name="analyst" prop:value=analyst_value />
+				<input
+					type="submit"
+					value="Add"
+					prop:disabled=move || add_sample.pending().get()
+				/>
+			</ActionForm>
+			<Transition fallback=move || view! { <p>"Loading samples..."</p> }>
 				<ErrorBoundary fallback=|errors| {
 						view! { <ErrorTemplate errors=errors /> }
 				}>
@@ -45,11 +81,13 @@ pub fn Samples() -> impl IntoView {
 																					.map(move |sample| {
 																							view! {
 																								<li>
-																									<ul class=css::inner_ul>
-																										<li>{sample.id}</li>
-																										<li>{sample.sample_type}</li>
-																										<li>{sample.analyst}</li>
-																									</ul>
+																									<SampleItem
+																										id=sample.id
+																										sample_type=sample.sample_type
+																										analyst=sample.analyst
+																										delete_sample=delete_sample.clone()
+																										edit_sample=edit_sample.clone()
+																									/>
 																								</li>
 																							}
 																					})
@@ -68,11 +106,67 @@ pub fn Samples() -> impl IntoView {
 	}
 }
 
+#[component]
+pub fn SampleItem(
+	id: i32,
+	sample_type: String,
+	analyst: String,
+	delete_sample: Action<DeleteSample, Result<(), ServerFnError>>,
+	edit_sample: MultiAction<EditSample, Result<(), ServerFnError>>,
+) -> impl IntoView {
+	let show_edit = create_rw_signal(false);
+
+	view! {
+		{move || {
+				let sample_type = sample_type.clone();
+				let analyst = analyst.clone();
+				let sample_type_edit = sample_type.clone();
+				let analyst_edit = analyst.clone();
+				if show_edit.get() {
+						view! {
+							<MultiActionForm
+								action=edit_sample
+								on:submit=move |_| {
+										show_edit.set(false);
+								}
+							>
+								<input type="hidden" name="id" value=id />
+								<input type="text" name="sample_type" value=sample_type_edit />
+								<input type="text" name="analyst" value=analyst_edit />
+								<input type="submit" value="Save" />
+							</MultiActionForm>
+						}
+								.into_view()
+				} else {
+						view! {
+							<ul class=css::inner_ul>
+								<li>{id}</li>
+								<li>{sample_type}</li>
+								<li>{analyst}</li>
+								<li>
+									<button on:click=move |_| {
+											show_edit.set(true)
+									}>Edit</button>
+								</li>
+								<li>
+									<ActionForm action=delete_sample>
+										<input type="hidden" name="id" value=id />
+										<input type="submit" value="Delete" />
+									</ActionForm>
+								</li>
+							</ul>
+						}
+								.into_view()
+				}
+		}}
+	}
+}
+
 #[server]
 pub async fn get_samples() -> Result<Vec<SampleData>, ServerFnError> {
 	use crate::db::ssr::get_db;
 
-	sqlx::query!("SELECT * FROM samples")
+	sqlx::query!("SELECT * FROM samples ORDER BY id")
 		.map(|data| SampleData {
 			id: data.id,
 			sample_type: data
@@ -83,4 +177,59 @@ pub async fn get_samples() -> Result<Vec<SampleData>, ServerFnError> {
 		.fetch_all(get_db())
 		.await
 		.map_err(|error| ServerFnError::ServerError(error.to_string()))
+}
+
+#[server]
+pub async fn add_sample(
+	sample_type: String,
+	analyst: String,
+) -> Result<(), ServerFnError> {
+	use crate::db::ssr::get_db;
+
+	// fake API delay
+	std::thread::sleep(std::time::Duration::from_millis(1250));
+
+	Ok(
+		sqlx::query!(
+			"INSERT INTO samples (sample_type, analyst) VALUES ($1, $2)",
+			sample_type,
+			analyst
+		)
+		.execute(get_db())
+		.await
+		.map(|_| ())?,
+	)
+}
+
+#[server]
+pub async fn edit_sample(
+	id: i32,
+	sample_type: String,
+	analyst: String,
+) -> Result<(), ServerFnError> {
+	use crate::db::ssr::get_db;
+
+	Ok(
+		sqlx::query!(
+			"UPDATE samples SET sample_type = $1,analyst = $2 WHERE id = $3",
+			sample_type,
+			analyst,
+			id
+		)
+		.execute(get_db())
+		.await
+		.map(|_| ())?,
+	)
+}
+
+#[server]
+pub async fn delete_sample(id: i32) -> Result<(), ServerFnError> {
+	use crate::db::ssr::get_db;
+
+	Ok(
+		sqlx::query!("DELETE FROM samples WHERE id = $1", id)
+			.execute(get_db())
+			.await
+			.map(|_| ())?,
+	)
 }

@@ -2,9 +2,16 @@
 	display: grid;
 }
 
+form,
 .wrapper h1,
 .wrapper p {
 	margin: 1rem auto;
+}
+
+.add_form {
+	display: grid;
+	grid-template-rows: 1fr 1fr 1fr;
+	gap: 0.5rem;
 }
 
 .outer_ul {
