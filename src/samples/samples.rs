@@ -8,9 +8,9 @@ stylance::import_style!(css, "samples.module.css");
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
 pub struct SampleData {
-	id: i32,
-	sample_type: String,
-	analyst: String,
+	pub id: i32,
+	pub sample_type: String,
+	pub analyst: String,
 }
 
 #[component]
@@ -72,27 +72,15 @@ pub fn Samples() -> impl IntoView {
 pub async fn get_samples() -> Result<Vec<SampleData>, ServerFnError> {
 	use crate::db::ssr::get_db;
 
-	use futures::TryStreamExt;
-	// use http::request::Parts;
-	//
-	// this is just an example of how to access server context injected in the handlers
-	// let req_parts = use_context::<Parts>();
-	//
-	// if let Some(req_parts) = req_parts {
-	//   println!("Uri = {:?}", req_parts.uri);
-	// }
-
-	let mut samples = Vec::new();
-	let mut rows =
-		sqlx::query_as::<_, SampleData>("SELECT * FROM samples").fetch(get_db());
-	while let Some(row) = rows.try_next().await? {
-		samples.push(row);
-	}
-
-	// Lines below show how to set status code and headers on the response
-	// let resp = expect_context::<ResponseOptions>();
-	// resp.set_status(StatusCode::IM_A_TEAPOT);
-	// resp.insert_header(SET_COOKIE, HeaderValue::from_str("fizz=buzz").unwrap());
-
-	Ok(samples)
+	sqlx::query!("SELECT * FROM samples")
+		.map(|data| SampleData {
+			id: data.id,
+			sample_type: data
+				.sample_type
+				.expect("No `sample_type` found in `samples` table"),
+			analyst: data.analyst.expect("No `analyst` found in `samples` table"),
+		})
+		.fetch_all(get_db())
+		.await
+		.map_err(|error| ServerFnError::ServerError(error.to_string()))
 }
