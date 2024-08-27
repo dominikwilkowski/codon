@@ -3,6 +3,9 @@ use crate::error_template::ErrorTemplate;
 use leptos::*;
 use leptos_router::*;
 use serde::{Deserialize, Serialize};
+use server_fn::codec::{MultipartData, MultipartFormData};
+use wasm_bindgen::JsCast;
+use web_sys::{FormData, HtmlFormElement, SubmitEvent};
 
 stylance::import_style!(css, "samples.module.css");
 
@@ -50,12 +53,13 @@ pub fn Samples() -> impl IntoView {
 			<ActionForm action=add_sample class=css::add_form>
 				<input type="text" name="sample_type" prop:value=sample_type_value />
 				<input type="text" name="analyst" prop:value=analyst_value />
-				<input
-					type="submit"
-					value="Add"
-					prop:disabled=move || add_sample.pending().get()
-				/>
+				<button type="submit" prop:disabled=move || add_sample.pending().get()>
+					Add
+				</button>
 			</ActionForm>
+			<hr />
+			<FileUpload />
+			<hr />
 			<Transition fallback=move || view! { <p>"Loading samples..."</p> }>
 				<ErrorBoundary fallback=|errors| {
 						view! { <ErrorTemplate errors=errors /> }
@@ -139,7 +143,7 @@ pub fn SampleItem(
 									node_ref=input_ref
 								/>
 								<input type="text" name="analyst" value=analyst_edit />
-								<input type="submit" value="Save" />
+								<button type="submit">Save</button>
 								<button on:click=move |_| {
 										show_edit.set(false);
 								}>Cancel</button>
@@ -171,6 +175,71 @@ pub fn SampleItem(
 								.into_view()
 				}
 		}}
+	}
+}
+
+#[component]
+pub fn FileUpload() -> impl IntoView {
+	#[server(input = MultipartFormData)]
+	pub async fn save_file(data: MultipartData) -> Result<String, ServerFnError> {
+		use std::path::Path;
+		use tokio::{fs::File, io::AsyncWriteExt};
+		let mut data = data.into_inner().unwrap();
+
+		while let Ok(Some(mut field)) = data.next_field().await {
+			let original_name = field.file_name().unwrap_or("unknown").to_string();
+			let new_name = format!("new_{}", original_name);
+			let file_path = Path::new("upload_media").join(&new_name);
+
+			// Create the directory if it doesn't exist
+			if let Some(parent) = file_path.parent() {
+				tokio::fs::create_dir_all(parent).await?;
+			}
+
+			// Save the file
+			let mut file = File::create(file_path).await?;
+			while let Ok(Some(chunk)) = field.chunk().await {
+				file.write_all(&chunk).await?;
+			}
+
+			return Ok(new_name);
+		}
+
+		Err(ServerFnError::ServerError("Failed to save file".into()))
+	}
+
+	let upload_action = create_action(|data: &FormData| {
+		let data = data.clone();
+		// `MultipartData` implements `From<FormData>`
+		save_file(data.into())
+	});
+
+	view! {
+		<form on:submit=move |ev: SubmitEvent| {
+				ev.prevent_default();
+				let target = ev.target().unwrap().unchecked_into::<HtmlFormElement>();
+				let form_data = FormData::new_with_form(&target).unwrap();
+				upload_action.dispatch(form_data);
+		}>
+			<h3>File Upload</h3>
+			<input type="file" name="file_to_upload" />
+			<button type="submit">Upload</button>
+		</form>
+		<p>
+			{move || {
+					if upload_action.input().get().is_none()
+							&& upload_action.value().get().is_none()
+					{
+							"Upload a file.".to_string()
+					} else if upload_action.pending().get() {
+							"Uploading...".to_string()
+					} else if let Some(Ok(value)) = upload_action.value().get() {
+							format!("Finished uploading \"{}\"", value)
+					} else {
+							format!("Error: {:?}", upload_action.value().get())
+					}
+			}}
+		</p>
 	}
 }
 

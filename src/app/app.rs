@@ -24,7 +24,7 @@ pub fn App() -> impl IntoView {
 				outside_errors.insert_with_default_key(AppError::NotFound);
 				view! { <ErrorTemplate outside_errors /> }.into_view()
 		}>
-			<main>
+			<main class=css::main>
 				<Nav />
 				<Routes>
 					<Route path="" view=HomePage />

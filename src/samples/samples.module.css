@@ -2,6 +2,10 @@
 	display: grid;
 }
 
+.wrapper hr {
+	width: 42rem;
+}
+
 form,
 .wrapper h1,
 .wrapper p {
