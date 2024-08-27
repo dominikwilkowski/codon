@@ -222,7 +222,12 @@ pub fn FileUpload() -> impl IntoView {
 				upload_action.dispatch(form_data);
 		}>
 			<h3>File Upload</h3>
-			<input type="file" name="file_to_upload" />
+			<input
+				type="file"
+				name="file_to_upload"
+				accept="image/*"
+				capture="environment"
+			/>
 			<button type="submit">Upload</button>
 		</form>
 		<p>

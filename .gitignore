@@ -28,3 +28,7 @@ style/bundle.css
 
 # environment files
 .env
+
+# uploads
+upload_media/*
+!upload_media/.keep
