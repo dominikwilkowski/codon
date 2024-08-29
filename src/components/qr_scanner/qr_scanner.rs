@@ -27,6 +27,6 @@ pub fn QrScanner() -> impl IntoView {
 								.unwrap();
 						start_qr_scanner(video_element);
 				});
-		}>{"Start QR Scanner"}</button>
+		}>Start QR Scanner</button>
 	}
 }
