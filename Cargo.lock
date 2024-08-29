@@ -377,6 +377,7 @@ dependencies = [
  "dotenvy",
  "futures",
  "http",
+ "js-sys",
  "leptos",
  "leptos_axum",
  "leptos_meta",
@@ -391,6 +392,7 @@ dependencies = [
  "tower-http",
  "tracing",
  "wasm-bindgen",
+ "wasm-bindgen-futures",
  "web-sys",
 ]
 

@@ -54,7 +54,7 @@ stylance --watch --output-file ./style/bundle.css ./
 ### Formatting
 Run the leptos formatter via:
 ```sh
-leptosfmt */**/*.rs
+leptosfmt src/**/*.rs
 ```
 You should also run the biom formatter for all test and css files:
 ```sh

@@ -43,10 +43,12 @@ sqlx = { version = "0.8", features = [
 	"runtime-tokio-rustls",
 	"postgres",
 ], optional = true }
-stylance = { version = "0.5.1", features = ["nightly"] }
-dotenvy = "0.15.7"
-web-sys = "0.3.70"
-server_fn = { version = "0.6.14", features = ["serde-lite", "rkyv", "multipart"] }
+stylance = { version = "0.5", features = ["nightly"] }
+dotenvy = "0.15"
+web-sys = { version = "0.3", features = ["HtmlVideoElement"] }
+server_fn = { version = "0.6", features = ["serde-lite", "rkyv", "multipart"] }
+js-sys = "0.3"
+wasm-bindgen-futures = "0.4"
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
@@ -95,7 +97,8 @@ style-file = "style/bundle.css"
 assets-dir = "public"
 
 # The IP and port (ex: 127.0.0.1:3000) where the server serves the content. Use it in your server setup.
-site-addr = "10.0.0.5:3000"
+# site-addr = "10.0.0.5:3000"
+site-addr = "127.0.0.1:3000"
 
 # The port to use for automatic reload monitoring
 reload-port = 3001

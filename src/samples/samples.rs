@@ -1,4 +1,6 @@
-use crate::error_template::ErrorTemplate;
+use crate::{
+	components::qr_scanner::qr_scanner::QrScanner, error_template::ErrorTemplate,
+};
 
 use leptos::*;
 use leptos_router::*;
@@ -59,6 +61,8 @@ pub fn Samples() -> impl IntoView {
 			</ActionForm>
 			<hr />
 			<FileUpload />
+			<hr />
+			<QrScanner />
 			<hr />
 			<Transition fallback=move || view! { <p>"Loading samples..."</p> }>
 				<ErrorBoundary fallback=|errors| {

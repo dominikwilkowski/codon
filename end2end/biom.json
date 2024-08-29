@@ -2,7 +2,14 @@
 	"formatter": {
 		"enabled": true,
 		"formatWithErrors": false,
-		"ignore": ["playwright-report/**", "test-results/**", "target/**", "dev/**/*.css"],
+		"ignore": [
+			"playwright-report/**",
+			"test-results/**",
+			"target/**",
+			"dev/**/*.css",
+			"public/**/*.min.js",
+			"public/**/*.min.css"
+		],
 		"attributePosition": "auto",
 		"indentStyle": "tab",
 		"indentWidth": 2,
