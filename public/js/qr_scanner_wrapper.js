@@ -3,5 +3,4 @@ function start_qr_scanner(video_element) {
 	scanner.start();
 }
 
-// Expose the function globally
 window.start_qr_scanner = start_qr_scanner;
