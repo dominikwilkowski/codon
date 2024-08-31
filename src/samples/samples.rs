@@ -53,9 +53,16 @@ pub fn Samples() -> impl IntoView {
 		<div class=css::wrapper>
 			<h1>Samples</h1>
 			<ActionForm action=add_sample class=css::add_form>
-				<input type="text" name="sample_type" prop:value=sample_type_value />
+				<input
+					type="text"
+					name="sample_type"
+					prop:value=sample_type_value
+				/>
 				<input type="text" name="analyst" prop:value=analyst_value />
-				<button type="submit" prop:disabled=move || add_sample.pending().get()>
+				<button
+					type="submit"
+					prop:disabled=move || add_sample.pending().get()
+				>
 					Add
 				</button>
 			</ActionForm>
@@ -66,47 +73,47 @@ pub fn Samples() -> impl IntoView {
 			<hr />
 			<Transition fallback=move || view! { <p>"Loading samples..."</p> }>
 				<ErrorBoundary fallback=|errors| {
-						view! { <ErrorTemplate errors=errors /> }
+					view! { <ErrorTemplate errors=errors /> }
 				}>
 					{move || {
-							let existing_todos = {
-									move || {
-											samples
-													.get()
-													.map(move |todos| match todos {
-															Err(e) => {
-																	view! {
-																		<pre class="error">"Server Error: " {e.to_string()}</pre>
-																	}
-																			.into_view()
-															}
-															Ok(samples) => {
-																	if samples.is_empty() {
-																			view! { <p>"No samples were found."</p> }.into_view()
-																	} else {
-																			samples
-																					.into_iter()
-																					.map(move |sample| {
-																							view! {
-																								<li>
-																									<SampleItem
-																										id=sample.id
-																										sample_type=sample.sample_type
-																										analyst=sample.analyst
-																										delete_sample=delete_sample.clone()
-																										edit_sample=edit_sample.clone()
-																									/>
-																								</li>
-																							}
-																					})
-																					.collect_view()
-																	}
-															}
+						let existing_todos = {
+							move || {
+								samples
+									.get()
+									.map(move |todos| match todos {
+										Err(e) => {
+											view! {
+												<pre class="error">"Server Error: " {e.to_string()}</pre>
+											}
+												.into_view()
+										}
+										Ok(samples) => {
+											if samples.is_empty() {
+												view! { <p>"No samples were found."</p> }.into_view()
+											} else {
+												samples
+													.into_iter()
+													.map(move |sample| {
+														view! {
+															<li>
+																<SampleItem
+																	id=sample.id
+																	sample_type=sample.sample_type
+																	analyst=sample.analyst
+																	delete_sample=delete_sample.clone()
+																	edit_sample=edit_sample.clone()
+																/>
+															</li>
+														}
 													})
-													.unwrap_or_default()
-									}
-							};
-							view! { <ul class=css::outer_ul>{existing_todos}</ul> }
+													.collect_view()
+											}
+										}
+									})
+									.unwrap_or_default()
+							}
+						};
+						view! { <ul class=css::outer_ul>{existing_todos}</ul> }
 					}}
 				</ErrorBoundary>
 			</Transition>
@@ -127,57 +134,57 @@ pub fn SampleItem(
 
 	view! {
 		{move || {
-				let sample_type = sample_type.clone();
-				let analyst = analyst.clone();
-				let sample_type_edit = sample_type.clone();
-				let analyst_edit = analyst.clone();
-				if show_edit.get() {
-						view! {
-							<MultiActionForm
-								action=edit_sample
-								on:submit=move |_| {
-										show_edit.set(false);
-								}
-							>
-								<input type="hidden" name="id" value=id />
-								<input
-									type="text"
-									name="sample_type"
-									value=sample_type_edit
-									node_ref=input_ref
-								/>
-								<input type="text" name="analyst" value=analyst_edit />
-								<button type="submit">Save</button>
-								<button on:click=move |_| {
-										show_edit.set(false);
-								}>Cancel</button>
-							</MultiActionForm>
+			let sample_type = sample_type.clone();
+			let analyst = analyst.clone();
+			let sample_type_edit = sample_type.clone();
+			let analyst_edit = analyst.clone();
+			if show_edit.get() {
+				view! {
+					<MultiActionForm
+						action=edit_sample
+						on:submit=move |_| {
+							show_edit.set(false);
 						}
-								.into_view()
-				} else {
-						view! {
-							<ul class=css::inner_ul>
-								<li>{id}</li>
-								<li>{sample_type}</li>
-								<li>{analyst}</li>
-								<li>
-									<button on:click=move |_| {
-											show_edit.set(true);
-											if let Some(input) = input_ref.get() {
-													input.focus().unwrap();
-											}
-									}>Edit</button>
-								</li>
-								<li>
-									<ActionForm action=delete_sample>
-										<input type="hidden" name="id" value=id />
-										<input type="submit" value="Delete" />
-									</ActionForm>
-								</li>
-							</ul>
-						}
-								.into_view()
+					>
+						<input type="hidden" name="id" value=id />
+						<input
+							type="text"
+							name="sample_type"
+							value=sample_type_edit
+							node_ref=input_ref
+						/>
+						<input type="text" name="analyst" value=analyst_edit />
+						<button type="submit">Save</button>
+						<button on:click=move |_| {
+							show_edit.set(false);
+						}>Cancel</button>
+					</MultiActionForm>
 				}
+					.into_view()
+			} else {
+				view! {
+					<ul class=css::inner_ul>
+						<li>{id}</li>
+						<li>{sample_type}</li>
+						<li>{analyst}</li>
+						<li>
+							<button on:click=move |_| {
+								show_edit.set(true);
+								if let Some(input) = input_ref.get() {
+									input.focus().unwrap();
+								}
+							}>Edit</button>
+						</li>
+						<li>
+							<ActionForm action=delete_sample>
+								<input type="hidden" name="id" value=id />
+								<input type="submit" value="Delete" />
+							</ActionForm>
+						</li>
+					</ul>
+				}
+					.into_view()
+			}
 		}}
 	}
 }
@@ -220,10 +227,13 @@ pub fn FileUpload() -> impl IntoView {
 
 	view! {
 		<form on:submit=move |ev: SubmitEvent| {
-				ev.prevent_default();
-				let target = ev.target().unwrap().unchecked_into::<HtmlFormElement>();
-				let form_data = FormData::new_with_form(&target).unwrap();
-				upload_action.dispatch(form_data);
+			ev.prevent_default();
+			let target = ev
+				.target()
+				.unwrap()
+				.unchecked_into::<HtmlFormElement>();
+			let form_data = FormData::new_with_form(&target).unwrap();
+			upload_action.dispatch(form_data);
 		}>
 			<h3>File Upload</h3>
 			<input
@@ -236,17 +246,17 @@ pub fn FileUpload() -> impl IntoView {
 		</form>
 		<p>
 			{move || {
-					if upload_action.input().get().is_none()
-							&& upload_action.value().get().is_none()
-					{
-							"Upload a file.".to_string()
-					} else if upload_action.pending().get() {
-							"Uploading...".to_string()
-					} else if let Some(Ok(value)) = upload_action.value().get() {
-							format!("Finished uploading \"{}\"", value)
-					} else {
-							format!("Error: {:?}", upload_action.value().get())
-					}
+				if upload_action.input().get().is_none()
+					&& upload_action.value().get().is_none()
+				{
+					"Upload a file.".to_string()
+				} else if upload_action.pending().get() {
+					"Uploading...".to_string()
+				} else if let Some(Ok(value)) = upload_action.value().get() {
+					format!("Finished uploading \"{}\"", value)
+				} else {
+					format!("Error: {:?}", upload_action.value().get())
+				}
 			}}
 		</p>
 	}

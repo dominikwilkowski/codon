@@ -1,5 +1,5 @@
 max_width = 80
-tab_spaces = 2
+tab_spaces = 4
 indentation_style = "Tabs"
 newline_style = "Unix"
 attr_value_brace_style = "WhenRequired" # "Always", "AlwaysUnlessLit", "WhenRequired" or "Preserve"

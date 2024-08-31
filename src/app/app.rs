@@ -20,9 +20,9 @@ pub fn App() -> impl IntoView {
 		<Title text="Welcome to Codon" />
 
 		<Router fallback=|| {
-				let mut outside_errors = Errors::default();
-				outside_errors.insert_with_default_key(AppError::NotFound);
-				view! { <ErrorTemplate outside_errors /> }.into_view()
+			let mut outside_errors = Errors::default();
+			outside_errors.insert_with_default_key(AppError::NotFound);
+			view! { <ErrorTemplate outside_errors /> }.into_view()
 		}>
 			<main class=css::main>
 				<Nav />
