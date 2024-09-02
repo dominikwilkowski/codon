@@ -1,6 +1,4 @@
-use crate::{
-	components::qr_scanner::qr_scanner::QrScanner, error_template::ErrorTemplate,
-};
+use crate::error_template::ErrorTemplate;
 
 use leptos::*;
 use leptos_router::*;
@@ -8,6 +6,7 @@ use serde::{Deserialize, Serialize};
 use server_fn::codec::{MultipartData, MultipartFormData};
 use wasm_bindgen::JsCast;
 use web_sys::{FormData, HtmlFormElement, SubmitEvent};
+use leptos_qr_scanner::Scan;
 
 stylance::import_style!(css, "samples.module.css");
 
@@ -37,6 +36,10 @@ pub fn Samples() -> impl IntoView {
 
 	let (sample_type_value, set_sample_type_value) = create_signal(String::new());
 	let (analyst_value, set_analyst_value) = create_signal(String::new());
+
+	let (scan_signal, scan_set) = create_signal(false);
+	let checkbox_ref = create_node_ref::<html::Input>();
+	let (result_signal, set_result) = create_signal("".to_string());
 
 	create_effect(move |_| {
 		match add_sample.value().get() {
@@ -69,7 +72,32 @@ pub fn Samples() -> impl IntoView {
 			<hr />
 			<FileUpload />
 			<hr />
-			<QrScanner />
+			<Scan
+				active=scan_signal
+				on_scan=move |a| {
+					logging::log!("scanned: {}", &a);
+					set_result.set(a);
+					scan_set.set(false);
+				}
+				class=""
+				video_class=""
+			/>
+			<label>
+				Scan
+				<input
+					type="checkbox"
+					prop:checked=move || scan_signal.get()
+					ref=checkbox_ref
+					on:change=move |_e| {
+						let checked = checkbox_ref
+							.get()
+							.expect("<input> to exist")
+							.checked();
+						scan_set.set(checked);
+					}
+				/>
+			</label>
+			<p>Scan result: {result_signal}</p>
 			<hr />
 			<Transition fallback=move || view! { <p>"Loading samples..."</p> }>
 				<ErrorBoundary fallback=|errors| {

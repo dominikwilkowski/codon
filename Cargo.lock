@@ -379,6 +379,7 @@ dependencies = [
  "http",
  "js-sys",
  "leptos",
+ "leptos-qr-scanner",
  "leptos_axum",
  "leptos_meta",
  "leptos_router",
@@ -1156,6 +1157,19 @@ dependencies = [
  "tracing",
  "typed-builder",
  "typed-builder-macro",
+ "wasm-bindgen",
+ "web-sys",
+]
+
+[[package]]
+name = "leptos-qr-scanner"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "61616abac4e08b1da2dc62176a176a0d9b28f62ecf81a3d848f5cbf6e1253d0d"
+dependencies = [
+ "js-sys",
+ "leptos",
+ "serde",
  "wasm-bindgen",
  "web-sys",
 ]

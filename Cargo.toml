@@ -49,6 +49,7 @@ web-sys = { version = "0.3", features = ["HtmlVideoElement"] }
 server_fn = { version = "0.6", features = ["serde-lite", "rkyv", "multipart"] }
 js-sys = "0.3"
 wasm-bindgen-futures = "0.4"
+leptos-qr-scanner = "0.2.0"
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]

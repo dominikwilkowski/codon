@@ -12,11 +12,6 @@ pub mod nav {
 pub mod app {
 	pub mod app;
 }
-pub mod components {
-	pub mod qr_scanner {
-		pub mod qr_scanner;
-	}
-}
 
 #[cfg(feature = "ssr")]
 pub mod fileserv;
