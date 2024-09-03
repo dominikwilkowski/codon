@@ -1,7 +1,7 @@
-use chrono::NaiveDate;
+use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(feature = "ssr", derive(sqlx::Type))]
 // #[cfg_attr(feature = "ssr", sqlx(type_name = "equipmenttypes", rename_all = "PascalCase"))]
 pub enum EquipmentTypes {
@@ -20,7 +20,7 @@ impl std::fmt::Display for EquipmentTypes {
 	}
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(feature = "ssr", derive(sqlx::Type))]
 // #[cfg_attr(feature = "ssr", sqlx(type_name = "equipmentstatus", rename_all = "PascalCase"))]
 pub enum EquipmentStatus {
@@ -45,20 +45,20 @@ impl std::fmt::Display for EquipmentStatus {
 	}
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
 pub struct EquipmentData {
 	pub id: i32,
 	pub equipment_type: EquipmentTypes,
 	pub qrcode: String,
-	pub create_date: NaiveDate,
+	pub create_date: DateTime<Utc>,
 	pub name: String,
 	pub status: EquipmentStatus,
 	pub manufacturer: Option<String>,
-	pub purchase_date: Option<NaiveDate>,
+	pub purchase_date: Option<DateTime<Utc>>,
 	pub vendor: Option<String>,
 	pub cost: Option<String>,
-	pub warranty_expiration_date: Option<NaiveDate>,
+	pub warranty_expiration_date: Option<DateTime<Utc>>,
 	pub location: Option<String>,
 	pub notes: Option<String>,
 }
@@ -82,7 +82,7 @@ impl EquipmentData {
 		]
 	}
 
-	pub fn format_date(date: &Option<NaiveDate>) -> String {
+	pub fn format_date(date: &Option<DateTime<Utc>>) -> String {
 		match date {
 			Some(d) => d.format("%Y-%m-%d").to_string(),
 			None => "N/A".to_string(),
