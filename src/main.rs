@@ -14,6 +14,7 @@ pub mod app {
 }
 pub mod equipment {
 	pub mod equipment;
+	pub mod schema;
 }
 pub mod icons {
 	pub mod culture;
