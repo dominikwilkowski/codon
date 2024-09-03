@@ -12,6 +12,15 @@ pub mod nav {
 pub mod app {
 	pub mod app;
 }
+pub mod equipment {
+	pub mod equipment;
+}
+pub mod icons {
+	pub mod culture;
+	pub mod flask;
+	pub mod incubation_cabine;
+	pub mod vessel;
+}
 
 #[cfg(feature = "ssr")]
 pub mod fileserv;

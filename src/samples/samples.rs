@@ -1,12 +1,18 @@
-use crate::error_template::ErrorTemplate;
+use crate::{
+	error_template::ErrorTemplate,
+	icons::{
+		culture::Culture, flask::Flask, incubation_cabine::IncubationCabine,
+		vessel::Vessel,
+	},
+};
 
 use leptos::*;
+use leptos_qr_scanner::Scan;
 use leptos_router::*;
 use serde::{Deserialize, Serialize};
 use server_fn::codec::{MultipartData, MultipartFormData};
 use wasm_bindgen::JsCast;
 use web_sys::{FormData, HtmlFormElement, SubmitEvent};
-use leptos_qr_scanner::Scan;
 
 stylance::import_style!(css, "samples.module.css");
 
@@ -98,6 +104,13 @@ pub fn Samples() -> impl IntoView {
 				/>
 			</label>
 			<p>Scan result: {result_signal}</p>
+			<hr />
+			<div class=css::icons>
+				<Flask />
+				<Culture />
+				<Vessel />
+				<IncubationCabine />
+			</div>
 			<hr />
 			<Transition fallback=move || view! { <p>"Loading samples..."</p> }>
 				<ErrorBoundary fallback=|errors| {

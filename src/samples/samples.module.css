@@ -42,3 +42,11 @@ form,
 .inner_ul li + li {
 	margin-left: 0.5rem;
 }
+
+.icons {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, 4rem);
+	width: 50%;
+	gap: 0.5rem;
+	margin: 0 auto;
+}

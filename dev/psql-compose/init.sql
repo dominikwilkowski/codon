@@ -8,7 +8,7 @@ INSERT INTO samples (sample_type, analyst) VALUES ('sample_type1', 'Analyst One'
 
 
 
-CREATE TYPE people_status AS ENUM ('active', 'on_leave', 'left');
+CREATE TYPE people_status AS ENUM ('Active', 'OnLeave', 'Left');
 CREATE TABLE people (
     id SERIAL PRIMARY KEY,
     employee_id TEXT UNIQUE,
@@ -28,21 +28,21 @@ CREATE TABLE people (
     picture TEXT
 );
 INSERT INTO people (preferred_name, notes, status) VALUES
-    ('Michael', 'CNO (chief nerd officer)', 'active'),
-    ('Dom', 'nerd', 'active'),
-    ('Josh', 'jock', 'active'),
-    ('Old mate', 'looser', 'left');
+    ('Michael', 'CNO (chief nerd officer)', 'Active'),
+    ('Dom', 'nerd', 'Active'),
+    ('Josh', 'jock', 'Active'),
+    ('Old mate', 'looser', 'Left');
 
-CREATE TYPE equipment_types AS ENUM ('flask', 'vessel', 'incubation_cabinet');
-CREATE TYPE equipment_status AS ENUM ('working', 'needs_cleaning', 'preparation', 'sterilization', 'broken', 'out_of_commission');
+CREATE TYPE EquipmentTypes AS ENUM ('Flask', 'Vessel', 'IncubationCabinet');
+CREATE TYPE EquipmentStatus AS ENUM ('Working', 'NeedsCleaning', 'Preparation', 'Sterilization', 'Broken', 'OutOfCommission');
 CREATE TABLE equipment (
     id SERIAL PRIMARY KEY,
-    type equipment_types,
+    equipment_type EquipmentTypes NOT NULL,
     qrcode TEXT NOT NULL UNIQUE,
-    create_date DATE DEFAULT CURRENT_DATE,
+    create_date DATE DEFAULT CURRENT_DATE NOT NULL,
     name TEXT NOT NULL,
+    status EquipmentStatus NOT NULL,
     manufacturer TEXT,
-    status equipment_status,
     purchase_date DATE,
     vendor TEXT,
     cost TEXT,
@@ -51,7 +51,7 @@ CREATE TABLE equipment (
     notes TEXT
 );
 
-CREATE TYPE culture_contamination_status AS ENUM ('clean', 'xenic', 'monoxenic', 'axenic', 'contaminated', 'parent_contaminated', 'clean_was_contaminated');
+CREATE TYPE culture_contamination_status AS ENUM ('Clean', 'Xenic', 'Monoxenic', 'Axenic', 'Contaminated', 'ParentContaminated', 'CleanWasContaminated');
 CREATE TABLE culture (
     id SERIAL PRIMARY KEY,
     qrcode TEXT NOT NULL UNIQUE,
