@@ -23,7 +23,7 @@ pub mod icons {
 	pub mod equipment;
 	pub mod experiment;
 	pub mod flask;
-	pub mod incubation_cabine;
+	pub mod incubation_cabinet;
 	pub mod people;
 	pub mod vessel;
 }

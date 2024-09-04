@@ -1,4 +1,9 @@
-use crate::equipment::schema::EquipmentData;
+use crate::{
+	equipment::schema::{EquipmentData, EquipmentTypes},
+	icons::{
+		flask::Flask, incubation_cabinet::IncubationCabinet, vessel::Vessel,
+	},
+};
 
 use leptos::*;
 use leptos_router::*;
@@ -13,7 +18,15 @@ pub fn Row(equipment: Vec<EquipmentData>) -> impl IntoView {
 			view! {
 				<tr>
 					<td>{equipment.id}</td>
-					<td>{equipment.equipment_type.to_string()}</td>
+					<td>
+						{match equipment.equipment_type {
+							EquipmentTypes::Flask => view! { <Flask /> },
+							EquipmentTypes::Vessel => view! { <Vessel /> },
+							EquipmentTypes::IncubationCabinet => {
+								view! { <IncubationCabinet /> }
+							}
+						}}
+					</td>
 					<td>{equipment.qrcode}</td>
 					<td>
 						{EquipmentData::format_date(&Some(equipment.create_date))}

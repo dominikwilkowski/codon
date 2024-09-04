@@ -3,13 +3,13 @@ use leptos::*;
 stylance::import_style!(css, "icons.module.css");
 
 #[component]
-pub fn IncubationCabineLogo() -> impl IntoView {
+pub fn IncubationCabinetLogo() -> impl IntoView {
 	view! {
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
 			viewBox="0 0 870 870"
-			class=css::icons
+			class=css::logo
 		>
 			<path
 				stroke="currentColor"
@@ -27,13 +27,13 @@ pub fn IncubationCabineLogo() -> impl IntoView {
 }
 
 #[component]
-pub fn IncubationCabine() -> impl IntoView {
+pub fn IncubationCabinet() -> impl IntoView {
 	view! {
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
 			viewBox="0 0 300 300"
-			class=css::icons
+			class=css::icon
 		>
 			<path
 				stroke="currentColor"

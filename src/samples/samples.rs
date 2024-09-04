@@ -5,7 +5,7 @@ use crate::{
 		equipment::{Equipment, EquipmentLogo},
 		experiment::{Experiment, ExperimentLogo},
 		flask::{Flask, FlaskLogo},
-		incubation_cabine::{IncubationCabine, IncubationCabineLogo},
+		incubation_cabinet::{IncubationCabinet, IncubationCabinetLogo},
 		people::{People, PeopleLogo},
 		vessel::{Vessel, VesselLogo},
 	},
@@ -114,7 +114,7 @@ pub fn Samples() -> impl IntoView {
 			<div class=css::logos>
 				<CultureLogo />
 				<FlaskLogo />
-				<IncubationCabineLogo />
+				<IncubationCabinetLogo />
 				<VesselLogo />
 				<EquipmentLogo />
 				<ExperimentLogo />
@@ -124,7 +124,7 @@ pub fn Samples() -> impl IntoView {
 			<div class=css::icons>
 				<Culture />
 				<Flask />
-				<IncubationCabine />
+				<IncubationCabinet />
 				<Vessel />
 				<Equipment />
 				<Experiment />

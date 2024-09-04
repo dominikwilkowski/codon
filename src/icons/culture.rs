@@ -9,7 +9,7 @@ pub fn CultureLogo() -> impl IntoView {
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
 			viewBox="0 0 870 870"
-			class=css::icons
+			class=css::logo
 		>
 			<path
 				fill="currentColor"
@@ -46,7 +46,7 @@ pub fn Culture() -> impl IntoView {
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
 			viewBox="0 0 300 300"
-			class=css::icons
+			class=css::icon
 		>
 			<path
 				fill="currentColor"

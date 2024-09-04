@@ -1,3 +1,9 @@
-.icons {
+.icon {
 	color: #222;
+	width: 1.5rem;
+}
+
+.logo {
+	color: #222;
+	width: 5.5rem;
 }

@@ -9,7 +9,7 @@ pub fn EquipmentLogo() -> impl IntoView {
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
 			viewBox="0 0 870 870"
-			class=css::icons
+			class=css::logo
 		>
 			<path
 				stroke="currentColor"
@@ -28,7 +28,7 @@ pub fn Equipment() -> impl IntoView {
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
 			viewBox="0 0 300 300"
-			class=css::icons
+			class=css::icon
 		>
 			<path
 				stroke="currentColor"

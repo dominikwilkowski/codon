@@ -2,6 +2,7 @@ use crate::{
 	components::{pagination::pagination::Pagination, table::table::TableHead},
 	equipment::{row::Row, schema::EquipmentData},
 	error_template::ErrorTemplate,
+	icons::equipment::EquipmentLogo,
 };
 
 use leptos::*;
@@ -45,8 +46,11 @@ pub fn Equipment() -> impl IntoView {
 	);
 
 	view! {
-		<h1>Equipment</h1>
-		<Transition fallback=move || view! { <p>"Loading equipment..."</p> }>
+		<h1>
+			<EquipmentLogo />
+			Equipment
+		</h1>
+		<Transition fallback=move || view! { <p>Loading equipment...</p> }>
 			<ErrorBoundary fallback=|errors| {
 				view! { <ErrorTemplate errors=errors /> }
 			}>
@@ -58,7 +62,7 @@ pub fn Equipment() -> impl IntoView {
 								.map(move |data| match data {
 									Err(e) => {
 										view! {
-											<pre class="error">"Server Error: " {e.to_string()}</pre>
+											<pre class="error">Server Error: {e.to_string()}</pre>
 										}
 											.into_view()
 									}
