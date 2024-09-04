@@ -14,6 +14,8 @@ pub mod app {
 }
 pub mod equipment {
 	pub mod equipment;
+	pub mod equipment_detail;
+	pub mod row;
 	pub mod schema;
 }
 pub mod icons {
@@ -28,6 +30,9 @@ pub mod icons {
 pub mod components {
 	pub mod pagination {
 		pub mod pagination;
+	}
+	pub mod table {
+		pub mod table;
 	}
 }
 

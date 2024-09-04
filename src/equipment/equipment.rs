@@ -1,8 +1,6 @@
 use crate::{
-	components::pagination::pagination::{
-		ItemsPerPage, PaginationNext, PaginationPrev,
-	},
-	equipment::schema::EquipmentData,
+	components::{pagination::pagination::Pagination, table::table::TableHead},
+	equipment::{row::Row, schema::EquipmentData},
 	error_template::ErrorTemplate,
 };
 
@@ -66,90 +64,24 @@ pub fn Equipment() -> impl IntoView {
 									}
 									Ok(equipment) => {
 										if equipment.is_empty() {
-											view! { <p>"No equipment found."</p> }.into_view()
+											view! {
+												<tr>
+													<td colspan=EquipmentData::get_fields()
+														.len()>"No equipment found."</td>
+												</tr>
+											}
+												.into_view()
 										} else {
 											items.set(equipment.len());
-											equipment
-												.into_iter()
-												.map(move |equipment| {
-													view! {
-														<tr>
-															<td>{equipment.id}</td>
-															<td>{equipment.equipment_type.to_string()}</td>
-															<td>{equipment.qrcode}</td>
-															<td>
-																{EquipmentData::format_date(&Some(equipment.create_date))}
-															</td>
-															<td>{equipment.name}</td>
-															<td>{equipment.status.to_string()}</td>
-															<td>{equipment.manufacturer.unwrap_or_default()}</td>
-															<td>
-																{EquipmentData::format_date(&equipment.purchase_date)}
-															</td>
-															<td>{equipment.vendor.unwrap_or_default()}</td>
-															<td>{equipment.cost.unwrap_or_default()}</td>
-															<td>
-																{EquipmentData::format_date(
-																	&equipment.warranty_expiration_date,
-																)}
-															</td>
-															<td>{equipment.location.unwrap_or_default()}</td>
-															<td>{equipment.notes.unwrap_or_default()}</td>
-															<td>
-																<A href=format!("/equipment/{}", equipment.id)>Details</A>
-															</td>
-														</tr>
-													}
-												})
-												.collect_view()
+											view! { <Row equipment=equipment /> }
 										}
 									}
 								})
 								.unwrap_or_default()
 						}
 					};
-					let head = EquipmentData::get_fields()
-						.iter()
-						.map(move |name| {
-							let label = if query_field.get() == *name {
-								"*↕️"
-							} else {
-								"↕️"
-							};
-							let order = if query_field.get() == *name
-								&& query_order.get() == "asc"
-							{
-								"desc"
-							} else {
-								"asc"
-							};
-							view! {
-								<th>
-									{name} <form action="/equipment" method="get">
-										<input type="hidden" name="field" value=name />
-										<input type="hidden" name="order" value=order />
-										<input type="hidden" name="page" value=query_page.get() />
-										<input
-											type="hidden"
-											name="items_per_page"
-											value=query_ipp.get()
-										/>
-										<button type="submit">{label}</button>
-									</form>
-								</th>
-							}
-						})
-						.collect_view();
 					view! {
-						<ItemsPerPage
-							action="/equipment"
-							query_page=query_page
-							query_ipp=query_ipp
-						>
-							<input type="hidden" name="field" value=query_field.get() />
-							<input type="hidden" name="order" value=query_order.get() />
-						</ItemsPerPage>
-						<PaginationNext
+						<Pagination
 							action="/equipment"
 							query_page=query_page
 							query_ipp=query_ipp
@@ -157,72 +89,38 @@ pub fn Equipment() -> impl IntoView {
 						>
 							<input type="hidden" name="field" value=query_field.get() />
 							<input type="hidden" name="order" value=query_order.get() />
-						</PaginationNext>
-						<PaginationPrev
-							action="/equipment"
-							query_page=query_page
-							query_ipp=query_ipp
-						>
-							<input type="hidden" name="field" value=query_field.get() />
-							<input type="hidden" name="order" value=query_order.get() />
-						</PaginationPrev>
+						</Pagination>
 						<table>
 							<thead>
-								<tr>{head}<th></th></tr>
+								<tr>
+									<TableHead
+										action="/equipment"
+										items=EquipmentData::get_fields()
+										query_field=query_field
+										query_order=query_order
+									>
+										<input type="hidden" name="page" value=query_page.get() />
+										<input
+											type="hidden"
+											name="items_per_page"
+											value=query_ipp.get()
+										/>
+									</TableHead>
+									<th colspan="3"></th>
+								</tr>
 							</thead>
 							<tbody>{equipment_list}</tbody>
 						</table>
+						<Pagination
+							action="/equipment"
+							query_page=query_page
+							query_ipp=query_ipp
+							items=items
+						>
+							<input type="hidden" name="field" value=query_field.get() />
+							<input type="hidden" name="order" value=query_order.get() />
+						</Pagination>
 					}
-				}}
-			</ErrorBoundary>
-		</Transition>
-	}
-}
-
-#[component]
-pub fn EquipmentDetail() -> impl IntoView {
-	let params = use_params_map();
-	let navigate = use_navigate();
-
-	create_effect(move |_| {
-		if params.with(|p| p.get("id").cloned().unwrap_or_default()).is_empty() {
-			navigate("/equipment", Default::default());
-		}
-	});
-
-	let equipment_data = create_resource(
-		move || params.with(|p| p.get("id").cloned().unwrap_or_default()),
-		move |id| get_equipment_data_by_id(id),
-	);
-
-	view! {
-		<h1>Equipment Details</h1>
-		<Transition fallback=move || view! { <p>"Loading equipment..."</p> }>
-			<ErrorBoundary fallback=|errors| {
-				view! { <ErrorTemplate errors=errors /> }
-			}>
-				{move || {
-					let equipment = {
-						move || {
-							if equipment_data.get().is_some() {
-								match equipment_data.get().unwrap() {
-									Err(e) => {
-										view! {
-											<pre class="error">"Server Error: " {e.to_string()}</pre>
-										}
-											.into_view()
-									}
-									Ok(equipment) => {
-										view! { <p>{equipment.id}, {equipment.name}</p> }
-											.into_view()
-									}
-								}
-							} else {
-								view! { <div>Nothing found</div> }.into_view()
-							}
-						}
-					};
-					view! { <div>{equipment}</div> }
 				}}
 			</ErrorBoundary>
 		</Transition>
@@ -271,24 +169,6 @@ pub async fn get_equipment_data(
 		.bind(limit)
 		.bind(offset)
 		.fetch_all(get_db())
-		.await
-		.map_err(|error| ServerFnError::ServerError(error.to_string()))
-}
-
-#[server]
-pub async fn get_equipment_data_by_id(
-	id: String,
-) -> Result<EquipmentData, ServerFnError> {
-	use crate::db::ssr::get_db;
-
-	let id = match id.parse::<i32>() {
-		Ok(value) => value,
-		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
-	};
-
-	sqlx::query_as::<_, EquipmentData>("SELECT * FROM equipment WHERE id = $1")
-		.bind(id)
-		.fetch_one(get_db())
 		.await
 		.map_err(|error| ServerFnError::ServerError(error.to_string()))
 }

@@ -1,5 +1,6 @@
 use crate::{
-	equipment::equipment::{Equipment, EquipmentDetail},
+	equipment::equipment::Equipment,
+	equipment::equipment_detail::EquipmentDetail,
 	error_template::{AppError, ErrorTemplate},
 	home::home::HomePage,
 	nav::nav::Nav,

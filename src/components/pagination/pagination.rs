@@ -96,3 +96,33 @@ pub fn ItemsPerPage(
 		</form>
 	}
 }
+
+#[component]
+pub fn Pagination(
+	action: &'static str,
+	query_page: RwSignal<u16>,
+	query_ipp: RwSignal<u8>,
+	items: RwSignal<usize>,
+	children: ChildrenFn,
+) -> impl IntoView {
+	let children1 = children.clone();
+	let children2 = children.clone();
+	let children3 = children.clone();
+
+	view! {
+		<PaginationPrev action=action query_page=query_page query_ipp=query_ipp>
+			{children1()}
+		</PaginationPrev>
+		<ItemsPerPage action=action query_page=query_page query_ipp=query_ipp>
+			{children2()}
+		</ItemsPerPage>
+		<PaginationNext
+			action=action
+			query_page=query_page
+			query_ipp=query_ipp
+			items=items
+		>
+			{children3()}
+		</PaginationNext>
+	}
+}
