@@ -1,4 +1,10 @@
-use crate::{equipment::schema::EquipmentData, error_template::ErrorTemplate};
+use crate::{
+	components::pagination::pagination::{
+		ItemsPerPage, PaginationNext, PaginationPrev,
+	},
+	equipment::schema::EquipmentData,
+	error_template::ErrorTemplate,
+};
 
 use leptos::*;
 use leptos_router::*;
@@ -14,10 +20,30 @@ pub fn Equipment() -> impl IntoView {
 	let query_order = create_rw_signal(
 		query.with(|p| p.get("order").cloned().unwrap_or(String::from("asc"))),
 	);
+	let query_page = create_rw_signal(
+		query
+			.with(|p| p.get("page").cloned().unwrap_or(String::from("1")))
+			.parse::<u16>()
+			.unwrap_or(1),
+	);
+	let query_ipp = create_rw_signal(
+		query
+			.with(|p| p.get("items_per_page").cloned().unwrap_or(String::from("25")))
+			.parse::<u8>()
+			.unwrap_or(25),
+	);
+	let items = create_rw_signal(0);
 
 	let equipment_data = create_resource(
 		move || (),
-		move |_| get_equipment_data(query_field.get(), query_order.get()),
+		move |_| {
+			get_equipment_data(
+				query_field.get(),
+				query_order.get(),
+				query_page.get(),
+				query_ipp.get(),
+			)
+		},
 	);
 
 	view! {
@@ -42,6 +68,7 @@ pub fn Equipment() -> impl IntoView {
 										if equipment.is_empty() {
 											view! { <p>"No equipment found."</p> }.into_view()
 										} else {
+											items.set(equipment.len());
 											equipment
 												.into_iter()
 												.map(move |equipment| {
@@ -101,6 +128,12 @@ pub fn Equipment() -> impl IntoView {
 									{name} <form action="/equipment" method="get">
 										<input type="hidden" name="field" value=name />
 										<input type="hidden" name="order" value=order />
+										<input type="hidden" name="page" value=query_page.get() />
+										<input
+											type="hidden"
+											name="items_per_page"
+											value=query_ipp.get()
+										/>
 										<button type="submit">{label}</button>
 									</form>
 								</th>
@@ -108,6 +141,31 @@ pub fn Equipment() -> impl IntoView {
 						})
 						.collect_view();
 					view! {
+						<ItemsPerPage
+							action="/equipment"
+							query_page=query_page
+							query_ipp=query_ipp
+						>
+							<input type="hidden" name="field" value=query_field.get() />
+							<input type="hidden" name="order" value=query_order.get() />
+						</ItemsPerPage>
+						<PaginationNext
+							action="/equipment"
+							query_page=query_page
+							query_ipp=query_ipp
+							items=items
+						>
+							<input type="hidden" name="field" value=query_field.get() />
+							<input type="hidden" name="order" value=query_order.get() />
+						</PaginationNext>
+						<PaginationPrev
+							action="/equipment"
+							query_page=query_page
+							query_ipp=query_ipp
+						>
+							<input type="hidden" name="field" value=query_field.get() />
+							<input type="hidden" name="order" value=query_order.get() />
+						</PaginationPrev>
 						<table>
 							<thead>
 								<tr>{head}<th></th></tr>
@@ -175,6 +233,8 @@ pub fn EquipmentDetail() -> impl IntoView {
 pub async fn get_equipment_data(
 	field: String,
 	order: String,
+	page: u16,
+	items_per_page: u8,
 ) -> Result<Vec<EquipmentData>, ServerFnError> {
 	use crate::db::ssr::get_db;
 
@@ -201,11 +261,15 @@ pub async fn get_equipment_data(
 		_ => String::from("id"),
 	};
 
+	let limit = items_per_page as i64;
+	let offset = (page as i64 - 1) * items_per_page as i64;
+
 	let query = format!(
-		"SELECT * FROM equipment ORDER BY {} {}",
-		field_sanitized, order_sanitized
+		"SELECT * FROM equipment ORDER BY {field_sanitized} {order_sanitized} LIMIT $1 OFFSET $2",
 	);
 	sqlx::query_as::<_, EquipmentData>(&query)
+		.bind(limit)
+		.bind(offset)
 		.fetch_all(get_db())
 		.await
 		.map_err(|error| ServerFnError::ServerError(error.to_string()))

@@ -25,6 +25,11 @@ pub mod icons {
 	pub mod people;
 	pub mod vessel;
 }
+pub mod components {
+	pub mod pagination {
+		pub mod pagination;
+	}
+}
 
 #[cfg(feature = "ssr")]
 pub mod fileserv;
