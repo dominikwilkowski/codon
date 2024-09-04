@@ -18,8 +18,11 @@ pub mod equipment {
 }
 pub mod icons {
 	pub mod culture;
+	pub mod equipment;
+	pub mod experiment;
 	pub mod flask;
 	pub mod incubation_cabine;
+	pub mod people;
 	pub mod vessel;
 }
 

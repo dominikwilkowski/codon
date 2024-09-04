@@ -1,8 +1,13 @@
 use crate::{
 	error_template::ErrorTemplate,
 	icons::{
-		culture::Culture, flask::Flask, incubation_cabine::IncubationCabine,
-		vessel::Vessel,
+		culture::{Culture, CultureLogo},
+		equipment::{Equipment, EquipmentLogo},
+		experiment::{Experiment, ExperimentLogo},
+		flask::{Flask, FlaskLogo},
+		incubation_cabine::{IncubationCabine, IncubationCabineLogo},
+		people::{People, PeopleLogo},
+		vessel::{Vessel, VesselLogo},
 	},
 };
 
@@ -105,11 +110,25 @@ pub fn Samples() -> impl IntoView {
 			</label>
 			<p>Scan result: {result_signal}</p>
 			<hr />
+			<h2>Logos</h2>
+			<div class=css::logos>
+				<CultureLogo />
+				<FlaskLogo />
+				<IncubationCabineLogo />
+				<VesselLogo />
+				<EquipmentLogo />
+				<ExperimentLogo />
+				<PeopleLogo />
+			</div>
+			<h2>Icons</h2>
 			<div class=css::icons>
-				<Flask />
 				<Culture />
-				<Vessel />
+				<Flask />
 				<IncubationCabine />
+				<Vessel />
+				<Equipment />
+				<Experiment />
+				<People />
 			</div>
 			<hr />
 			<Transition fallback=move || view! { <p>"Loading samples..."</p> }>
