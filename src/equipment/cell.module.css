@@ -1,0 +1,52 @@
+.qrcode {
+	max-width: 5rem;
+}
+
+.working,
+.needscleaning,
+.preparation,
+.sterilization,
+.broken,
+.outofcommission {
+	display: inline-flex;
+	height: 28px;
+	align-items: center;
+	font-size: 14px;
+	line-height: 1;
+	padding: 0 8px;
+	background-color: #fff;
+	color: #000;
+	border: 1px solid #000;
+	border-radius: 3px;
+}
+
+.working {
+	background-color: #edf7f2;
+	color: #18a058;
+	border: 1px solid #c5e7d5;
+}
+.needscleaning {
+	background-color: #fef7ed;
+	color: #f0a020;
+	border: 1px solid #fae0b5;
+}
+.preparation {
+	background-color: #ccc;
+	color: #000;
+	border: 1px solid #ccc;
+}
+.sterilization {
+	background-color: #ff8877;
+	color: #18a058;
+	border: 1px solid #c5e7d5;
+}
+.broken {
+	background-color: #fbeef1;
+	color: #d03050;
+	border: 1px solid #f3cbd3;
+}
+.outofcommission {
+	background-color: #ccc;
+	color: #fff;
+	border: 1px solid #ccc;
+}

@@ -12,7 +12,9 @@ pub mod nav {
 pub mod app {
 	pub mod app;
 }
+pub mod macros;
 pub mod equipment {
+	pub mod cell;
 	pub mod equipment;
 	pub mod equipment_detail;
 	pub mod row;

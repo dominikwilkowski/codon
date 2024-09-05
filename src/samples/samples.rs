@@ -11,11 +11,13 @@ use crate::{
 	},
 };
 
+use chrono::prelude::*;
 use leptos::*;
 use leptos_qr_scanner::Scan;
 use leptos_router::*;
 use serde::{Deserialize, Serialize};
 use server_fn::codec::{MultipartData, MultipartFormData};
+use thaw::*;
 use wasm_bindgen::JsCast;
 use web_sys::{FormData, HtmlFormElement, SubmitEvent};
 
@@ -109,6 +111,10 @@ pub fn Samples() -> impl IntoView {
 				/>
 			</label>
 			<p>Scan result: {result_signal}</p>
+			<hr />
+			<DatePicker value=create_rw_signal(
+				Some(Local::now().date_naive()),
+			) />
 			<hr />
 			<h2>Logos</h2>
 			<div class=css::logos>

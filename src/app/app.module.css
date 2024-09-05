@@ -1,3 +1,12 @@
+html,
+body {
+	font-family: "Noto Sans Mono", Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
+	font-optical-sizing: auto;
+	font-weight: 350;
+	font-style: normal;
+	font-variation-settings: "wdth" 100;
+}
+
 .main {
 	padding: 0.5rem;
 }

@@ -1,9 +1,4 @@
-use crate::{
-	equipment::schema::{EquipmentData, EquipmentTypes},
-	icons::{
-		flask::Flask, incubation_cabinet::IncubationCabinet, vessel::Vessel,
-	},
-};
+use crate::equipment::{cell::EquipmentCell, schema::EquipmentData};
 
 use leptos::*;
 use leptos_router::*;
@@ -17,35 +12,45 @@ pub fn Row(equipment: Vec<EquipmentData>) -> impl IntoView {
 		.map(move |equipment| {
 			view! {
 				<tr>
-					<td>{equipment.id}</td>
 					<td>
-						{match equipment.equipment_type {
-							EquipmentTypes::Flask => view! { <Flask /> },
-							EquipmentTypes::Vessel => view! { <Vessel /> },
-							EquipmentTypes::IncubationCabinet => {
-								view! { <IncubationCabinet /> }
-							}
-						}}
+						<EquipmentCell cell=equipment.id />
 					</td>
-					<td>{equipment.qrcode}</td>
 					<td>
-						{EquipmentData::format_date(&Some(equipment.create_date))}
+						<EquipmentCell cell=equipment.equipment_type />
 					</td>
-					<td>{equipment.name}</td>
-					<td>{equipment.status.to_string()}</td>
-					<td>{equipment.manufacturer.unwrap_or_default()}</td>
 					<td>
-						{EquipmentData::format_date(&equipment.purchase_date)}
+						<EquipmentCell cell=equipment.qrcode />
 					</td>
-					<td>{equipment.vendor.unwrap_or_default()}</td>
-					<td>{equipment.cost.unwrap_or_default()}</td>
 					<td>
-						{EquipmentData::format_date(
-							&equipment.warranty_expiration_date,
-						)}
+						<EquipmentCell cell=equipment.create_date />
 					</td>
-					<td>{equipment.location.unwrap_or_default()}</td>
-					<td>{equipment.notes.unwrap_or_default()}</td>
+					<td>
+						<EquipmentCell cell=equipment.name />
+					</td>
+					<td>
+						<EquipmentCell cell=equipment.status />
+					</td>
+					<td>
+						<EquipmentCell cell=equipment.manufacturer />
+					</td>
+					<td>
+						<EquipmentCell cell=equipment.purchase_date />
+					</td>
+					<td>
+						<EquipmentCell cell=equipment.vendor />
+					</td>
+					<td>
+						<EquipmentCell cell=equipment.cost />
+					</td>
+					<td>
+						<EquipmentCell cell=equipment.warranty_expiration_date />
+					</td>
+					<td>
+						<EquipmentCell cell=equipment.location />
+					</td>
+					<td>
+						<EquipmentCell cell=equipment.notes />
+					</td>
 					<td>
 						<A href=format!("/equipment/{}", equipment.id)>Details</A>
 					</td>

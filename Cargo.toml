@@ -53,9 +53,10 @@ js-sys = "0.3"
 wasm-bindgen-futures = "0.4"
 leptos-qr-scanner = "0.2"
 chrono = { version = "0.4", features = ["serde"] }
+thaw = { version = "0.3" }
 
 [features]
-hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
+hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate", "thaw/hydrate"]
 ssr = [
 	"dep:axum",
 	"dep:tokio",
@@ -67,6 +68,7 @@ ssr = [
 	"leptos_meta/ssr",
 	"leptos_router/ssr",
 	"dep:tracing",
+	"thaw/ssr",
 ]
 
 # [package.metadata.cargo-all-features]

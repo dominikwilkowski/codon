@@ -1,5 +1,6 @@
 use crate::{
-	equipment::schema::EquipmentData, error_template::ErrorTemplate,
+	equipment::{cell::EquipmentCell, schema::EquipmentData},
+	error_template::ErrorTemplate,
 	icons::equipment::EquipmentLogo,
 };
 
@@ -60,51 +61,68 @@ pub fn EquipmentDetail() -> impl IntoView {
 												/>
 												<dl>
 													<dt>ID</dt>
-													<dd>{equipment.id}</dd>
+													<dd>
+														<EquipmentCell cell=equipment.id />
+													</dd>
 
 													<dt>Name</dt>
-													<dd>{equipment.name}</dd>
+													<dd>
+														<EquipmentCell cell=equipment.name />
+													</dd>
 
 													<dt>Equipment Type</dt>
-													<dd>{equipment.equipment_type.to_string()}</dd>
+													<dd>
+														<EquipmentCell cell=equipment.equipment_type />
+													</dd>
 
 													<dt>Qrcode</dt>
-													<dd>{equipment.qrcode}</dd>
+													<EquipmentCell cell=equipment.qrcode />
+													<dd></dd>
 
 													<dt>Create Date</dt>
 													<dd>
-														{EquipmentData::format_date(&Some(equipment.create_date))}
+														<EquipmentCell cell=equipment.create_date />
 													</dd>
 
 													<dt>Status</dt>
-													<dd>{equipment.status.to_string()}</dd>
+													<dd>
+														<EquipmentCell cell=equipment.status />
+													</dd>
 
 													<dt>Manufacturer</dt>
-													<dd>{equipment.manufacturer.unwrap_or_default()}</dd>
+													<dd>
+														<EquipmentCell cell=equipment.manufacturer />
+													</dd>
 
 													<dt>Purchase Date</dt>
 													<dd>
-														{EquipmentData::format_date(&equipment.purchase_date)}
+														<EquipmentCell cell=equipment.purchase_date />
 													</dd>
 
 													<dt>Vendor</dt>
-													<dd>{equipment.vendor.unwrap_or_default()}</dd>
+													<dd>
+														<EquipmentCell cell=equipment.vendor />
+													</dd>
 
 													<dt>Cost</dt>
-													<dd>{equipment.cost.unwrap_or_default()}</dd>
+													<dd>
+														<EquipmentCell cell=equipment.cost />
+													</dd>
 
 													<dt>Warranty Expiration Date</dt>
 													<dd>
-														{EquipmentData::format_date(
-															&equipment.warranty_expiration_date,
-														)}
+														<EquipmentCell cell=equipment.warranty_expiration_date />
 													</dd>
 
 													<dt>Location</dt>
-													<dd>{equipment.location.unwrap_or_default()}</dd>
+													<dd>
+														<EquipmentCell cell=equipment.location />
+													</dd>
 
 													<dt>Notes</dt>
-													<dd>{equipment.notes.unwrap_or_default()}</dd>
+													<dd>
+														<EquipmentCell cell=equipment.notes />
+													</dd>
 												</dl>
 											</div>
 										}
@@ -112,11 +130,152 @@ pub fn EquipmentDetail() -> impl IntoView {
 									}
 								}
 							} else {
-								view! { <div>Nothing found</div> }.into_view()
+								view! {
+									// <img
+									// src=format!("/qrcodes/{}", equipment.qrcode)
+									// alt=format!("The QR code for {}", equipment.name)
+									// class=css::qrcode
+									// />
+
+									// <EquipmentCell cell=String::new() qrcode=equipment.qrcode />
+
+									// <img
+									// src=format!("/qrcodes/{}", equipment.qrcode)
+									// alt=format!("The QR code for {}", equipment.name)
+									// class=css::qrcode
+									// />
+
+									// <EquipmentCell cell=String::new() qrcode=equipment.qrcode />
+
+									<div>Nothing found</div>
+								}
+									.into_view()
 							}
 						}
 					};
-					view! { <div>{equipment}</div> }
+					view! {
+						// <img
+						// src=format!("/qrcodes/{}", equipment.qrcode)
+						// alt=format!("The QR code for {}", equipment.name)
+						// class=css::qrcode
+						// />
+
+						// <EquipmentCell cell=String::new() qrcode=equipment.qrcode />
+
+						// <img
+						// src=format!("/qrcodes/{}", equipment.qrcode)
+						// alt=format!("The QR code for {}", equipment.name)
+						// class=css::qrcode
+						// />
+
+						// <EquipmentCell cell=String::new() qrcode=equipment.qrcode />
+
+						// <img
+						// src=format!("/qrcodes/{}", equipment.qrcode)
+						// alt=format!("The QR code for {}", equipment.name)
+						// class=css::qrcode
+						// />
+
+						// <EquipmentCell cell=String::new() qrcode=equipment.qrcode />
+
+						// <img
+						// src=format!("/qrcodes/{}", equipment.qrcode)
+						// alt=format!("The QR code for {}", equipment.name)
+						// class=css::qrcode
+						// />
+
+						// <EquipmentCell cell=String::new() qrcode=equipment.qrcode />
+
+						// <img
+						// src=format!("/qrcodes/{}", equipment.qrcode)
+						// alt=format!("The QR code for {}", equipment.name)
+						// class=css::qrcode
+						// />
+
+						// <EquipmentCell cell=String::new() qrcode=equipment.qrcode />
+
+						// <img
+						// src=format!("/qrcodes/{}", equipment.qrcode)
+						// alt=format!("The QR code for {}", equipment.name)
+						// class=css::qrcode
+						// />
+
+						// <EquipmentCell cell=String::new() qrcode=equipment.qrcode />
+
+						// <img
+						// src=format!("/qrcodes/{}", equipment.qrcode)
+						// alt=format!("The QR code for {}", equipment.name)
+						// class=css::qrcode
+						// />
+
+						// <EquipmentCell cell=String::new() qrcode=equipment.qrcode />
+
+						// <img
+						// src=format!("/qrcodes/{}", equipment.qrcode)
+						// alt=format!("The QR code for {}", equipment.name)
+						// class=css::qrcode
+						// />
+
+						// <EquipmentCell cell=String::new() qrcode=equipment.qrcode />
+
+						// <img
+						// src=format!("/qrcodes/{}", equipment.qrcode)
+						// alt=format!("The QR code for {}", equipment.name)
+						// class=css::qrcode
+						// />
+
+						// <EquipmentCell cell=String::new() qrcode=equipment.qrcode />
+
+						// <img
+						// src=format!("/qrcodes/{}", equipment.qrcode)
+						// alt=format!("The QR code for {}", equipment.name)
+						// class=css::qrcode
+						// />
+
+						// <EquipmentCell cell=String::new() qrcode=equipment.qrcode />
+
+						// <img
+						// src=format!("/qrcodes/{}", equipment.qrcode)
+						// alt=format!("The QR code for {}", equipment.name)
+						// class=css::qrcode
+						// />
+
+						// <EquipmentCell cell=String::new() qrcode=equipment.qrcode />
+
+						// <img
+						// src=format!("/qrcodes/{}", equipment.qrcode)
+						// alt=format!("The QR code for {}", equipment.name)
+						// class=css::qrcode
+						// />
+
+						// <EquipmentCell cell=String::new() qrcode=equipment.qrcode />
+
+						// <img
+						// src=format!("/qrcodes/{}", equipment.qrcode)
+						// alt=format!("The QR code for {}", equipment.name)
+						// class=css::qrcode
+						// />
+
+						// <EquipmentCell cell=String::new() qrcode=equipment.qrcode />
+
+						// <img
+						// src=format!("/qrcodes/{}", equipment.qrcode)
+						// alt=format!("The QR code for {}", equipment.name)
+						// class=css::qrcode
+						// />
+
+						// <EquipmentCell cell=String::new() qrcode=equipment.qrcode />
+
+						// <img
+						// src=format!("/qrcodes/{}", equipment.qrcode)
+						// alt=format!("The QR code for {}", equipment.name)
+						// class=css::qrcode
+						// />
+
+						// <EquipmentCell cell=String::new() qrcode=equipment.qrcode />
+
+						<div>{equipment}</div>
+					}
 				}}
 			</ErrorBoundary>
 		</Transition>

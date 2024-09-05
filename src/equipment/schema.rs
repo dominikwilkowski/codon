@@ -1,9 +1,12 @@
+use crate::custom_sql_string_type;
+
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "ssr")]
+use sqlx::{FromRow, Type};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[cfg_attr(feature = "ssr", derive(sqlx::Type))]
-// #[cfg_attr(feature = "ssr", sqlx(type_name = "equipmenttypes", rename_all = "PascalCase"))]
+#[cfg_attr(feature = "ssr", derive(Type))]
 pub enum EquipmentTypes {
 	Flask,
 	Vessel,
@@ -21,8 +24,7 @@ impl std::fmt::Display for EquipmentTypes {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[cfg_attr(feature = "ssr", derive(sqlx::Type))]
-// #[cfg_attr(feature = "ssr", sqlx(type_name = "equipmentstatus", rename_all = "PascalCase"))]
+#[cfg_attr(feature = "ssr", derive(Type))]
 pub enum EquipmentStatus {
 	Working,
 	NeedsCleaning,
@@ -46,21 +48,36 @@ impl std::fmt::Display for EquipmentStatus {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
+#[cfg_attr(feature = "ssr", derive(FromRow))]
+pub struct QRCode(String);
+custom_sql_string_type!(QRCode);
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ssr", derive(FromRow))]
+pub struct Cost(String);
+custom_sql_string_type!(Cost);
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ssr", derive(FromRow))]
+pub struct Notes(String);
+custom_sql_string_type!(Notes);
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ssr", derive(FromRow))]
 pub struct EquipmentData {
 	pub id: i32,
 	pub equipment_type: EquipmentTypes,
-	pub qrcode: String,
+	pub qrcode: QRCode,
 	pub create_date: DateTime<Utc>,
 	pub name: String,
 	pub status: EquipmentStatus,
 	pub manufacturer: Option<String>,
 	pub purchase_date: Option<DateTime<Utc>>,
 	pub vendor: Option<String>,
-	pub cost: Option<String>,
+	pub cost: Option<Cost>,
 	pub warranty_expiration_date: Option<DateTime<Utc>>,
 	pub location: Option<String>,
-	pub notes: Option<String>,
+	pub notes: Option<Notes>,
 }
 
 impl EquipmentData {
@@ -80,12 +97,5 @@ impl EquipmentData {
 			String::from("location"),
 			String::from("notes"),
 		]
-	}
-
-	pub fn format_date(date: &Option<DateTime<Utc>>) -> String {
-		match date {
-			Some(d) => d.format("%Y-%m-%d").to_string(),
-			None => "N/A".to_string(),
-		}
 	}
 }
