@@ -1,5 +1,3 @@
-use crate::custom_sql_string_type;
-
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]

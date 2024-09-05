@@ -12,6 +12,7 @@ pub mod nav {
 pub mod app {
 	pub mod app;
 }
+#[macro_use]
 pub mod macros;
 pub mod equipment {
 	pub mod cell;

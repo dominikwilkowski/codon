@@ -1,3 +1,4 @@
+#[rustfmt::skip]
 #[macro_export]
 macro_rules! custom_sql_string_type {
 	($struct_name:ident) => {
