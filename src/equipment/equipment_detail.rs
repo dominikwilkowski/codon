@@ -24,6 +24,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 		}
 	});
 
+	#[expect(clippy::redundant_closure)]
 	let equipment_data = create_resource(
 		move || params.with(|p| p.get("id").cloned().unwrap_or_default()),
 		move |id| get_equipment_data_by_id(id),

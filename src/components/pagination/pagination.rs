@@ -110,18 +110,13 @@ pub fn Pagination(
 	let children3 = children.clone();
 
 	view! {
-		<PaginationPrev action=action query_page=query_page query_ipp=query_ipp>
+		<PaginationPrev action query_page query_ipp>
 			{children1()}
 		</PaginationPrev>
-		<ItemsPerPage action=action query_page=query_page query_ipp=query_ipp>
+		<ItemsPerPage action query_page query_ipp>
 			{children2()}
 		</ItemsPerPage>
-		<PaginationNext
-			action=action
-			query_page=query_page
-			query_ipp=query_ipp
-			items=items
-		>
+		<PaginationNext action query_page query_ipp items>
 			{children3()}
 		</PaginationNext>
 	}

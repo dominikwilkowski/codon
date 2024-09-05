@@ -12,6 +12,8 @@ stylance::import_style!(css, "equipment.module.css");
 
 #[component]
 pub fn Equipment() -> impl IntoView {
+	let delete_equipment = create_server_action::<DeleteEquipment>();
+
 	let query = use_query_map();
 	let query_field = create_rw_signal(
 		query.with(|p| p.get("field").cloned().unwrap_or(String::from("id"))),
@@ -34,7 +36,7 @@ pub fn Equipment() -> impl IntoView {
 	let items = create_rw_signal(0);
 
 	let equipment_data = create_resource(
-		move || (),
+		move || (delete_equipment.version().get()),
 		move |_| {
 			get_equipment_data(
 				query_field.get(),
@@ -52,7 +54,7 @@ pub fn Equipment() -> impl IntoView {
 		</h1>
 		<Transition fallback=move || view! { <p>Loading equipment...</p> }>
 			<ErrorBoundary fallback=|errors| {
-				view! { <ErrorTemplate errors=errors /> }
+				view! { <ErrorTemplate errors /> }
 			}>
 				{move || {
 					let equipment_list = {
@@ -77,7 +79,7 @@ pub fn Equipment() -> impl IntoView {
 												.into_view()
 										} else {
 											items.set(equipment.len());
-											view! { <Row equipment=equipment /> }
+											view! { <Row equipment delete_equipment /> }
 										}
 									}
 								})
@@ -85,12 +87,7 @@ pub fn Equipment() -> impl IntoView {
 						}
 					};
 					view! {
-						<Pagination
-							action="/equipment"
-							query_page=query_page
-							query_ipp=query_ipp
-							items=items
-						>
+						<Pagination action="/equipment" query_page query_ipp items>
 							<input type="hidden" name="field" value=query_field.get() />
 							<input type="hidden" name="order" value=query_order.get() />
 						</Pagination>
@@ -100,8 +97,8 @@ pub fn Equipment() -> impl IntoView {
 									<TableHead
 										action="/equipment"
 										items=EquipmentData::get_fields()
-										query_field=query_field
-										query_order=query_order
+										query_field
+										query_order
 									>
 										<input type="hidden" name="page" value=query_page.get() />
 										<input
@@ -115,12 +112,7 @@ pub fn Equipment() -> impl IntoView {
 							</thead>
 							<tbody>{equipment_list}</tbody>
 						</table>
-						<Pagination
-							action="/equipment"
-							query_page=query_page
-							query_ipp=query_ipp
-							items=items
-						>
+						<Pagination action="/equipment" query_page query_ipp items>
 							<input type="hidden" name="field" value=query_field.get() />
 							<input type="hidden" name="order" value=query_order.get() />
 						</Pagination>
@@ -175,4 +167,38 @@ pub async fn get_equipment_data(
 		.fetch_all(get_db())
 		.await
 		.map_err(|error| ServerFnError::ServerError(error.to_string()))
+}
+
+#[server]
+pub async fn delete_equipment(id: i32) -> Result<(), ServerFnError> {
+	use crate::{db::ssr::get_db, equipment::schema::QRCode};
+
+	use server_fn::error::NoCustomError;
+	use std::fs;
+	use std::path::PathBuf;
+
+	let qrcode_id =
+		sqlx::query_as::<_, QRCode>("SELECT qrcode FROM equipment WHERE id = $1")
+			.bind(id)
+			.fetch_one(get_db())
+			.await?;
+
+	let file_path = PathBuf::from(format!(
+		"{}/public/qrcodes/{}",
+		env!("CARGO_MANIFEST_DIR"),
+		qrcode_id
+	));
+
+	if file_path.exists() {
+		fs::remove_file(&file_path).map_err(|error| {
+			ServerFnError::<NoCustomError>::ServerError(error.to_string())
+		})?;
+	}
+
+	Ok(
+		sqlx::query!("DELETE FROM equipment WHERE id = $1", id)
+			.execute(get_db())
+			.await
+			.map(|_| ())?,
+	)
 }

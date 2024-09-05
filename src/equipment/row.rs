@@ -1,4 +1,6 @@
-use crate::equipment::{cell::EquipmentCell, schema::EquipmentData};
+use crate::equipment::{
+	cell::EquipmentCell, equipment::DeleteEquipment, schema::EquipmentData,
+};
 
 use leptos::*;
 use leptos_router::*;
@@ -6,7 +8,10 @@ use leptos_router::*;
 stylance::import_style!(css, "equipment.module.css");
 
 #[component]
-pub fn Row(equipment: Vec<EquipmentData>) -> impl IntoView {
+pub fn Row(
+	equipment: Vec<EquipmentData>,
+	delete_equipment: Action<DeleteEquipment, Result<(), ServerFnError>>,
+) -> impl IntoView {
 	equipment
 		.into_iter()
 		.map(move |equipment| {
@@ -55,7 +60,22 @@ pub fn Row(equipment: Vec<EquipmentData>) -> impl IntoView {
 						<A href=format!("/equipment/{}", equipment.id)>Details</A>
 					</td>
 					<td>Edit</td>
-					<td>Delete</td>
+					<td>
+						<button on:click=move |_| {
+							if web_sys::window()
+								.unwrap()
+								.confirm_with_message(
+									"Are you sure you want to delete this item?",
+								)
+								.unwrap_or(false)
+							{
+								delete_equipment
+									.dispatch(DeleteEquipment {
+										id: equipment.id,
+									});
+							}
+						}>"Delete"</button>
+					</td>
 				</tr>
 			}
 		})

@@ -139,7 +139,7 @@ pub fn Samples() -> impl IntoView {
 			<hr />
 			<Transition fallback=move || view! { <p>"Loading samples..."</p> }>
 				<ErrorBoundary fallback=|errors| {
-					view! { <ErrorTemplate errors=errors /> }
+					view! { <ErrorTemplate errors /> }
 				}>
 					{move || {
 						let existing_todos = {
@@ -166,8 +166,8 @@ pub fn Samples() -> impl IntoView {
 																	id=sample.id
 																	sample_type=sample.sample_type
 																	analyst=sample.analyst
-																	delete_sample=delete_sample.clone()
-																	edit_sample=edit_sample.clone()
+																	delete_sample
+																	edit_sample
 																/>
 															</li>
 														}
