@@ -19,11 +19,19 @@ pub fn App() -> impl IntoView {
 
 	view! {
 		<Stylesheet id="leptos" href="/pkg/codon.css" />
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100..900&display=swap"
-			rel="stylesheet"
+		<Link
+			rel="preload"
+			as_="font"
+			type_="font/woff2"
+			href="/noto_sans_mono_latin.woff2"
+			crossorigin=""
+		/>
+		<Link
+			rel="preload"
+			as_="font"
+			type_="font/woff2"
+			href="/noto_sans_mono_latin_ext.woff2"
+			crossorigin=""
 		/>
 		<Title text="Welcome to Codon" />
 
