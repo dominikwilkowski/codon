@@ -3,7 +3,7 @@ use crate::equipment::{DeleteEquipment, EquipmentCell, EquipmentData};
 use leptos::*;
 use leptos_router::*;
 
-stylance::import_style!(css, "equipment.module.css");
+stylance::import_style!(css, "row.module.css");
 
 #[component]
 pub fn Row(

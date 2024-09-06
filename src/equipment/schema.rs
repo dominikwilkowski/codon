@@ -11,6 +11,17 @@ pub enum EquipmentTypes {
 	IncubationCabinet,
 }
 
+impl EquipmentTypes {
+	pub fn parse(input: String) -> Self {
+		match input.to_lowercase().as_str() {
+			"flask" => EquipmentTypes::Flask,
+			"vessel" => EquipmentTypes::Vessel,
+			"incubationcabinet" => EquipmentTypes::IncubationCabinet,
+			_ => Default::default(),
+		}
+	}
+}
+
 impl std::fmt::Display for EquipmentTypes {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		match self {
@@ -18,6 +29,12 @@ impl std::fmt::Display for EquipmentTypes {
 			EquipmentTypes::Vessel => write!(f, "Vessel"),
 			EquipmentTypes::IncubationCabinet => write!(f, "Incubation Cabinet"),
 		}
+	}
+}
+
+impl std::default::Default for EquipmentTypes {
+	fn default() -> Self {
+		EquipmentTypes::Flask
 	}
 }
 
@@ -32,6 +49,20 @@ pub enum EquipmentStatus {
 	OutOfCommission,
 }
 
+impl EquipmentStatus {
+	pub fn parse(input: String) -> Self {
+		match input.to_lowercase().as_str() {
+			"Working" => EquipmentStatus::Working,
+			"needscleaning" => EquipmentStatus::NeedsCleaning,
+			"preparation" => EquipmentStatus::Preparation,
+			"sterilization" => EquipmentStatus::Sterilization,
+			"broken" => EquipmentStatus::Broken,
+			"outofcommission" => EquipmentStatus::OutOfCommission,
+			_ => Default::default(),
+		}
+	}
+}
+
 impl std::fmt::Display for EquipmentStatus {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		match self {
@@ -42,6 +73,12 @@ impl std::fmt::Display for EquipmentStatus {
 			EquipmentStatus::Broken => write!(f, "Broken"),
 			EquipmentStatus::OutOfCommission => write!(f, "Out Of Commission"),
 		}
+	}
+}
+
+impl std::default::Default for EquipmentStatus {
+	fn default() -> Self {
+		EquipmentStatus::Working
 	}
 }
 
@@ -95,5 +132,25 @@ impl EquipmentData {
 			String::from("location"),
 			String::from("notes"),
 		]
+	}
+}
+
+impl std::default::Default for EquipmentData {
+	fn default() -> Self {
+		EquipmentData {
+			id: Default::default(),
+			equipment_type: Default::default(),
+			qrcode: Default::default(),
+			create_date: Utc::now(),
+			name: Default::default(),
+			status: Default::default(),
+			manufacturer: None,
+			purchase_date: None,
+			vendor: None,
+			cost: None,
+			warranty_expiration_date: None,
+			location: None,
+			notes: None,
+		}
 	}
 }

@@ -35,5 +35,11 @@ macro_rules! custom_sql_string_type {
 				write!(f, "{}", self.0)
 			}
 		}
+
+		impl std::default::Default for $struct_name {
+			fn default() -> Self {
+				$struct_name(String::new())
+			}
+		}
 	};
 }
