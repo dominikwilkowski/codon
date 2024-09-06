@@ -1,8 +1,6 @@
 use crate::{
-	equipment::schema::{Cost, EquipmentStatus, EquipmentTypes, Notes, QRCode},
-	icons::{
-		flask::Flask, incubation_cabinet::IncubationCabinet, vessel::Vessel,
-	},
+	equipment::{Cost, EquipmentStatus, EquipmentTypes, Notes, QRCode},
+	icons::{Flask, IncubationCabinet, Vessel},
 };
 
 use chrono::prelude::*;

@@ -1,7 +1,7 @@
 use crate::{
-	equipment::{cell::EquipmentCell, schema::EquipmentData},
+	equipment::{EquipmentCell, EquipmentData},
 	error_template::ErrorTemplate,
-	icons::equipment::EquipmentLogo,
+	icons::EquipmentLogo,
 };
 
 use leptos::*;

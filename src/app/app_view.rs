@@ -1,10 +1,9 @@
 use crate::{
-	equipment::equipment::Equipment,
-	equipment::equipment_detail::EquipmentDetail,
+	equipment::{Equipment, EquipmentDetail},
 	error_template::{AppError, ErrorTemplate},
-	home::home::HomePage,
-	nav::nav::Nav,
-	samples::samples::Samples,
+	home::Home,
+	nav::Nav,
+	samples::Samples,
 };
 
 use leptos::*;
@@ -46,10 +45,12 @@ pub fn App() -> impl IntoView {
 			<main class=css::main>
 				<Nav />
 				<Routes>
-					<Route path="" view=HomePage />
+					<Route path="" view=Home />
 					<Route path="/samples" view=Samples />
 					<Route path="/equipment" view=Equipment />
+					// <Route path="/equipment/add" view=EquipmentAdd />
 					<Route path="/equipment/:id" view=EquipmentDetail />
+					// <Route path="/equipment/edit/:id" view=EquipmentEdit />
 				</Routes>
 			</main>
 		</Router>

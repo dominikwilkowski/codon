@@ -3,7 +3,7 @@ use leptos::*;
 stylance::import_style!(css, "home.module.css");
 
 #[component]
-pub fn HomePage() -> impl IntoView {
+pub fn Home() -> impl IntoView {
 	let count = create_rw_signal(0);
 	let on_click = move |_| count.update(|count| *count += 1);
 

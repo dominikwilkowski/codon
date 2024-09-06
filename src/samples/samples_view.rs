@@ -1,13 +1,9 @@
 use crate::{
 	error_template::ErrorTemplate,
 	icons::{
-		culture::{Culture, CultureLogo},
-		equipment::{Equipment, EquipmentLogo},
-		experiment::{Experiment, ExperimentLogo},
-		flask::{Flask, FlaskLogo},
-		incubation_cabinet::{IncubationCabinet, IncubationCabinetLogo},
-		people::{People, PeopleLogo},
-		vessel::{Vessel, VesselLogo},
+		Culture, CultureLogo, Equipment, EquipmentLogo, Experiment, ExperimentLogo,
+		Flask, FlaskLogo, IncubationCabinet, IncubationCabinetLogo, People,
+		PeopleLogo, Vessel, VesselLogo,
 	},
 };
 

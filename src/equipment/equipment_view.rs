@@ -1,8 +1,8 @@
 use crate::{
-	components::{pagination::pagination::Pagination, table::table::TableHead},
-	equipment::{row::Row, schema::EquipmentData},
+	components::{pagination::Pagination, table::TableHead},
+	equipment::{EquipmentData, Row},
 	error_template::ErrorTemplate,
-	icons::equipment::EquipmentLogo,
+	icons::EquipmentLogo,
 };
 
 use leptos::*;
@@ -171,7 +171,7 @@ pub async fn get_equipment_data(
 
 #[server]
 pub async fn delete_equipment(id: i32) -> Result<(), ServerFnError> {
-	use crate::{db::ssr::get_db, equipment::schema::QRCode};
+	use crate::{db::ssr::get_db, equipment::QRCode};
 
 	use server_fn::error::NoCustomError;
 	use std::fs;

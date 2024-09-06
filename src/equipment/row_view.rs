@@ -1,6 +1,4 @@
-use crate::equipment::{
-	cell::EquipmentCell, equipment::DeleteEquipment, schema::EquipmentData,
-};
+use crate::equipment::{DeleteEquipment, EquipmentCell, EquipmentData};
 
 use leptos::*;
 use leptos_router::*;
