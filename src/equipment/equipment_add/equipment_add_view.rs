@@ -195,8 +195,10 @@ pub async fn add_equipment(
 	use crate::{
 		db::ssr::get_db,
 		equipment::{EquipmentStatus, EquipmentType},
+		qrcode::generate_qr,
 	};
 	use chrono::prelude::*;
+	use std::{fs, path::PathBuf};
 
 	let purchase_date: Option<DateTime<Utc>> =
 		match purchase_date.parse::<DateTime<Utc>>() {
@@ -221,7 +223,7 @@ pub async fn add_equipment(
 		VALUES\
 		($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)\
 		RETURNING id",
-		EquipmentType::parse(equipment_type).to_string(),
+		EquipmentType::parse(equipment_type.clone()).to_string(),
 		Utc::now(),
 		name,
 		EquipmentStatus::parse(status).to_string(),
@@ -239,13 +241,32 @@ pub async fn add_equipment(
 		ServerFnError::ServerError(error.to_string())
 	})?;
 
-	// TODO: build qrcode and save to disk
-	let qrcode = String::from("path/to/qrcode.svg");
+	let qr_svg = generate_qr(&format!("https://codon.com/equipment/{}", row.id))
+		.map_err::<ServerFnError, _>(|_| {
+			ServerFnError::ServerError("Failed to generate QR code".into())
+		})?;
+
+	let equipment_type_short = match EquipmentType::parse(equipment_type) {
+		EquipmentType::Flask => "F",
+		EquipmentType::Vessel => "V",
+		EquipmentType::IncubationCabinet => "I",
+	};
+	let qrcode_path =
+		format!("equipment/qr_{:06}_{}.svg", row.id, equipment_type_short);
+	let file_path = PathBuf::from(format!(
+		"{}/public/qrcodes/{}",
+		env!("CARGO_MANIFEST_DIR"),
+		qrcode_path
+	));
+
+	fs::write(&file_path, qr_svg).map_err::<ServerFnError, _>(|_| {
+		ServerFnError::ServerError("Failed to save QR code to file".into())
+	})?;
 
 	Ok(
 		sqlx::query!(
 			"UPDATE equipment SET qrcode = $1 WHERE id = $2",
-			qrcode,
+			qrcode_path,
 			row.id
 		)
 		.execute(get_db())

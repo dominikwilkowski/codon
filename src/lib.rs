@@ -12,6 +12,7 @@ pub mod error_template;
 pub mod home;
 pub mod icons;
 pub mod nav;
+pub mod qrcode;
 pub mod samples;
 
 #[cfg(feature = "ssr")]

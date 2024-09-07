@@ -54,6 +54,7 @@ wasm-bindgen-futures = "0.4"
 leptos-qr-scanner = "0.2"
 chrono = { version = "0.4", features = ["serde"] }
 thaw = { version = "0.3" }
+qrcodegen = "1.8.0"
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate", "thaw/hydrate"]
