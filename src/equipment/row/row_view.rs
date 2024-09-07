@@ -43,7 +43,7 @@ pub fn Row(
 						<EquipmentCell cell=equipment.vendor />
 					</td>
 					<td>
-						<EquipmentCell cell=equipment.cost />
+						<EquipmentCell cell=equipment.cost_in_cent />
 					</td>
 					<td>
 						<EquipmentCell cell=equipment.warranty_expiration_date />

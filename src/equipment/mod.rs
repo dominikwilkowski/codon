@@ -27,5 +27,6 @@ pub use row::row_view::Row;
 
 pub mod schema;
 pub use schema::{
-	Cost, EquipmentData, EquipmentStatus, EquipmentTypes, Notes, QRCode,
+	Cost, EquipmentData, EquipmentSQLData, EquipmentStatus, EquipmentType, Notes,
+	QRCode,
 };

@@ -130,7 +130,7 @@ pub async fn get_equipment_data(
 	page: u16,
 	items_per_page: u8,
 ) -> Result<Vec<EquipmentData>, ServerFnError> {
-	use crate::db::ssr::get_db;
+	use crate::{db::ssr::get_db, equipment::EquipmentSQLData};
 
 	let order_sanitized = match order.to_lowercase().as_str() {
 		"asc" => "ASC",
@@ -148,7 +148,7 @@ pub async fn get_equipment_data(
 		| ref f @ "manufacturer"
 		| ref f @ "purchase_date"
 		| ref f @ "vendor"
-		| ref f @ "cost"
+		| ref f @ "cost_in_cent"
 		| ref f @ "warranty_expiration_date"
 		| ref f @ "location"
 		| ref f @ "notes" => String::from(*f),
@@ -161,24 +161,32 @@ pub async fn get_equipment_data(
 	let query = format!(
 		"SELECT * FROM equipment ORDER BY {field_sanitized} {order_sanitized} LIMIT $1 OFFSET $2",
 	);
-	sqlx::query_as::<_, EquipmentData>(&query)
+
+	let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLData>(&query)
 		.bind(limit)
 		.bind(offset)
 		.fetch_all(get_db())
 		.await
-		.map_err(|error| ServerFnError::ServerError(error.to_string()))
+		.map_err::<ServerFnError, _>(|error| {
+			ServerFnError::ServerError(error.to_string())
+		})?;
+
+	let equipment_data: Vec<EquipmentData> =
+		equipment_sql_data.into_iter().map(Into::into).collect();
+
+	Ok(equipment_data)
 }
 
 #[server]
 pub async fn delete_equipment(id: i32) -> Result<(), ServerFnError> {
-	use crate::{db::ssr::get_db, equipment::QRCode};
+	use crate::db::ssr::get_db;
 
 	use server_fn::error::NoCustomError;
 	use std::fs;
 	use std::path::PathBuf;
 
-	let qrcode_id =
-		sqlx::query_as::<_, QRCode>("SELECT qrcode FROM equipment WHERE id = $1")
+	let qrcode_path: String =
+		sqlx::query_scalar("SELECT qrcode FROM equipment WHERE id = $1")
 			.bind(id)
 			.fetch_one(get_db())
 			.await?;
@@ -186,7 +194,7 @@ pub async fn delete_equipment(id: i32) -> Result<(), ServerFnError> {
 	let file_path = PathBuf::from(format!(
 		"{}/public/qrcodes/{}",
 		env!("CARGO_MANIFEST_DIR"),
-		qrcode_id
+		qrcode_path
 	));
 
 	if file_path.exists() {

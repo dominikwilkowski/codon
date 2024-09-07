@@ -1,5 +1,5 @@
 use crate::{
-	equipment::{Cost, EquipmentStatus, EquipmentTypes, Notes, QRCode},
+	equipment::{Cost, EquipmentStatus, EquipmentType, Notes, QRCode},
 	icons::{Flask, IncubationCabinet, Vessel},
 };
 
@@ -18,20 +18,20 @@ impl EquipmentCellView for i32 {
 	}
 }
 
-impl EquipmentCellView for EquipmentTypes {
+impl EquipmentCellView for EquipmentType {
 	fn view(self) -> impl IntoView {
 		match self {
-			EquipmentTypes::Flask => view! {
+			EquipmentType::Flask => view! {
 				<abbr title="A Flask">
 					<Flask />
 				</abbr>
 			},
-			EquipmentTypes::Vessel => view! {
+			EquipmentType::Vessel => view! {
 				<abbr title="A Vessel">
 					<Vessel />
 				</abbr>
 			},
-			EquipmentTypes::IncubationCabinet => {
+			EquipmentType::IncubationCabinet => {
 				view! {
 					<abbr title="A Incubation Cabinet">
 						<IncubationCabinet />
@@ -110,7 +110,7 @@ impl EquipmentCellView for Option<Cost> {
 	fn view(self) -> impl IntoView {
 		match self {
 			Some(value) => {
-				view! { <div>Cost: {format!("{value}")}</div> }.into_view()
+				view! { <div>Cost: {format!("${value}")}</div> }.into_view()
 			},
 			None => view! {}.into_view(),
 		}
@@ -121,7 +121,19 @@ impl EquipmentCellView for Option<Notes> {
 	fn view(self) -> impl IntoView {
 		match self {
 			Some(value) => {
-				view! { <div>Notes: {format!("{value}")}</div> }.into_view()
+				let text = value.to_string();
+				view! {
+					<div>
+						{text
+							.lines()
+							.map(|line| {
+								let line = line.to_string();
+								view! { <>{line}<br /></> }
+							})
+							.collect_view()}
+					</div>
+				}
+				.into_view()
 			},
 			None => view! {}.into_view(),
 		}

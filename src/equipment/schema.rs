@@ -1,46 +1,50 @@
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
-use sqlx::{FromRow, Type};
+use sqlx::FromRow;
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[cfg_attr(feature = "ssr", derive(Type))]
-pub enum EquipmentTypes {
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+pub enum EquipmentType {
+	#[default]
 	Flask,
 	Vessel,
 	IncubationCabinet,
 }
 
-impl EquipmentTypes {
+impl EquipmentType {
 	pub fn parse(input: String) -> Self {
 		match input.to_lowercase().as_str() {
-			"flask" => EquipmentTypes::Flask,
-			"vessel" => EquipmentTypes::Vessel,
-			"incubationcabinet" => EquipmentTypes::IncubationCabinet,
+			"flask" => EquipmentType::Flask,
+			"vessel" => EquipmentType::Vessel,
+			"incubationcabinet" => EquipmentType::IncubationCabinet,
 			_ => Default::default(),
 		}
 	}
 }
 
-impl std::fmt::Display for EquipmentTypes {
+impl std::fmt::Display for EquipmentType {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		match self {
-			EquipmentTypes::Flask => write!(f, "Flask"),
-			EquipmentTypes::Vessel => write!(f, "Vessel"),
-			EquipmentTypes::IncubationCabinet => write!(f, "Incubation Cabinet"),
+			EquipmentType::Flask => write!(f, "Flask"),
+			EquipmentType::Vessel => write!(f, "Vessel"),
+			EquipmentType::IncubationCabinet => write!(f, "Incubation Cabinet"),
 		}
 	}
 }
 
-impl std::default::Default for EquipmentTypes {
-	fn default() -> Self {
-		EquipmentTypes::Flask
+impl EquipmentType {
+	pub fn get_fields() -> Vec<String> {
+		vec![
+			String::from("Flask"),
+			String::from("Vessel"),
+			String::from("IncubationCabinet"),
+		]
 	}
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[cfg_attr(feature = "ssr", derive(Type))]
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub enum EquipmentStatus {
+	#[default]
 	Working,
 	NeedsCleaning,
 	Preparation,
@@ -52,7 +56,7 @@ pub enum EquipmentStatus {
 impl EquipmentStatus {
 	pub fn parse(input: String) -> Self {
 		match input.to_lowercase().as_str() {
-			"Working" => EquipmentStatus::Working,
+			"working" => EquipmentStatus::Working,
 			"needscleaning" => EquipmentStatus::NeedsCleaning,
 			"preparation" => EquipmentStatus::Preparation,
 			"sterilization" => EquipmentStatus::Sterilization,
@@ -76,32 +80,57 @@ impl std::fmt::Display for EquipmentStatus {
 	}
 }
 
-impl std::default::Default for EquipmentStatus {
-	fn default() -> Self {
-		EquipmentStatus::Working
+impl EquipmentStatus {
+	pub fn get_fields() -> Vec<String> {
+		vec![
+			String::from("Working"),
+			String::from("NeedsCleaning"),
+			String::from("Preparation"),
+			String::from("Sterilization"),
+			String::from("Broken"),
+			String::from("OutOfCommission"),
+		]
 	}
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[cfg_attr(feature = "ssr", derive(FromRow))]
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+pub struct Cost(i32);
+impl std::fmt::Display for Cost {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		write!(f, "{:.2}", self.0 as f64 / 100.0)
+	}
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct QRCode(String);
-custom_sql_string_type!(QRCode);
+display_default_for_string_struct!(QRCode);
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[cfg_attr(feature = "ssr", derive(FromRow))]
-pub struct Cost(String);
-custom_sql_string_type!(Cost);
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[cfg_attr(feature = "ssr", derive(FromRow))]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Notes(String);
-custom_sql_string_type!(Notes);
+display_default_for_string_struct!(Notes);
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(feature = "ssr", derive(FromRow))]
+pub struct EquipmentSQLData {
+	pub id: i32,
+	pub equipment_type: String,
+	pub qrcode: String,
+	pub create_date: DateTime<Utc>,
+	pub name: String,
+	pub status: String,
+	pub manufacturer: Option<String>,
+	pub purchase_date: Option<DateTime<Utc>>,
+	pub vendor: Option<String>,
+	pub cost_in_cent: Option<i32>,
+	pub warranty_expiration_date: Option<DateTime<Utc>>,
+	pub location: Option<String>,
+	pub notes: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EquipmentData {
 	pub id: i32,
-	pub equipment_type: EquipmentTypes,
+	pub equipment_type: EquipmentType,
 	pub qrcode: QRCode,
 	pub create_date: DateTime<Utc>,
 	pub name: String,
@@ -109,7 +138,7 @@ pub struct EquipmentData {
 	pub manufacturer: Option<String>,
 	pub purchase_date: Option<DateTime<Utc>>,
 	pub vendor: Option<String>,
-	pub cost: Option<Cost>,
+	pub cost_in_cent: Option<Cost>,
 	pub warranty_expiration_date: Option<DateTime<Utc>>,
 	pub location: Option<String>,
 	pub notes: Option<Notes>,
@@ -127,7 +156,7 @@ impl EquipmentData {
 			String::from("manufacturer"),
 			String::from("purchase_date"),
 			String::from("vendor"),
-			String::from("cost"),
+			String::from("cost_in_cent"),
 			String::from("warranty_expiration_date"),
 			String::from("location"),
 			String::from("notes"),
@@ -147,10 +176,51 @@ impl std::default::Default for EquipmentData {
 			manufacturer: None,
 			purchase_date: None,
 			vendor: None,
-			cost: None,
+			cost_in_cent: None,
 			warranty_expiration_date: None,
 			location: None,
 			notes: None,
 		}
 	}
 }
+
+impl From<EquipmentSQLData> for EquipmentData {
+	fn from(val: EquipmentSQLData) -> Self {
+		EquipmentData {
+			id: val.id,
+			equipment_type: EquipmentType::parse(val.equipment_type),
+			qrcode: QRCode(val.qrcode),
+			create_date: val.create_date,
+			name: val.name,
+			status: EquipmentStatus::parse(val.status),
+			manufacturer: val.manufacturer,
+			purchase_date: val.purchase_date,
+			vendor: val.vendor,
+			cost_in_cent: val.cost_in_cent.map(Cost),
+			warranty_expiration_date: val.warranty_expiration_date,
+			location: val.location,
+			notes: val.notes.map(Notes),
+		}
+	}
+}
+
+// Not needed thus far
+// impl Into<EquipmentSQLData> for EquipmentData {
+// 	fn into(self) -> EquipmentSQLData {
+// 		EquipmentSQLData {
+// 			id: self.id,
+// 			equipment_type: self.equipment_type.to_string(),
+// 			qrcode: self.qrcode.0,
+// 			create_date: self.create_date,
+// 			name: self.name,
+// 			status: self.status.to_string(),
+// 			manufacturer: self.manufacturer,
+// 			purchase_date: self.purchase_date,
+// 			vendor: self.vendor,
+// 			cost_in_cent: self.cost_in_cent.map(|c| c.0), //<-- this is likely wrong
+// 			warranty_expiration_date: self.warranty_expiration_date,
+// 			location: self.location,
+// 			notes: self.notes.map(|n| n.0),
+// 		}
+// 	}
+// }

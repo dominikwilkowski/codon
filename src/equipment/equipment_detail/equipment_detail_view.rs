@@ -107,7 +107,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Cost</dt>
 													<dd>
-														<EquipmentCell cell=equipment.cost />
+														<EquipmentCell cell=equipment.cost_in_cent />
 													</dd>
 
 													<dt>Warranty Expiration Date</dt>
@@ -146,16 +146,22 @@ pub fn EquipmentDetail() -> impl IntoView {
 pub async fn get_equipment_data_by_id(
 	id: String,
 ) -> Result<EquipmentData, ServerFnError> {
-	use crate::db::ssr::get_db;
+	use crate::{db::ssr::get_db, equipment::EquipmentSQLData};
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
 	};
 
-	sqlx::query_as::<_, EquipmentData>("SELECT * FROM equipment WHERE id = $1")
-		.bind(id)
-		.fetch_one(get_db())
-		.await
-		.map_err(|error| ServerFnError::ServerError(error.to_string()))
+	let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLData>(
+		"SELECT * FROM equipment WHERE id = $1",
+	)
+	.bind(id)
+	.fetch_one(get_db())
+	.await
+	.map_err::<ServerFnError, _>(|error| {
+		ServerFnError::ServerError(error.to_string())
+	})?;
+
+	Ok(equipment_sql_data.into())
 }
