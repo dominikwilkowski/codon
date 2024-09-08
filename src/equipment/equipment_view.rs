@@ -92,27 +92,29 @@ pub fn Equipment() -> impl IntoView {
 							<input type="hidden" name="field" value=query_field.get() />
 							<input type="hidden" name="order" value=query_order.get() />
 						</Pagination>
-						<table>
-							<thead>
-								<tr>
-									<TableHead
-										action="/equipment"
-										items=EquipmentData::get_fields()
-										query_field
-										query_order
-									>
-										<input type="hidden" name="page" value=query_page.get() />
-										<input
-											type="hidden"
-											name="items_per_page"
-											value=query_ipp.get()
-										/>
-									</TableHead>
-									<th colspan="3"></th>
-								</tr>
-							</thead>
-							<tbody>{equipment_list}</tbody>
-						</table>
+						<div class=css::table_wrapper>
+							<table>
+								<thead>
+									<tr>
+										<TableHead
+											action="/equipment"
+											items=EquipmentData::get_fields()
+											query_field
+											query_order
+										>
+											<input type="hidden" name="page" value=query_page.get() />
+											<input
+												type="hidden"
+												name="items_per_page"
+												value=query_ipp.get()
+											/>
+										</TableHead>
+										<th colspan="3"></th>
+									</tr>
+								</thead>
+								<tbody>{equipment_list}</tbody>
+							</table>
+						</div>
 						<Pagination action="/equipment" query_page query_ipp items>
 							<input type="hidden" name="field" value=query_field.get() />
 							<input type="hidden" name="order" value=query_order.get() />

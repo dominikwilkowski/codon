@@ -1,5 +1,13 @@
 .nav {
-	color: hotpink;
+	text-align: center;
+	padding: 1rem 1.5rem;
+	display: block;
+	max-width: max-content;
+	margin: 0 auto;
+	border-radius: 6px;
+	/* border-top: 0; */
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
 }
 
 .nav a[aria-current] {
@@ -18,5 +26,5 @@
 }
 
 .nav li + li {
-	margin-left: 0.5rem;
+	margin-left: 1.5rem;
 }

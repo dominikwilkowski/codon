@@ -1,3 +1,12 @@
+:root {
+	--fg: #eaeff0;
+	--fg-highlight: #fff;
+	--bg: #101415;
+	--content-bg: #15181c;
+	--action: #ff0093;
+	--secondary: #8a63ff;
+}
+
 @font-face {
 	font-family: "NotoSansMono";
 	font-style: normal;
@@ -24,10 +33,39 @@ html,
 body {
 	font-family: "NotoSansMono", Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
 	font-optical-sizing: auto;
-	font-weight: 350;
+	font-weight: 400;
 	font-style: normal;
+	background: var(--bg);
+	color: var(--fg);
+	-webkit-font-smoothing: antialiased;
+	-moz-font-smoothing: antialiased;
+	-o-font-smoothing: antialiased;
+	text-decoration-skip-ink: auto;
 }
 
 .main {
-	padding: 0.5rem;
+	padding: 2rem;
+	max-width: 100rem;
+	margin: 2rem auto;
+}
+
+:global(.frame) {
+	background-color: var(--content-bg);
+	box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, 0.05), 0 0 0 1px hsla(0, 0%, 0%, 0.05), 0 0.3px 0.4px
+		hsla(0, 0%, 0%, 0.02), 0 0.9px 1.5px hsla(0, 0%, 0%, 0.045), 3.5px 0 12px 3px hsla(0, 0%, 0%, 0.35);
+	border-radius: 12px;
+}
+
+h1,
+h2,
+h3 {
+	color: var(--fg-highlight);
+	margin: 0;
+}
+
+a,
+a:hover,
+a:visited,
+a:active {
+	color: var(--action);
 }

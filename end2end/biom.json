@@ -1,7 +1,7 @@
 {
 	"formatter": {
 		"enabled": true,
-		"formatWithErrors": false,
+		"formatWithErrors": true,
 		"ignore": [
 			"playwright-report/**",
 			"test-results/**",
@@ -19,6 +19,11 @@
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "single"
+		}
+	},
+	"css": {
+		"parser": {
+			"cssModules": true
 		}
 	}
 }

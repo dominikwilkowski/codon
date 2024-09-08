@@ -1,9 +1,9 @@
 .icon {
-	color: #222;
+	color: var(--fg);
 	width: 1.5rem;
 }
 
 .logo {
-	color: #222;
+	color: var(--fg);
 	width: 5.5rem;
 }

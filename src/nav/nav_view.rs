@@ -6,7 +6,7 @@ stylance::import_style!(css, "nav.module.css");
 #[component]
 pub fn Nav() -> impl IntoView {
 	view! {
-		<nav class=css::nav>
+		<nav class=format!("{} frame", css::nav)>
 			<ul>
 				<li>
 					<A href="/">Homepage</A>

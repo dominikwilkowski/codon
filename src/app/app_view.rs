@@ -42,8 +42,8 @@ pub fn App() -> impl IntoView {
 				view! { <ErrorTemplate outside_errors /> }.into_view()
 			}
 		>
-			<main class=css::main>
-				<Nav />
+			<Nav />
+			<main class=format!("{} frame", css::main)>
 				<Routes>
 					<Route path="" view=Home />
 					<Route path="/samples" view=Samples />

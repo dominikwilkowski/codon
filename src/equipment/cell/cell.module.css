@@ -36,9 +36,9 @@
 	border: 1px solid #ccc;
 }
 .sterilization {
-	background-color: #ff8877;
-	color: #18a058;
-	border: 1px solid #c5e7d5;
+	background-color: #191622;
+	color: var(--secondary);
+	border: 1px solid var(--secondary);
 }
 .broken {
 	background-color: #fbeef1;
