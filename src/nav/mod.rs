@@ -1,2 +1,2 @@
 pub mod nav_view;
-pub use nav_view::Nav;
+pub use nav_view::*;

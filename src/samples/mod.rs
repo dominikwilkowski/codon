@@ -1,2 +1,2 @@
 pub mod samples_view;
-pub use samples_view::Samples;
+pub use samples_view::*;

@@ -1,5 +1,5 @@
 use crate::{
-	equipment::{Equipment, EquipmentAdd, EquipmentDetail},
+	equipment::{Equipment, EquipmentAdd, EquipmentDetail, EquipmentEdit},
 	error_template::{AppError, ErrorTemplate},
 	home::Home,
 	nav::Nav,
@@ -50,7 +50,7 @@ pub fn App() -> impl IntoView {
 					<Route path="/equipment" view=Equipment />
 					<Route path="/equipment/add" view=EquipmentAdd />
 					<Route path="/equipment/:id" view=EquipmentDetail />
-				// <Route path="/equipment/edit/:id" view=EquipmentEdit />
+					<Route path="/equipment/edit/:id" view=EquipmentEdit />
 				</Routes>
 			</main>
 		</Router>

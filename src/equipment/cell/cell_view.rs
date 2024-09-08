@@ -22,20 +22,17 @@ impl EquipmentCellView for EquipmentType {
 	fn view(self) -> impl IntoView {
 		match self {
 			EquipmentType::Flask => view! {
-				<abbr title="A Flask">
-					<Flask />
-				</abbr>
+				<Flask />
+				" Fask"
 			},
 			EquipmentType::Vessel => view! {
-				<abbr title="A Vessel">
-					<Vessel />
-				</abbr>
+				<Vessel />
+				" Vessel"
 			},
 			EquipmentType::IncubationCabinet => {
 				view! {
-					<abbr title="A Incubation Cabinet">
-						<IncubationCabinet />
-					</abbr>
+					<IncubationCabinet />
+					" Incubation Cabinet"
 				}
 			},
 		}

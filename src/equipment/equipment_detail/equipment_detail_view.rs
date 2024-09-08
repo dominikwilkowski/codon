@@ -14,11 +14,11 @@ pub fn EquipmentDetail() -> impl IntoView {
 	let params = use_params_map();
 	let navigate = use_navigate();
 
-	let go_home = create_rw_signal(false);
+	let go_to_listing = create_rw_signal(false);
 
 	create_effect(move |_| {
 		if params.with(|p| p.get("id").cloned().unwrap_or_default()).is_empty()
-			|| go_home.get()
+			|| go_to_listing.get()
 		{
 			navigate("/equipment", Default::default());
 		}
@@ -33,7 +33,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 	view! {
 		<h1>
 			<EquipmentLogo />
-			Equipment Details
+			" Equipment Details"
 		</h1>
 		<Transition fallback=move || view! { <p>Loading equipment...</p> }>
 			<ErrorBoundary fallback=|errors| {
@@ -45,7 +45,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 							if equipment_data.get().is_some() {
 								match equipment_data.get().unwrap() {
 									Err(e) => {
-										go_home.set(true);
+										go_to_listing.set(true);
 										view! {
 											<pre class="error">Server Error: {e.to_string()}</pre>
 										}

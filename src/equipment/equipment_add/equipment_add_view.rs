@@ -1,10 +1,18 @@
 use crate::{
-	equipment::{EquipmentData, EquipmentStatus, EquipmentType},
+	equipment::{
+		get_equipment_data_by_id, EquipmentData, EquipmentStatus, EquipmentType,
+	},
+	error_template::ErrorTemplate,
 	icons::EquipmentLogo,
 };
 
 use leptos::*;
 use leptos_router::*;
+use serde::de::DeserializeOwned;
+use server_fn::{
+	client::Client, codec::PostUrl, error::NoCustomError, request::ClientReq,
+	ServerFn,
+};
 
 stylance::import_style!(css, "equipment_add.module.css");
 
@@ -15,7 +23,7 @@ pub fn EquipmentAdd() -> impl IntoView {
 	view! {
 		<h2>
 			<EquipmentLogo />
-			Add new Equipment
+			" Add new Equipment"
 		</h2>
 		<EquipmentAddEditForm
 			submit_action=add_equipment
@@ -25,12 +33,85 @@ pub fn EquipmentAdd() -> impl IntoView {
 }
 
 #[component]
-pub fn EquipmentAddEditForm(
+pub fn EquipmentEdit() -> impl IntoView {
+	let edit_equipment = create_server_action::<EditEquipment>();
+	let params = use_params_map();
+	let navigate = use_navigate();
+
+	let go_to_listing = create_rw_signal(false);
+
+	create_effect(move |_| {
+		if params.with(|p| p.get("id").cloned().unwrap_or_default()).is_empty()
+			|| go_to_listing.get()
+		{
+			navigate("/equipment", Default::default());
+		}
+	});
+
+	#[expect(clippy::redundant_closure)]
+	let equipment_data = create_resource(
+		move || params.with(|p| p.get("id").cloned().unwrap_or_default()),
+		move |id| get_equipment_data_by_id(id),
+	);
+
+	view! {
+		<h2>
+			<EquipmentLogo />
+			" Edit Equipment"
+		</h2>
+		<Transition fallback=move || view! { <p>Loading equipment...</p> }>
+			<ErrorBoundary fallback=|errors| {
+				view! { <ErrorTemplate errors=errors /> }
+			}>
+				{move || {
+					view! {
+						{if equipment_data.get().is_some() {
+							match equipment_data.get().unwrap() {
+								Err(e) => {
+									go_to_listing.set(true);
+									view! {
+										<pre class="error">Server Error: {e.to_string()}</pre>
+									}
+										.into_view()
+								}
+								Ok(equipment) => {
+									view! {
+										<EquipmentAddEditForm
+											is_edit=true
+											data=equipment
+											submit_action=edit_equipment
+											redirect_on_success="/equipment"
+										/>
+									}
+								}
+							}
+						} else {
+							view! { <div>Nothing found</div> }.into_view()
+						}}
+					}
+				}}
+			</ErrorBoundary>
+		</Transition>
+	}
+}
+
+#[component]
+pub fn EquipmentAddEditForm<T>(
 	#[prop(optional)] is_edit: bool,
 	#[prop(optional)] data: EquipmentData,
-	submit_action: Action<AddEquipment, Result<(), ServerFnError>>,
+	submit_action: Action<T, Result<(), ServerFnError>>,
 	redirect_on_success: &'static str,
-) -> impl IntoView {
+) -> impl IntoView
+where
+	T: ServerFn<InputEncoding = PostUrl, Output = (), Error = NoCustomError>
+		+ 'static,
+	T::Error: Clone + 'static,
+	T: DeserializeOwned + 'static,
+	<<<T as ServerFn>::Client as Client<
+		<T as ServerFn>::Error,
+	>>::Request as ClientReq<<T as ServerFn>::Error>>::FormData:
+		From<web_sys::FormData>,
+{
 	let id_value = create_rw_signal(if !is_edit {
 		String::new()
 	} else {
@@ -93,6 +174,7 @@ pub fn EquipmentAddEditForm(
 	create_effect(move |_| {
 		if let Some(submission) = submit_action.value().get() {
 			if submission.is_ok() {
+				println!("submit done!");
 				navigate(redirect_on_success, NavigateOptions::default());
 			} else {
 				println!("{submission:?}");
@@ -218,7 +300,7 @@ pub async fn add_equipment(
 		.map(|cost_in_cent_f64| (cost_in_cent_f64 * 100.0) as i32);
 
 	let row = sqlx::query!(
-		"INSERT INTO equipment
+		"INSERT INTO equipment\
 		(equipment_type, create_date, name, status, manufacturer, purchase_date, vendor, cost_in_cent, warranty_expiration_date, location, notes)\
 		VALUES\
 		($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)\
@@ -268,6 +350,77 @@ pub async fn add_equipment(
 			"UPDATE equipment SET qrcode = $1 WHERE id = $2",
 			qrcode_path,
 			row.id
+		)
+		.execute(get_db())
+		.await
+		.map(|_| ())?,
+	)
+}
+
+#[server]
+pub async fn edit_equipment(
+	id: String,
+	equipment_type: String,
+	name: String,
+	status: String,
+	manufacturer: String,
+	purchase_date: String,
+	vendor: String,
+	cost_in_cent: String,
+	warranty_expiration_date: String,
+	location: String,
+	notes: String,
+) -> Result<(), ServerFnError> {
+	use crate::{
+		db::ssr::get_db,
+		equipment::{EquipmentStatus, EquipmentType},
+	};
+	use chrono::prelude::*;
+
+	let id: i32 = id.parse::<i32>()?;
+
+	let purchase_date: Option<DateTime<Utc>> =
+		match purchase_date.parse::<DateTime<Utc>>() {
+			Ok(date) => Some(date),
+			Err(_) => None,
+		};
+
+	let warranty_expiration_date: Option<DateTime<Utc>> =
+		match warranty_expiration_date.parse::<DateTime<Utc>>() {
+			Ok(date) => Some(date),
+			Err(_) => None,
+		};
+
+	let cost_in_cent: Option<i32> = cost_in_cent
+		.parse::<f64>()
+		.ok()
+		.map(|cost_in_cent_f64| (cost_in_cent_f64 * 100.0) as i32);
+
+	Ok(
+		sqlx::query!(
+			"UPDATE equipment SET
+			equipment_type = $1,
+			name = $2,
+			status = $3,
+			manufacturer = $4,
+			purchase_date = $5,
+			vendor = $6,
+			cost_in_cent = $7,
+			warranty_expiration_date = $8,
+			location = $9,
+			notes = $10
+		WHERE id = $11",
+			EquipmentType::parse(equipment_type.clone()).to_string(),
+			name,
+			EquipmentStatus::parse(status).to_string(),
+			manufacturer,
+			purchase_date,
+			vendor,
+			cost_in_cent,
+			warranty_expiration_date,
+			location,
+			notes,
+			id,
 		)
 		.execute(get_db())
 		.await

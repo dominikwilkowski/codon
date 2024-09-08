@@ -57,7 +57,9 @@ pub fn Row(
 					<td>
 						<A href=format!("/equipment/{}", equipment.id)>Details</A>
 					</td>
-					<td>Edit</td>
+					<td>
+						<A href=format!("edit/{}", equipment.id)>Edit</A>
+					</td>
 					<td>
 						<button on:click=move |_| {
 							if web_sys::window()

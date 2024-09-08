@@ -50,8 +50,9 @@ pub fn Equipment() -> impl IntoView {
 	view! {
 		<h1>
 			<EquipmentLogo />
-			Equipment
+			" Equipment"
 		</h1>
+		<A href="add/">Add new</A>
 		<Transition fallback=move || view! { <p>Loading equipment...</p> }>
 			<ErrorBoundary fallback=|errors| {
 				view! { <ErrorTemplate errors /> }

@@ -8,7 +8,7 @@ pub fn Home() -> impl IntoView {
 	let on_click = move |_| count.update(|count| *count += 1);
 
 	view! {
-		<h1>"Welcome to Codon"</h1>
+		<h1>Welcome to Codon</h1>
 		<button on:click=on_click>"Click Me: " {count}</button>
 	}
 }
