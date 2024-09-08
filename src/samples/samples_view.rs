@@ -68,9 +68,15 @@ pub fn Samples() -> impl IntoView {
 				<input
 					type="text"
 					name="sample_type"
+					placeholder="type"
 					prop:value=sample_type_value
 				/>
-				<input type="text" name="analyst" prop:value=analyst_value />
+				<input
+					type="text"
+					name="analyst"
+					placeholder="analyst"
+					prop:value=analyst_value
+				/>
 				<button
 					type="submit"
 					prop:disabled=move || add_sample.pending().get()
