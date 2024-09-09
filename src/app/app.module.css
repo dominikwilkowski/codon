@@ -6,6 +6,16 @@
 	--action: #ff0093; /* rgb(255, 0, 147) */
 	--focus: #ff0093; /* rgb(255, 0, 147) */
 	--secondary: #8a63ff; /* rgb(138, 99, 255) */
+	--outline: #642449; /* rgb(100, 36, 73) */
+	--text: #fff; /* rgb(255, 255, 255) */
+
+	--disabled-bg: #101415; /* rgb(16, 20, 21) */
+	--disabled-fg: #ffffff88; /* rgba(255, 255, 255, 136) */
+
+	--input-bg: #252a31; /* rgb(37, 42, 49) */
+	--input-fg: #fff; /* rgb(255, 255, 255) */
+
+	--thaw-font-color: #fff; /* rgb(255, 255, 255) */
 }
 
 @font-face {
@@ -42,6 +52,7 @@ body {
 	-moz-font-smoothing: antialiased;
 	-o-font-smoothing: antialiased;
 	text-decoration-skip-ink: auto;
+	accent-color: var(--action);
 }
 
 .main {
@@ -61,7 +72,7 @@ h1,
 h2,
 h3 {
 	color: var(--fg-highlight);
-	margin: 0;
+	margin: 0 0 1.5rem 0;
 }
 
 a,
@@ -73,7 +84,7 @@ a:active {
 
 ::selection {
 	text-shadow: none;
-	color: #fff;
+	color: var(--text);
 	background-color: rgba(255, 0, 147, 0.6);
 }
 
@@ -83,49 +94,75 @@ button {
 	cursor: pointer;
 }
 
-*:focus-visible,
-input:focus-visible,
+*:focus-visible:not(:global(.thaw-input__input-el)),
+input:not(:global(.thaw-input__input-el)):focus-visible,
+:global(.codon-thaw-input):focus-within,
 button:focus-visible,
 [type="submit"]:focus-visible {
-	outline: 1px solid var(--focus);
+	outline: 1px solid var(--focus) !important;
 	outline-offset: 1px;
 }
 
-a:focus-visible {
+a:focus-visible:not(:global(.increasing_specificity)) {
 	border-radius: 3px;
 	outline-offset: 6px;
 }
 
-input:focus-visible {
+input:not(:global(.thaw-input__input-el)):focus-visible,
+:global(.codon-thaw-input):focus-visible {
 	outline-style: solid;
 	outline-width: 1px;
 	outline-offset: 0;
 }
 
-input[type="text"],
-input[type="number"],
+input[type="text"]:not(:global(.thaw-input__input-el)),
+input[type="number"]:not(:global(.thaw-input__input-el)),
 textarea,
-select {
+select,
+:global(.codon-thaw-input),
+:global(.codon-thaw-btn) {
 	appearance: none;
-	background: #252a31;
-	color: #fff;
+	background: var(--input-bg);
+	color: var(--input-fg);
 	box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, 0.05), 0 0 0 1px hsla(0, 0%, 0%, 0.05), 0 0.3px 0.4px
 		hsla(0, 0%, 0%, 0.02), 0 0.9px 1.5px hsla(0, 0%, 0%, 0.045), 0 0 2px 1px hsla(0, 0%, 0%, 0.35);
 	border: none;
 	border-radius: 3px;
 	padding: 4px 0.5rem;
-	margin: 0 2px;
+	transition: outline 0.3s;
+	outline: none;
 }
 
-input[type="text"]:disabled,
-input[type="number"]:disabled,
+:global(.thaw-date-picker-panel),
+:global(.thaw-select-menu),
+:global(.thaw-message),
+:global(.input_shadow) {
+	box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, 0.05), 0 0 0 1px hsla(0, 0%, 0%, 0.05), 0 0.3px 0.4px
+		hsla(0, 0%, 0%, 0.02), 0 0.9px 1.5px hsla(0, 0%, 0%, 0.045), 0 0 2px 1px hsla(0, 0%, 0%, 0.35) !important;
+}
+
+input[type="text"]:not(:global(.thaw-input__input-el)):disabled,
+input[type="number"]:not(:global(.thaw-input__input-el)):disabled,
+:global(.codon-thaw-input):disabled,
+:global(.codon-thaw-btn):disabled,
 textarea:disabled,
 select:disabled {
 	background: var(--bg);
 	cursor: not-allowed;
 	box-shadow: inset 0 0 0 1px var(--bg);
+	color: var(--disabled-fg);
 }
 
 ::placeholder {
 	font-size: 70%;
+	color: var(--disabled-fg);
+}
+
+:global(.codon-thaw-input:hover),
+:global(.codon-thaw-input.thaw-input--focus) {
+	border-color: transparent !important;
+}
+
+:global(.thaw-button--outlined):hover:not(:global(.thaw-button--disabled)) {
+	color: var(--input-fg) !important;
 }

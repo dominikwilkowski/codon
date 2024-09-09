@@ -261,6 +261,7 @@ where
 	}
 }
 
+#[allow(clippy::too_many_arguments)]
 #[server]
 pub async fn add_equipment(
 	equipment_type: String,
@@ -357,6 +358,7 @@ pub async fn add_equipment(
 	)
 }
 
+#[allow(clippy::too_many_arguments)]
 #[server]
 pub async fn edit_equipment(
 	id: String,

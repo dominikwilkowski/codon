@@ -7,6 +7,7 @@ pub mod components {
 	pub mod table;
 }
 pub mod db;
+pub mod ds;
 pub mod equipment;
 pub mod error_template;
 pub mod home;

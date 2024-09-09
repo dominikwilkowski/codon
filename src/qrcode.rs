@@ -1,7 +1,7 @@
 extern crate qrcodegen;
 use qrcodegen::{DataTooLong, QrCode, QrCodeEcc};
 
-pub fn generate_qr<'a>(text: &'a str) -> Result<String, DataTooLong> {
+pub fn generate_qr(text: &str) -> Result<String, DataTooLong> {
 	let qr = QrCode::encode_text(text, QrCodeEcc::Medium)?;
 	Ok(to_optimized_svg_string(qr.size() as u16, 4, QrCode::get_module, &qr))
 }
