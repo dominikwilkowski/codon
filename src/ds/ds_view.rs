@@ -62,15 +62,11 @@ pub fn Ds() -> impl IntoView {
 				</div>
 
 				<div class=css::stack_inline>
-					<MoneyInput
-						placeholder="Money input"
-						value=create_rw_signal(String::from(""))
-					/>
+					<MoneyInput value=create_rw_signal(String::from("")) />
 					<MoneyInput value=create_rw_signal(
 						String::from("1234.56"),
 					) />
 					<MoneyInput
-						placeholder="Money input"
 						value=create_rw_signal(String::from(""))
 						disabled=create_rw_signal(true)
 					/>

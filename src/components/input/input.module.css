@@ -37,10 +37,44 @@
 }
 
 .money_input {
-	padding: 0 10px;
+	display: inline-flex;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0 5px 0 10px;
+	transition: offset 0.3s;
 }
 
 .money_input input[type="number"]:not(:global(.increasing_specificity)) {
 	appearance: none;
 	-moz-appearance: textfield;
+}
+
+.money_btns {
+	appearance: none;
+	border: none;
+	padding: 0;
+	margin: 0;
+	border: none;
+	background: transparent;
+	color: var(--input-fg);
+	width: 1.8125rem;
+	height: 100%;
+}
+
+.money_btns:hover {
+	color: var(--action);
+}
+
+.money_btns:disabled {
+	color: var(--disabled-fg);
+}
+
+.money_btns svg {
+	display: inline-block;
+}
+
+.money_symbol {
+	display: inline-grid;
+	height: 100%;
+	align-items: center;
 }
