@@ -3,8 +3,11 @@ pub mod macros;
 
 pub mod app;
 pub mod components {
+	pub mod button;
+	pub mod datepicker;
 	pub mod input;
 	pub mod pagination;
+	pub mod select;
 	pub mod table;
 }
 pub mod db;

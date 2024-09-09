@@ -1,0 +1,4 @@
+:global(.input_shadow):focus-within {
+	outline: 1px solid var(--focus) !important;
+	outline-offset: 1px;
+}

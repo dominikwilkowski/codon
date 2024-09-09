@@ -1,8 +1,5 @@
 use leptos::*;
-use thaw::{
-	Input as ThawInput,
-	// TextArea as ThawTextArea,
-};
+use thaw::{Input as ThawInput, TextArea as ThawTextArea};
 
 stylance::import_style!(css, "input.module.css");
 
@@ -32,7 +29,7 @@ pub fn MoneyInput(
 			<span class=css::money_symbol>$</span>
 			<input
 				type="number"
-				class="thaw-input__input-el"
+				class=format!("{} codon-input-field", css::input_field)
 				prop:value=value
 				on:input=move |event| {
 					value.set_untracked(event_target_value(&event))
@@ -76,4 +73,14 @@ pub fn MoneyInput(
 			</button>
 		</div>
 	}
+}
+
+#[component]
+pub fn TextArea(
+	#[prop(optional)] placeholder: &'static str,
+	#[prop(optional)] value: RwSignal<String>,
+	#[prop(optional)] disabled: RwSignal<bool>,
+	#[prop(attrs)] attrs: Vec<(&'static str, Attribute)>,
+) -> impl IntoView {
+	view! { <ThawTextArea value placeholder disabled attrs /> }
 }

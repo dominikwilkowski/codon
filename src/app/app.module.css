@@ -6,7 +6,6 @@
 	--action: #ff0093; /* rgb(255, 0, 147) */
 	--focus: #ff0093; /* rgb(255, 0, 147) */
 	--secondary: #8a63ff; /* rgb(138, 99, 255) */
-	--outline: #642449; /* rgb(100, 36, 73) */
 	--text: #fff; /* rgb(255, 255, 255) */
 
 	--disabled-bg: #101415; /* rgb(16, 20, 21) */
@@ -38,6 +37,12 @@
 	src: url("/noto_sans_mono_latin_ext.woff2") format("woff2");
 	unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
 		U+2C60-2C7F, U+A720-A7FF;
+}
+
+*,
+*:after,
+*:before {
+	box-sizing: border-box;
 }
 
 html,
@@ -94,10 +99,7 @@ button {
 	cursor: pointer;
 }
 
-*:focus-visible:not(:global(.thaw-input__input-el)),
-input:not(:global(.thaw-input__input-el)):focus-visible,
-button:focus-visible,
-[type="submit"]:focus-visible {
+*:focus-visible:not(:global(.thaw-input__input-el)):not(:global(.codon-input-field)) {
 	outline: 1px solid var(--focus) !important;
 	outline-offset: 1px;
 }
@@ -107,14 +109,6 @@ a:focus-visible:not(:global(.increasing_specificity)) {
 	outline-offset: 6px;
 }
 
-input:not(:global(.thaw-input__input-el)):focus-visible {
-	outline-style: solid;
-	outline-width: 1px;
-	outline-offset: 0;
-}
-
-input[type="text"]:not(:global(.thaw-input__input-el)),
-input[type="number"]:not(:global(.thaw-input__input-el)),
 textarea,
 select,
 :global(.codon-thaw-btn) {
@@ -138,10 +132,7 @@ select,
 		hsla(0, 0%, 0%, 0.02), 0 0.9px 1.5px hsla(0, 0%, 0%, 0.045), 0 0 2px 1px hsla(0, 0%, 0%, 0.35) !important;
 }
 
-input[type="text"]:not(:global(.thaw-input__input-el)):disabled,
-input[type="number"]:not(:global(.thaw-input__input-el)):disabled,
 :global(.codon-thaw-btn):disabled,
-textarea:disabled,
 select:disabled {
 	background: var(--bg);
 	cursor: not-allowed;
@@ -154,6 +145,9 @@ select:disabled {
 	color: var(--disabled-fg) !important;
 }
 
-:global(.thaw-button--outlined):hover:not(:global(.thaw-button--disabled)) {
-	color: var(--input-fg) !important;
+:global(.thaw-textarea),
+:global(.thaw-textarea):hover,
+:global(.input_shadow),
+:global(.input_shadow):hover {
+	border: none !important;
 }

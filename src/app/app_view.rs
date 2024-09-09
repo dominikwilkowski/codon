@@ -42,7 +42,7 @@ pub fn App() -> impl IntoView {
 	theme.button.color_text_disabled = String::from("var(--disabled-fg)");
 	theme.button.color_background_disabled = String::from("var(--disabled-bg)");
 	theme.button.color_border_disabled = String::from("var(--disabled-bg)");
-	theme.button.border_color_outlined = String::from("var(--outline)");
+	theme.button.border_color_outlined = String::from("var(--action)");
 	theme.switch.background_color = String::from("var(--input-bg)");
 	theme.select.background_color = String::from("var(--input-bg)");
 	theme.select.menu_background_color = String::from("var(--input-bg)");

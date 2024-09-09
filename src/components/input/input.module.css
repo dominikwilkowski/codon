@@ -1,10 +1,22 @@
+.input {
+	display: inline-grid;
+}
+
 .input:not(:global(.thaw-input--disabled)) {
-	background: var(--input-bg);
-	color: var(--input-fg);
+	border-radius: 3px;
 	box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, 0.05), 0 0 0 1px hsla(0, 0%, 0%, 0.05), 0 0.3px 0.4px
 		hsla(0, 0%, 0%, 0.02), 0 0.9px 1.5px hsla(0, 0%, 0%, 0.045), 0 0 2px 1px hsla(0, 0%, 0%, 0.35) !important;
+}
+
+.input:not(:global(.thaw-input--disabled)),
+.input_field {
+	background: var(--input-bg);
+	color: var(--input-fg);
 	border: none;
-	border-radius: 3px;
+}
+
+.input_field {
+	height: 30px;
 }
 
 .input:focus-within {
@@ -18,14 +30,20 @@
 	outline-offset: 0;
 }
 
+:global(.codon-input-field):focus-visible {
+	outline: none;
+}
+
 .input:hover,
 .input:global(.thaw-input--focus) {
 	border-color: transparent !important;
 }
 
 .input:global(.thaw-input--disabled),
-.money_input_disabled:not(:global(.increasing_specificity)) {
-	background: var(--bg);
+.money_input_disabled:not(:global(.increasing_specificity)),
+:global(.codon-input-field):disabled,
+:global(.thaw-textarea__textarea-el):disabled {
+	background: var(--bg) !important;
 	cursor: not-allowed;
 	box-shadow: inset 0 0 0 1px var(--bg) !important;
 	color: var(--disabled-fg);
@@ -39,9 +57,8 @@
 .money_input {
 	display: inline-flex;
 	width: 100%;
-	box-sizing: border-box;
-	padding: 0 5px 0 10px;
-	transition: offset 0.3s;
+	padding: 2px 5px 2px 10px;
+	transition: all 0.3s;
 }
 
 .money_input input[type="number"]:not(:global(.increasing_specificity)) {
@@ -57,8 +74,10 @@
 	border: none;
 	background: transparent;
 	color: var(--input-fg);
-	width: 1.8125rem;
-	height: 100%;
+	width: 1.25rem;
+	height: 1.25rem;
+	border-radius: 3px;
+	align-self: center;
 }
 
 .money_btns:hover {
@@ -77,4 +96,5 @@
 	display: inline-grid;
 	height: 100%;
 	align-items: center;
+	user-select: none;
 }

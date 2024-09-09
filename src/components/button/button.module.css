@@ -1,0 +1,3 @@
+:global(.thaw-button--outlined):hover:not(:global(.thaw-button--disabled)) {
+	color: var(--input-fg) !important;
+}
