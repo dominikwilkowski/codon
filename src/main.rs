@@ -3,6 +3,7 @@ pub mod macros;
 
 pub mod app;
 pub mod components {
+	pub mod input;
 	pub mod pagination;
 	pub mod table;
 }

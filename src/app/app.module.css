@@ -96,7 +96,6 @@ button {
 
 *:focus-visible:not(:global(.thaw-input__input-el)),
 input:not(:global(.thaw-input__input-el)):focus-visible,
-:global(.codon-thaw-input):focus-within,
 button:focus-visible,
 [type="submit"]:focus-visible {
 	outline: 1px solid var(--focus) !important;
@@ -108,8 +107,7 @@ a:focus-visible:not(:global(.increasing_specificity)) {
 	outline-offset: 6px;
 }
 
-input:not(:global(.thaw-input__input-el)):focus-visible,
-:global(.codon-thaw-input):focus-visible {
+input:not(:global(.thaw-input__input-el)):focus-visible {
 	outline-style: solid;
 	outline-width: 1px;
 	outline-offset: 0;
@@ -119,7 +117,6 @@ input[type="text"]:not(:global(.thaw-input__input-el)),
 input[type="number"]:not(:global(.thaw-input__input-el)),
 textarea,
 select,
-:global(.codon-thaw-input),
 :global(.codon-thaw-btn) {
 	appearance: none;
 	background: var(--input-bg);
@@ -143,7 +140,6 @@ select,
 
 input[type="text"]:not(:global(.thaw-input__input-el)):disabled,
 input[type="number"]:not(:global(.thaw-input__input-el)):disabled,
-:global(.codon-thaw-input):disabled,
 :global(.codon-thaw-btn):disabled,
 textarea:disabled,
 select:disabled {
@@ -155,12 +151,7 @@ select:disabled {
 
 ::placeholder {
 	font-size: 70%;
-	color: var(--disabled-fg);
-}
-
-:global(.codon-thaw-input:hover),
-:global(.codon-thaw-input.thaw-input--focus) {
-	border-color: transparent !important;
+	color: var(--disabled-fg) !important;
 }
 
 :global(.thaw-button--outlined):hover:not(:global(.thaw-button--disabled)) {

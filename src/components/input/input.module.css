@@ -1,0 +1,46 @@
+.input:not(:global(.thaw-input--disabled)) {
+	background: var(--input-bg);
+	color: var(--input-fg);
+	box-shadow: inset 0 0 0 1px hsla(0, 0%, 100%, 0.05), 0 0 0 1px hsla(0, 0%, 0%, 0.05), 0 0.3px 0.4px
+		hsla(0, 0%, 0%, 0.02), 0 0.9px 1.5px hsla(0, 0%, 0%, 0.045), 0 0 2px 1px hsla(0, 0%, 0%, 0.35) !important;
+	border: none;
+	border-radius: 3px;
+}
+
+.input:focus-within {
+	outline: 1px solid var(--focus) !important;
+	outline-offset: 1px;
+}
+
+.input:focus-visible {
+	outline-style: solid;
+	outline-width: 1px;
+	outline-offset: 0;
+}
+
+.input:hover,
+.input:global(.thaw-input--focus) {
+	border-color: transparent !important;
+}
+
+.input:global(.thaw-input--disabled),
+.money_input_disabled:not(:global(.increasing_specificity)) {
+	background: var(--bg);
+	cursor: not-allowed;
+	box-shadow: inset 0 0 0 1px var(--bg) !important;
+	color: var(--disabled-fg);
+}
+
+.money_input_disabled:not(:global(.increasing_specificity)) input {
+	cursor: not-allowed;
+	color: var(--disabled-fg);
+}
+
+.money_input {
+	padding: 0 10px;
+}
+
+.money_input input[type="number"]:not(:global(.increasing_specificity)) {
+	appearance: none;
+	-moz-appearance: textfield;
+}

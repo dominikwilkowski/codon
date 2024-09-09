@@ -19,6 +19,7 @@ pub fn App() -> impl IntoView {
 	provide_meta_context();
 	let mut theme = Theme::dark();
 	theme.common.font_color = String::from("var(--text)");
+	theme.common.font_size = String::from("1rem;");
 	theme.common.color_primary = String::from("var(--action)");
 	theme.common.color_primary_hover = String::from("var(--action)");
 	theme.common.color_primary_active = String::from("var(--action)");
