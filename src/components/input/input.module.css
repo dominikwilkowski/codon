@@ -84,6 +84,14 @@
 	color: var(--action);
 }
 
+.money_btns svg {
+	transition: all 0.3s;
+}
+
+.money_btns:hover:not(:disabled) svg {
+	fill-opacity: 1;
+}
+
 .money_btns:disabled {
 	color: var(--disabled-fg);
 }
