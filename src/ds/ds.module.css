@@ -2,16 +2,11 @@
 	margin-bottom: 2rem;
 }
 
-.stack_block,
 .stack_inline {
 	display: inline-grid;
-	grid-auto-flow: row;
+	grid-auto-flow: column;
 	gap: 0.5rem;
 	justify-items: left;
-}
-
-.stack_inline {
-	grid-auto-flow: column;
 }
 
 .grid {

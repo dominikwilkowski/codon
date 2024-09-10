@@ -21,18 +21,28 @@ pub fn Equipment() -> impl IntoView {
 	let query_order = create_rw_signal(
 		query.with(|p| p.get("order").cloned().unwrap_or(String::from("asc"))),
 	);
-	let query_page = create_rw_signal(
-		query
+	let query_page = create_rw_signal({
+		let page = query
 			.with(|p| p.get("page").cloned().unwrap_or(String::from("1")))
 			.parse::<u16>()
-			.unwrap_or(1),
-	);
-	let query_ipp = create_rw_signal(
-		query
+			.unwrap_or(1);
+		if page > 0 {
+			page
+		} else {
+			1
+		}
+	});
+	let query_ipp = create_rw_signal({
+		let ipp = query
 			.with(|p| p.get("items_per_page").cloned().unwrap_or(String::from("25")))
 			.parse::<u8>()
-			.unwrap_or(25),
-	);
+			.unwrap_or(25);
+		if ipp > 0 {
+			ipp
+		} else {
+			1
+		}
+	});
 
 	let equipment_data = create_resource(
 		move || (delete_equipment.version().get()),
@@ -68,16 +78,18 @@ pub fn Equipment() -> impl IntoView {
 										.into_view()
 								}
 								Ok((equipment, row_count)) => {
+									let hidden_fields = vec![
+										(String::from("field"), query_field.get()),
+										(String::from("order"), query_order.get()),
+									];
 									view! {
 										<Pagination
 											action="/equipment"
 											query_page
 											query_ipp
 											row_count
-										>
-											<input type="hidden" name="field" value=query_field.get() />
-											<input type="hidden" name="order" value=query_order.get() />
-										</Pagination>
+											hidden_fields=hidden_fields.clone()
+										/>
 										<div class=css::table_wrapper>
 											<table>
 												<thead>
@@ -118,10 +130,8 @@ pub fn Equipment() -> impl IntoView {
 											query_page
 											query_ipp
 											row_count
-										>
-											<input type="hidden" name="field" value=query_field.get() />
-											<input type="hidden" name="order" value=query_order.get() />
-										</Pagination>
+											hidden_fields
+										/>
 									}
 										.into_view()
 								}
