@@ -54,6 +54,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 									Ok(equipment) => {
 										view! {
 											<div>
+												<A href=format!("/equipment/edit/{}", equipment.id)>Edit</A>
 												<h2>{equipment.name.clone()}</h2>
 												<img
 													src=format!("/qrcodes/{}", equipment.qrcode)
