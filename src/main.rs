@@ -8,6 +8,7 @@ pub mod components {
 	pub mod input;
 	pub mod pagination;
 	pub mod select;
+	pub mod switch;
 	pub mod table;
 }
 pub mod db;

@@ -4,6 +4,7 @@ use crate::{
 		datepicker::DatePicker,
 		input::{Input, MoneyInput, TextArea},
 		select::{Select, SelectOption},
+		switch::Switch,
 	},
 	icons::{
 		Culture, CultureLogo, Equipment, EquipmentLogo, Experiment, ExperimentLogo,
@@ -186,6 +187,11 @@ pub fn Ds() -> impl IntoView {
 							SelectOption::new("Option B", String::from("option_b")),
 						]
 					/>
+
+					<select>
+						<option value="a">Option A</option>
+						<option value="b">Option B</option>
+					</select>
 				</div>
 
 				<h2>Datepicker</h2>
@@ -193,6 +199,11 @@ pub fn Ds() -> impl IntoView {
 					<DatePicker value=create_rw_signal(
 						Some(Local::now().date_naive()),
 					) />
+				</div>
+
+				<h2>Switch</h2>
+				<div class=css::stack_inline>
+					<Switch value=create_rw_signal(false) />
 				</div>
 
 			</div>
@@ -212,8 +223,6 @@ pub fn Ds() -> impl IntoView {
 		// <RadioItem key="a">Radio A</RadioItem>
 		// <RadioItem key="b">Radio B</RadioItem>
 		// </RadioGroup>
-
-		// <Switch class="input_shadow" value=create_rw_signal(false) />
 
 		<section class=css::section>
 			<h2></h2>
