@@ -1,8 +1,10 @@
 use crate::{
 	components::{
 		button::{use_message, Button, MessageOptions, MessageVariant},
+		checkbox::{Checkbox, CheckboxGroup, CheckboxItem},
 		datepicker::DatePicker,
 		input::{Input, MoneyInput, TextArea},
+		radio::{Radio, RadioGroup, RadioItem},
 		select::{Select, SelectOption},
 		switch::Switch,
 	},
@@ -206,23 +208,36 @@ pub fn Ds() -> impl IntoView {
 					<Switch value=create_rw_signal(false) />
 				</div>
 
+				<h2>Checkbox</h2>
+				<div class=css::stack_inline>
+					<CheckboxGroup value=create_rw_signal(
+						vec![String::from("b")]
+							.into_iter()
+							.collect::<std::collections::HashSet<String>>(),
+					)>
+						<CheckboxItem label="Option A" key=String::from("a") />
+						<CheckboxItem label="Option B" key=String::from("b") />
+						<CheckboxItem label="Option C" key=String::from("c") />
+					</CheckboxGroup>
+				</div>
+
+				<div class=css::stack_inline>
+					<Checkbox>Singel Checkbox</Checkbox>
+				</div>
+
+				<h2>Radio</h2>
+				<div class=css::stack_inline>
+					<RadioGroup value=create_rw_signal(Some(String::from("b")))>
+						<RadioItem key="a">Radio A</RadioItem>
+						<RadioItem key="b">Radio B</RadioItem>
+					</RadioGroup>
+				</div>
+
+				<div class=css::stack_inline>
+					<Radio>Singel Radio</Radio>
+				</div>
 			</div>
 		</section>
-
-		// <CheckboxGroup value=create_rw_signal(
-		// vec![String::from("b")]
-		// .into_iter()
-		// .collect::<std::collections::HashSet<String>>(),
-		// )>
-		// <CheckboxItem label="Option A" key=String::from("a") />
-		// <CheckboxItem label="Option B" key=String::from("b") />
-		// <CheckboxItem label="Option C" key=String::from("c") />
-		// </CheckboxGroup>
-
-		// <RadioGroup value=create_rw_signal(Some(String::from("b")))>
-		// <RadioItem key="a">Radio A</RadioItem>
-		// <RadioItem key="b">Radio B</RadioItem>
-		// </RadioGroup>
 
 		<section class=css::section>
 			<h2></h2>

@@ -4,9 +4,11 @@ pub mod macros;
 pub mod app;
 pub mod components {
 	pub mod button;
+	pub mod checkbox;
 	pub mod datepicker;
 	pub mod input;
 	pub mod pagination;
+	pub mod radio;
 	pub mod select;
 	pub mod switch;
 	pub mod table;
