@@ -203,24 +203,3 @@ impl From<EquipmentSQLData> for EquipmentData {
 		}
 	}
 }
-
-// Not needed thus far
-// impl Into<EquipmentSQLData> for EquipmentData {
-// 	fn into(self) -> EquipmentSQLData {
-// 		EquipmentSQLData {
-// 			id: self.id,
-// 			equipment_type: self.equipment_type.to_string(),
-// 			qrcode: self.qrcode.0,
-// 			create_date: self.create_date,
-// 			name: self.name,
-// 			status: self.status.to_string(),
-// 			manufacturer: self.manufacturer,
-// 			purchase_date: self.purchase_date,
-// 			vendor: self.vendor,
-// 			cost_in_cent: self.cost_in_cent.map(|c| c.0), //<-- this is likely wrong
-// 			warranty_expiration_date: self.warranty_expiration_date,
-// 			location: self.location,
-// 			notes: self.notes.map(|n| n.0),
-// 		}
-// 	}
-// }

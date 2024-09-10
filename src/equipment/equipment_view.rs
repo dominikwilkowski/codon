@@ -33,7 +33,6 @@ pub fn Equipment() -> impl IntoView {
 			.parse::<u8>()
 			.unwrap_or(25),
 	);
-	let items = create_rw_signal(0);
 
 	let equipment_data = create_resource(
 		move || (delete_equipment.version().get()),
@@ -58,67 +57,76 @@ pub fn Equipment() -> impl IntoView {
 				view! { <ErrorTemplate errors /> }
 			}>
 				{move || {
-					let equipment_list = {
-						move || {
-							equipment_data
-								.get()
-								.map(move |data| match data {
-									Err(e) => {
-										view! {
-											<pre class="error">Server Error: {e.to_string()}</pre>
-										}
-											.into_view()
-									}
-									Ok(equipment) => {
-										if equipment.is_empty() {
-											view! {
-												<tr>
-													<td colspan=EquipmentData::get_fields()
-														.len()>"No equipment found."</td>
-												</tr>
-											}
-												.into_view()
-										} else {
-											items.set(equipment.len());
-											view! { <Row equipment delete_equipment /> }
-										}
-									}
-								})
-								.unwrap_or_default()
-						}
-					};
 					view! {
-						<Pagination action="/equipment" query_page query_ipp items>
-							<input type="hidden" name="field" value=query_field.get() />
-							<input type="hidden" name="order" value=query_order.get() />
-						</Pagination>
-						<div class=css::table_wrapper>
-							<table>
-								<thead>
-									<tr>
-										<TableHead
+						{equipment_data
+							.get()
+							.map(move |data| match data {
+								Err(e) => {
+									view! {
+										<pre class="error">Server Error: {e.to_string()}</pre>
+									}
+										.into_view()
+								}
+								Ok((equipment, row_count)) => {
+									view! {
+										<Pagination
 											action="/equipment"
-											items=EquipmentData::get_fields()
-											query_field
-											query_order
+											query_page
+											query_ipp
+											row_count
 										>
-											<input type="hidden" name="page" value=query_page.get() />
-											<input
-												type="hidden"
-												name="items_per_page"
-												value=query_ipp.get()
-											/>
-										</TableHead>
-										<th colspan="3"></th>
-									</tr>
-								</thead>
-								<tbody>{equipment_list}</tbody>
-							</table>
-						</div>
-						<Pagination action="/equipment" query_page query_ipp items>
-							<input type="hidden" name="field" value=query_field.get() />
-							<input type="hidden" name="order" value=query_order.get() />
-						</Pagination>
+											<input type="hidden" name="field" value=query_field.get() />
+											<input type="hidden" name="order" value=query_order.get() />
+										</Pagination>
+										<div class=css::table_wrapper>
+											<table>
+												<thead>
+													<tr>
+														<TableHead
+															action="/equipment"
+															items=EquipmentData::get_fields()
+															query_field
+															query_order
+														>
+															<input type="hidden" name="page" value=query_page.get() />
+															<input
+																type="hidden"
+																name="items_per_page"
+																value=query_ipp.get()
+															/>
+														</TableHead>
+														<th colspan="3"></th>
+													</tr>
+												</thead>
+												<tbody>
+													{if equipment.is_empty() {
+														view! {
+															<tr>
+																<td colspan=EquipmentData::get_fields()
+																	.len()>"No equipment found."</td>
+															</tr>
+														}
+															.into_view()
+													} else {
+														view! { <Row equipment delete_equipment /> }.into_view()
+													}}
+												</tbody>
+											</table>
+										</div>
+										<Pagination
+											action="/equipment"
+											query_page
+											query_ipp
+											row_count
+										>
+											<input type="hidden" name="field" value=query_field.get() />
+											<input type="hidden" name="order" value=query_order.get() />
+										</Pagination>
+									}
+										.into_view()
+								}
+							})
+							.unwrap_or_default()}
 					}
 				}}
 			</ErrorBoundary>
@@ -132,7 +140,7 @@ pub async fn get_equipment_data(
 	order: String,
 	page: u16,
 	items_per_page: u8,
-) -> Result<Vec<EquipmentData>, ServerFnError> {
+) -> Result<(Vec<EquipmentData>, i64), ServerFnError> {
 	use crate::{db::ssr::get_db, equipment::EquipmentSQLData};
 
 	let order_sanitized = match order.to_lowercase().as_str() {
@@ -162,7 +170,7 @@ pub async fn get_equipment_data(
 	let offset = (page as i64 - 1) * items_per_page as i64;
 
 	let query = format!(
-		"SELECT * FROM equipment ORDER BY {field_sanitized} {order_sanitized} LIMIT $1 OFFSET $2",
+		"SELECT *, COUNT(*) OVER() as row_count FROM equipment ORDER BY {field_sanitized} {order_sanitized} LIMIT $1 OFFSET $2",
 	);
 
 	let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLData>(&query)
@@ -177,7 +185,11 @@ pub async fn get_equipment_data(
 	let equipment_data: Vec<EquipmentData> =
 		equipment_sql_data.into_iter().map(Into::into).collect();
 
-	Ok(equipment_data)
+	let row_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM equipment")
+		.fetch_one(get_db())
+		.await?;
+
+	Ok((equipment_data, row_count))
 }
 
 #[server]

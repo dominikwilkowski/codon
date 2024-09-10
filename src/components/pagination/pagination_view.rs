@@ -40,9 +40,12 @@ pub fn PaginationNext(
 	action: &'static str,
 	query_page: RwSignal<u16>,
 	query_ipp: RwSignal<u8>,
-	items: RwSignal<usize>,
+	row_count: i64,
 	children: Children,
 ) -> impl IntoView {
+	let max_pages = row_count as f64 / query_ipp.get() as f64;
+	let is_last_page = query_page.get() as f64 >= max_pages;
+
 	view! {
 		<form action=action method="get">
 			{children()}
@@ -50,7 +53,7 @@ pub fn PaginationNext(
 				type="hidden"
 				name="page"
 				value=move || {
-					if items.get() == query_ipp.get() as usize {
+					if !is_last_page {
 						query_page.get() + 1
 					} else {
 						query_page.get()
@@ -64,10 +67,7 @@ pub fn PaginationNext(
 				min="1"
 				max="255"
 			/>
-			<button
-				type="submit"
-				disabled=move || items.get() < query_ipp.get() as usize
-			>
+			<button type="submit" disabled=move || is_last_page>
 				Next Page
 			</button>
 		</form>
@@ -102,7 +102,7 @@ pub fn Pagination(
 	action: &'static str,
 	query_page: RwSignal<u16>,
 	query_ipp: RwSignal<u8>,
-	items: RwSignal<usize>,
+	row_count: i64,
 	children: ChildrenFn,
 ) -> impl IntoView {
 	let children1 = children.clone();
@@ -110,14 +110,16 @@ pub fn Pagination(
 	let children3 = children.clone();
 
 	view! {
-		<PaginationPrev action query_page query_ipp>
-			{children1()}
-		</PaginationPrev>
-		<ItemsPerPage action query_page query_ipp>
-			{children2()}
-		</ItemsPerPage>
-		<PaginationNext action query_page query_ipp items>
-			{children3()}
-		</PaginationNext>
+		<div>
+			<PaginationPrev action query_page query_ipp>
+				{children1()}
+			</PaginationPrev>
+			<ItemsPerPage action query_page query_ipp>
+				{children2()}
+			</ItemsPerPage>
+			<PaginationNext action query_page query_ipp row_count>
+				{children3()}
+			</PaginationNext>
+		</div>
 	}
 }
