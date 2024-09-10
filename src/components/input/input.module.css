@@ -1,5 +1,6 @@
 .input {
 	display: inline-grid;
+	position: relative;
 }
 
 .input:not(:global(.thaw-input--disabled)) {
@@ -55,9 +56,11 @@
 }
 
 .money_input {
-	display: inline-flex;
+	display: inline-grid;
+	grid-auto-flow: column;
+	grid-template-columns: 1fr auto;
 	width: 100%;
-	padding: 2px 5px 2px 10px;
+	padding: 2px 5px 2px 1.5rem;
 	transition: all 0.3s;
 }
 
@@ -67,6 +70,14 @@
 }
 
 .money_btns {
+	display: grid;
+	grid-auto-flow: column;
+	align-content: center;
+	align-self: center;
+	gap: 3px;
+}
+
+.money_btn {
 	appearance: none;
 	border: none;
 	padding: 0;
@@ -80,29 +91,32 @@
 	align-self: center;
 }
 
-.money_btns:hover {
+.money_btn:hover {
 	color: var(--action);
 }
 
-.money_btns svg {
+.money_btn svg {
 	transition: all 0.3s;
 }
 
-.money_btns:hover:not(:disabled) svg {
+.money_btn:hover:not(:disabled) svg {
 	fill-opacity: 1;
 }
 
-.money_btns:disabled {
+.money_btn:disabled {
 	color: var(--disabled-fg);
 }
 
-.money_btns svg {
+.money_btn svg {
 	display: inline-block;
 }
 
 .money_symbol {
+	position: absolute;
 	display: inline-grid;
-	height: 100%;
+	top: 0;
+	bottom: 0;
+	left: 0.75rem;
 	align-items: center;
 	user-select: none;
 }
