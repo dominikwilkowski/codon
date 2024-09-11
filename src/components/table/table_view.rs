@@ -1,3 +1,4 @@
+use convert_case::{Case, Casing};
 use leptos::*;
 
 stylance::import_style!(css, "table.module.css");
@@ -23,9 +24,16 @@ pub fn TableHead(
 			} else {
 				"asc"
 			};
+
+			let name = match name.as_str() {
+				"cost_in_cent" => &String::from("Cost"),
+				_ => name,
+			};
+
 			view! {
-				<th>
-					{name} <form action=action method="get">
+				<th class=name>
+					{name.to_case(Case::Title)}
+					<form action=action method="get">
 						<input type="hidden" name="field" value=name />
 						<input type="hidden" name="order" value=order />
 						{children()}
