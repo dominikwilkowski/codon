@@ -74,7 +74,7 @@ pub fn Row(
 										id: equipment.id,
 									});
 							}
-						}>"Delete"</button>
+						}>Delete</button>
 					</td>
 				</tr>
 			}

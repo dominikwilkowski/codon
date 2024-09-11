@@ -119,7 +119,8 @@ pub fn Pages(
 	row_count: i64,
 	hidden_fields: Vec<(String, String)>,
 ) -> impl IntoView {
-	let pages = row_count / query_ipp.get() as i64;
+	let ipp = query_ipp.get() as i64;
+	let pages = (row_count + ipp - 1) / ipp;
 
 	view! {
 		<div class=css::pages>
