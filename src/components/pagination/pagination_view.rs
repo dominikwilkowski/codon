@@ -104,7 +104,9 @@ pub fn ItemsPerPage(
 			<button type="submit" class=css::btn>
 				Save
 			</button>
-			<span class=css::ipp_stats>{from}- {to}of {row_count}items</span>
+			<span class=css::ipp_stats>
+				{from}" - "{to}" of "{row_count}" items"
+			</span>
 		</form>
 	}
 }
