@@ -3,9 +3,7 @@ use thaw::{Button as ThawButton, ButtonVariant};
 
 stylance::import_style!(css, "button.module.css");
 
-pub use thaw::use_message;
-pub use thaw::MessageOptions;
-pub use thaw::MessageVariant;
+pub use thaw::{use_message, MessageOptions, MessageVariant};
 
 #[component]
 pub fn Button(

@@ -250,7 +250,7 @@ pub fn Ds() -> impl IntoView {
 			</div>
 
 			<div class=css::stack_inline>
-				<Checkbox>Singel Checkbox</Checkbox>
+				<Checkbox>Single Checkbox</Checkbox>
 			</div>
 		</section>
 
@@ -264,7 +264,7 @@ pub fn Ds() -> impl IntoView {
 			</div>
 
 			<div class=css::stack_inline>
-				<Radio>Singel Radio</Radio>
+				<Radio>Single Radio</Radio>
 			</div>
 		</section>
 
