@@ -1,0 +1,9 @@
+.delete {
+	appearance: none;
+	border: none;
+	background: transparent;
+	padding: 0;
+	box-shadow: none;
+	color: var(--action);
+	text-decoration: underline;
+}

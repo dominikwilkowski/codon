@@ -91,7 +91,7 @@ pub fn Equipment() -> impl IntoView {
 											hidden_fields=hidden_fields.clone()
 										/>
 										<div class=css::table_wrapper>
-											<table>
+											<table class=css::table>
 												<thead>
 													<tr>
 														<TableHead
@@ -107,7 +107,6 @@ pub fn Equipment() -> impl IntoView {
 																value=query_ipp.get()
 															/>
 														</TableHead>
-														<th colspan="3"></th>
 													</tr>
 												</thead>
 												<tbody>

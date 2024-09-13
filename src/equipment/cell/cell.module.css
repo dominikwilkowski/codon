@@ -1,5 +1,14 @@
+.equipment_type {
+	display: grid;
+	justify-items: center;
+	text-align: center;
+	gap: 0.5rem;
+	font-size: 60%;
+}
+
 .qrcode {
 	max-width: 5rem;
+	display: inline-block;
 }
 
 .working,
@@ -21,19 +30,19 @@
 }
 
 .working {
-	background-color: #edf7f2;
+	background-color: #161e1a;
 	color: #18a058;
-	border: 1px solid #c5e7d5;
+	border: 1px solid #18a058;
 }
 .needscleaning {
-	background-color: #fef7ed;
+	background-color: #1e1c16;
 	color: #f0a020;
-	border: 1px solid #fae0b5;
+	border: 1px solid #f0a020;
 }
 .preparation {
-	background-color: #ccc;
-	color: #000;
-	border: 1px solid #ccc;
+	background-color: #1f2122;
+	color: #ccc;
+	border: 1px dashed #ccc;
 }
 .sterilization {
 	background-color: #191622;
@@ -41,12 +50,12 @@
 	border: 1px solid var(--secondary);
 }
 .broken {
-	background-color: #fbeef1;
+	background-color: #221a1a;
 	color: #d03050;
-	border: 1px solid #f3cbd3;
+	border: 1px solid #d03050;
 }
 .outofcommission {
-	background-color: #ccc;
-	color: #fff;
+	background-color: #1f2122;
+	color: #ccc;
 	border: 1px solid #ccc;
 }

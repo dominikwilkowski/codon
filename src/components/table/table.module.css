@@ -1,0 +1,34 @@
+.th {
+	padding: 1.25rem;
+	background: #ffffff15;
+}
+
+.th:global(.notes) {
+	min-width: 30rem;
+}
+
+.th:global(.location) {
+	min-width: 15rem;
+}
+
+.thead {
+	display: flex;
+	justify-content: center;
+}
+
+.sort_form {
+	display: inline-block;
+}
+
+.sort_btn {
+	appearance: none;
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	padding: 0 0 0 0.5rem;
+	color: var(--text);
+}
+
+.sort_btn svg {
+	height: 1.25rem;
+}

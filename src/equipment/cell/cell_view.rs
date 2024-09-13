@@ -14,27 +14,35 @@ pub trait EquipmentCellView {
 
 impl EquipmentCellView for i32 {
 	fn view(self) -> impl IntoView {
-		view! { <span>ID: {format!("{self}")}</span> }
+		view! { <span>{format!("{self}")}</span> }
 	}
 }
 
 impl EquipmentCellView for EquipmentType {
 	fn view(self) -> impl IntoView {
-		match self {
-			EquipmentType::Flask => view! {
-				<Flask />
-				" Fask"
-			},
-			EquipmentType::Vessel => view! {
-				<Vessel />
-				" Vessel"
-			},
-			EquipmentType::IncubationCabinet => {
-				view! {
-					<IncubationCabinet />
-					" Incubation Cabinet"
-				}
-			},
+		view! {
+			<div class=css::equipment_type>
+				{match self {
+					EquipmentType::Flask => {
+						view! {
+							<Flask />
+							<span>" Fask"</span>
+						}
+					}
+					EquipmentType::Vessel => {
+						view! {
+							<Vessel />
+							<span>" Vessel"</span>
+						}
+					}
+					EquipmentType::IncubationCabinet => {
+						view! {
+							<IncubationCabinet />
+							<span>" Incubation Cabinet"</span>
+						}
+					}
+				}}
+			</div>
 		}
 	}
 }
@@ -106,9 +114,7 @@ impl EquipmentCellView for Option<String> {
 impl EquipmentCellView for Option<Cost> {
 	fn view(self) -> impl IntoView {
 		match self {
-			Some(value) => {
-				view! { <div>Cost: {format!("${value}")}</div> }.into_view()
-			},
+			Some(value) => view! { <span>{format!("${value}")}</span> }.into_view(),
 			None => view! {}.into_view(),
 		}
 	}
@@ -139,7 +145,7 @@ impl EquipmentCellView for Option<Notes> {
 
 #[component]
 fn StringCell(item: String) -> impl IntoView {
-	view! { <div>String: {item}</div> }
+	view! { <span>{item}</span> }
 }
 
 impl EquipmentCellView for DateTime<Utc> {
@@ -161,7 +167,7 @@ impl EquipmentCellView for Option<DateTime<Utc>> {
 fn DateCell(item: Option<DateTime<Utc>>) -> impl IntoView {
 	match item {
 		Some(d) => {
-			view! { <div>Date: {d.format("%Y-%m-%d").to_string()}</div> }.into_view()
+			view! { <span>{d.format("%d %b %Y").to_string()}</span> }.into_view()
 		},
 		None => view! {}.into_view(),
 	}

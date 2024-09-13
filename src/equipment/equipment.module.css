@@ -2,3 +2,14 @@
 	max-width: 100%;
 	overflow: auto;
 }
+
+.table {
+}
+
+.table tr:nth-child(even) {
+	background: #ffffff05;
+}
+
+.table td {
+	padding: 0.5rem 1rem;
+}

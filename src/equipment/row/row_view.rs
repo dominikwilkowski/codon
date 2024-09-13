@@ -61,20 +61,25 @@ pub fn Row(
 						<A href=format!("edit/{}", equipment.id)>Edit</A>
 					</td>
 					<td>
-						<button on:click=move |_| {
-							if web_sys::window()
-								.unwrap()
-								.confirm_with_message(
-									"Are you sure you want to delete this item?",
-								)
-								.unwrap_or(false)
-							{
-								delete_equipment
-									.dispatch(DeleteEquipment {
-										id: equipment.id,
-									});
+						<button
+							class=css::delete
+							on:click=move |_| {
+								if web_sys::window()
+									.unwrap()
+									.confirm_with_message(
+										"Are you sure you want to delete this item?",
+									)
+									.unwrap_or(false)
+								{
+									delete_equipment
+										.dispatch(DeleteEquipment {
+											id: equipment.id,
+										});
+								}
 							}
-						}>Delete</button>
+						>
+							Delete
+						</button>
 					</td>
 				</tr>
 			}
