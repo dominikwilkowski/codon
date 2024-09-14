@@ -19,6 +19,6 @@
 	grid-template-columns: auto 1fr auto;
 	align-items: center;
 	gap: 0.5rem;
-	margin: 1.5rem 0;
+	margin: 1rem 0;
 	font-size: 75%;
 }

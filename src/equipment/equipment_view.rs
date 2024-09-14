@@ -96,6 +96,13 @@ pub fn Equipment() -> impl IntoView {
 										(String::from("order"), query_order.get()),
 									];
 									view! {
+										<Pagination
+											action="/equipment"
+											query_page
+											query_ipp
+											row_count
+											hidden_fields=hidden_fields.clone()
+										/>
 										<div class=css::filter>
 											"Filter: "
 											<MultiSelect
@@ -122,13 +129,6 @@ pub fn Equipment() -> impl IntoView {
 												Select all
 											</Button>
 										</div>
-										<Pagination
-											action="/equipment"
-											query_page
-											query_ipp
-											row_count
-											hidden_fields=hidden_fields.clone()
-										/>
 										<div class=css::table_wrapper>
 											<table class=css::table>
 												<thead>

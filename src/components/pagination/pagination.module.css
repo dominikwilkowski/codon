@@ -1,7 +1,7 @@
 .pagination {
 	display: grid;
 	grid-template-columns: 1fr;
-	margin: 0.5rem 0;
+	margin: 1rem 0;
 	font-size: 75%;
 	gap: 0.5rem;
 	justify-items: center;
