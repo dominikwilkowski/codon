@@ -6,7 +6,9 @@ use crate::{
 		input::{Input, MoneyInput, TextArea},
 		pagination::Pagination,
 		radio::{Radio, RadioGroup, RadioItem},
-		select::{Select, SelectOption},
+		select::{
+			MultiSelect, MultiSelectOption, Select, SelectOption, TagVariant,
+		},
 		switch::Switch,
 	},
 	icons::{
@@ -134,7 +136,9 @@ pub fn Ds() -> impl IntoView {
 				<Button disabled=create_rw_signal(true)>Disabled Button</Button>
 				<Button loading=create_rw_signal(true)>Button</Button>
 			</div>
+		</section>
 
+		<section class=css::section>
 			<h2>Buttons outlined</h2>
 			<div class=css::stack_inline>
 				<Button outlined=true>Button</Button>
@@ -216,6 +220,27 @@ pub fn Ds() -> impl IntoView {
 					<option value="a">Option A</option>
 					<option value="b">Option B</option>
 				</select>
+			</div>
+		</section>
+
+		<section class=css::section>
+			<h2>Multi Select</h2>
+
+			<div class=css::stack_inline>
+				<MultiSelect
+					value=create_rw_signal(vec![])
+					options=create_rw_signal(
+						vec![
+							MultiSelectOption::new("A", String::from("a")),
+							MultiSelectOption::new("B", String::from("b"))
+								.with_variant(TagVariant::Success),
+							MultiSelectOption::new("C", String::from("c"))
+								.with_variant(TagVariant::Warning),
+							MultiSelectOption::new("D", String::from("d"))
+								.with_variant(TagVariant::Error),
+						],
+					)
+				/>
 			</div>
 		</section>
 

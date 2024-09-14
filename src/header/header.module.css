@@ -36,8 +36,14 @@ a.logo_wrapper:hover :global(.logo-codon) {
 }
 
 .logo_wrapper :global(.logo-codon) {
-	height: 12rem;
+	height: 4rem;
 	transition: color ease 30s;
+}
+
+@media (min-width: 60rem) {
+	.logo_wrapper :global(.logo-codon) {
+		height: 8rem;
+	}
 }
 
 .logo_word {

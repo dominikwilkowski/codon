@@ -11,7 +11,6 @@ pub mod components {
 	pub mod radio;
 	pub mod select;
 	pub mod switch;
-	pub mod table;
 }
 pub mod db;
 pub mod ds;

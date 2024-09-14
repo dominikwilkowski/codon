@@ -145,21 +145,24 @@ pub struct EquipmentData {
 }
 
 impl EquipmentData {
-	pub fn get_fields() -> Vec<String> {
+	pub fn get_fields() -> Vec<(String, String)> {
 		vec![
-			String::from("id"),
-			String::from("equipment_type"),
-			String::from("qrcode"),
-			String::from("create_date"),
-			String::from("name"),
-			String::from("status"),
-			String::from("manufacturer"),
-			String::from("purchase_date"),
-			String::from("vendor"),
-			String::from("cost_in_cent"),
-			String::from("warranty_expiration_date"),
-			String::from("location"),
-			String::from("notes"),
+			(String::from("id"), String::from("ID")),
+			(String::from("equipment_type"), String::from("Type")),
+			(String::from("qrcode"), String::from("QRCode")),
+			(String::from("create_date"), String::from("Create")),
+			(String::from("name"), String::from("Name")),
+			(String::from("status"), String::from("Status")),
+			(String::from("manufacturer"), String::from("Manufacturer")),
+			(String::from("purchase_date"), String::from("Purchased")),
+			(String::from("vendor"), String::from("Vendor")),
+			(String::from("cost_in_cent"), String::from("Cost")),
+			(
+				String::from("warranty_expiration_date"),
+				String::from("Warranty Expiration Date"),
+			),
+			(String::from("location"), String::from("Location")),
+			(String::from("notes"), String::from("Notes")),
 		]
 	}
 }

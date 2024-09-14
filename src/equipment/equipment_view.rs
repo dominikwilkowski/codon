@@ -1,6 +1,10 @@
 use crate::{
-	components::{button::Button, pagination::Pagination, table::TableHead},
-	equipment::{EquipmentData, Row},
+	components::{
+		button::Button,
+		pagination::Pagination,
+		select::{MultiSelect, MultiSelectOption},
+	},
+	equipment::{EquipmentData, Row, THead},
 	error_template::ErrorTemplate,
 	icons::EquipmentLogo,
 };
@@ -44,6 +48,15 @@ pub fn Equipment() -> impl IntoView {
 		}
 	});
 
+	let field_filter = create_rw_signal(vec![
+		String::from("id"),
+		String::from("equipment_type"),
+		String::from("name"),
+		String::from("status"),
+		String::from("location"),
+		String::from("notes"),
+	]);
+
 	let equipment_data = create_resource(
 		move || (delete_equipment.version().get()),
 		move |_| {
@@ -83,8 +96,31 @@ pub fn Equipment() -> impl IntoView {
 										(String::from("order"), query_order.get()),
 									];
 									view! {
-										<div>
-											<Button>Filter</Button>
+										<div class=css::filter>
+											"Filter: "
+											<MultiSelect
+												value=field_filter
+												options=create_rw_signal(
+													EquipmentData::get_fields()
+														.into_iter()
+														.map(|(id, name)| MultiSelectOption::new(name, id))
+														.collect::<Vec<MultiSelectOption<String>>>(),
+												)
+											/>
+											<Button
+												outlined=true
+												on_click=move |_| {
+													field_filter
+														.set(
+															EquipmentData::get_fields()
+																.into_iter()
+																.map(|(id, _)| id)
+																.collect::<Vec<String>>(),
+														);
+												}
+											>
+												Select all
+											</Button>
 										</div>
 										<Pagination
 											action="/equipment"
@@ -97,11 +133,12 @@ pub fn Equipment() -> impl IntoView {
 											<table class=css::table>
 												<thead>
 													<tr>
-														<TableHead
+														<THead
 															action="/equipment"
 															items=EquipmentData::get_fields()
 															query_field
 															query_order
+															field_filter
 														>
 															<input type="hidden" name="page" value=query_page.get() />
 															<input
@@ -109,7 +146,7 @@ pub fn Equipment() -> impl IntoView {
 																name="items_per_page"
 																value=query_ipp.get()
 															/>
-														</TableHead>
+														</THead>
 													</tr>
 												</thead>
 												<tbody>
@@ -122,7 +159,8 @@ pub fn Equipment() -> impl IntoView {
 														}
 															.into_view()
 													} else {
-														view! { <Row equipment delete_equipment /> }.into_view()
+														view! { <Row equipment delete_equipment field_filter /> }
+															.into_view()
 													}}
 												</tbody>
 											</table>

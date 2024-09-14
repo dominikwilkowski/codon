@@ -23,3 +23,6 @@ pub use row::row_view::*;
 
 pub mod schema;
 pub use schema::*;
+
+pub mod thead;
+pub use thead::*;

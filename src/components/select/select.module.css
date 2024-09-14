@@ -1,0 +1,4 @@
+:global(.thaw-tag__close):hover {
+	color: var(--action);
+	background: transparent;
+}
