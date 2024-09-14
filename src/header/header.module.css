@@ -1,0 +1,48 @@
+.header {
+	display: grid;
+	grid-template-columns: 12rem auto;
+	align-items: baseline;
+	gap: 1rem;
+	padding: 1rem;
+	margin-bottom: 3rem;
+}
+
+@media (min-width: 60rem) {
+	.header {
+		padding: 2rem;
+		margin-bottom: 5rem;
+	}
+}
+
+a.logo_wrapper {
+	display: inline-grid;
+	color: var(--text);
+	text-decoration: none;
+	justify-items: center;
+}
+
+a.logo_wrapper:hover :global(.logo-codon) {
+	color: var(--action);
+	animation: hue 80s infinite linear;
+}
+
+@keyframes hue {
+	from {
+		filter: hue-rotate(0);
+	}
+	to {
+		filter: hue-rotate(-360deg);
+	}
+}
+
+.logo_wrapper :global(.logo-codon) {
+	height: 12rem;
+	transition: color ease 30s;
+}
+
+.logo_word {
+	font-size: 3rem;
+	text-transform: lowercase;
+	font-weight: 140;
+	margin-top: -10px;
+}

@@ -13,6 +13,9 @@ pub use flask_view::*;
 pub mod incubation_cabinet_view;
 pub use incubation_cabinet_view::*;
 
+pub mod logo_view;
+pub use logo_view::*;
+
 pub mod people_view;
 pub use people_view::*;
 

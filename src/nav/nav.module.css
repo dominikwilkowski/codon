@@ -1,12 +1,7 @@
 .nav {
-	text-align: center;
-	padding: 1rem 1.5rem;
-	display: block;
-	max-width: max-content;
-	margin: 0 auto;
-	border-radius: var(--border-radius-md);
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
+	display: inline-block;
+	justify-self: end;
+	align-self: end;
 }
 
 .nav a[aria-current] {

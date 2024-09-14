@@ -1,5 +1,5 @@
 use crate::{
-	components::{pagination::Pagination, table::TableHead},
+	components::{button::Button, pagination::Pagination, table::TableHead},
 	equipment::{EquipmentData, Row},
 	error_template::ErrorTemplate,
 	icons::EquipmentLogo,
@@ -83,6 +83,9 @@ pub fn Equipment() -> impl IntoView {
 										(String::from("order"), query_order.get()),
 									];
 									view! {
+										<div>
+											<Button>Filter</Button>
+										</div>
 										<Pagination
 											action="/equipment"
 											query_page

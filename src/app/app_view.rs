@@ -2,8 +2,8 @@ use crate::{
 	ds::Ds,
 	equipment::{Equipment, EquipmentAdd, EquipmentDetail, EquipmentEdit},
 	error_template::{AppError, ErrorTemplate},
+	header::Header,
 	home::Home,
-	nav::Nav,
 	samples::Samples,
 };
 
@@ -76,7 +76,7 @@ pub fn App() -> impl IntoView {
 						view! { <ErrorTemplate outside_errors /> }.into_view()
 					}
 				>
-					<Nav />
+					<Header />
 					<main class=format!("{} frame", css::main)>
 						<Routes>
 							<Route path="" view=Home />
