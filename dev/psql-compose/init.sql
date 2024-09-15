@@ -14,22 +14,23 @@ INSERT INTO samples (sample_type, analyst) VALUES ('sample_type1', 'Analyst One'
 CREATE TABLE people (
 	id SERIAL PRIMARY KEY,
 	employee_id TEXT UNIQUE,
+	status TEXT NOT NULL,
 	first_name TEXT,
 	last_name TEXT,
 	preferred_name TEXT NOT NULL,
-	email TEXT UNIQUE,
+	email TEXT UNIQUE NOT NULL,
 	phone_number TEXT,
-	notes TEXT,
 	department TEXT,
 	role TEXT,
 	hire_date TIMESTAMPTZ,
-	status TEXT,
 	emergency_contact TEXT,
 	certifications TEXT,
 	specializations TEXT,
-	picture TEXT
+	picture TEXT,
+	bio TEXT,
+	create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
-INSERT INTO people (employee_id, first_name, last_name, preferred_name, email, phone_number, notes, department, role, hire_date, status, emergency_contact, certifications, specializations, picture) VALUES
+INSERT INTO people (employee_id, first_name, last_name, preferred_name, email, phone_number, bio, department, role, hire_date, status, emergency_contact, certifications, specializations, picture) VALUES
 ('BIO10-0001', 'Gene', 'Splicer', 'Gene', 'gene.splicer@biolab.com', '555-0100', 'Always on the cutting edge.', 'Genetics', 'Senior Scientist', '2020-01-15', 'Active', 'Dr. Helix (555-1111)', 'PhD in Genetics', 'DNA recombination', 'gene_splicer.jpg'),
 ('BIO10-0002', 'Elle', 'Ment', 'Elle', 'elle.ment@biolab.com', '555-0101', 'Her experiments always have great chemistry.', 'Chemistry', 'Lab Assistant', '2021-06-01', 'Active', 'Sam Ment (555-2222)', 'BSc in Chemistry', 'Chemical analysis', 'elle_ment.jpg'),
 ('BIO10-0003', 'Adam', 'Zyme', 'Adam', 'adam.zyme@biolab.com', '555-0102', 'Enzymes are his catalyst.', 'Biochemistry', 'Research Scientist', '2019-09-10', 'Active', 'Eve Zyme (555-3333)', 'PhD in Biochemistry', 'Enzymology', 'adam_zyme.jpg'),

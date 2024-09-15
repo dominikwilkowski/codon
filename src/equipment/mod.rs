@@ -24,5 +24,14 @@ pub use row::row_view::*;
 pub mod schema;
 pub use schema::*;
 
+pub mod schema_actions;
+pub use schema_actions::*;
+
+pub mod schema_notes;
+pub use schema_notes::*;
+
+pub mod schema_people;
+pub use schema_people::*;
+
 pub mod thead;
 pub use thead::*;
