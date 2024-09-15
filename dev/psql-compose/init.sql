@@ -49,6 +49,8 @@ INSERT INTO people (employee_id, first_name, last_name, preferred_name, email, p
 
 -- EQUIPMENT --
 
+-- equipment_type = 'Flask', 'Vessel', 'IncubationCabinet'
+-- status = 'Working', 'NeedsCleaning', 'Preparation', 'Sterilization', 'Broken', 'OutOfCommission'
 CREATE TABLE equipment (
 	id SERIAL PRIMARY KEY,
 	equipment_type TEXT NOT NULL,
@@ -80,7 +82,6 @@ INSERT INTO equipment (equipment_type, qrcode, create_date, name, status, manufa
 
 CREATE TABLE equipment_notes (
 	id SERIAL PRIMARY KEY,
-	note_type TEXT NOT NULL,
 	equipment INT NOT NULL REFERENCES equipment(id) ON DELETE CASCADE,
 	create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	person INT NOT NULL REFERENCES people(id),
@@ -98,55 +99,92 @@ CREATE TABLE equipment_notes (
 );
 CREATE INDEX equipment_notes_equipment ON equipment_notes (equipment);
 CREATE INDEX equipment_notes_person ON equipment_notes (person);
-INSERT INTO equipment_notes (note_type, equipment, create_date, person, notes) VALUES
-('inspection', 1, '2023-09-15 10:30:00', 2, 'The thing still refuses to make coffee.'),
-('cleaning', 1, '2023-09-20 14:45:00', 3, 'Found a sandwich from 2019 inside the item.'),
-('notes', 1, '2023-09-25 09:15:00', 1, 'Do not press the red button unless you enjoy alarms.'),
-('notes', 1, '2024-01-20 14:15:00', 2, 'Equipment refuses to operate until it gets a motivational speech.'),
-('cleaning', 3, '2023-09-16 11:20:00', 4, 'Dust levels exceeded recommended safe limits—again.'),
-('notes', 3, '2023-09-21 08:50:00', 2, 'Do not challenge the machine to a staring contest—you will lose.'),
-('notes', 3, '2023-09-26 15:30:00', 5, 'The humming sound is normal. The screaming is not.'),
-('notes', 4, '2023-09-17 13:05:00', 1, 'If this equipment asks for a raise, politely decline.'),
-('inspection', 4, '2023-09-22 16:40:00', 3, 'All systems nominal, except for the blinking light of mystery.'),
-('cleaning', 4, '2023-09-27 12:25:00', 4, 'Removed what seemed to be a nest of paperclips.'),
-('inspection', 6, '2023-09-18 09:55:00', 2, 'Machine insists it is not broken, just differently functional.'),
-('notes', 6, '2023-09-23 14:10:00', 5, 'The machine may or may not grant wishes when turned off and on again.'),
-('cleaning', 6, '2023-09-28 11:00:00', 1, 'Managed to remove the sticker saying "Kick Me".'),
-('notes', 7, '2023-09-19 10:45:00', 3, 'Do not taunt the equipment. It seems to understand sarcasm.'),
-('inspection', 7, '2023-09-24 15:15:00', 2, 'Found no issues except a mild attitude problem.'),
-('cleaning', 7, '2023-08-25 09:00:00', 2, 'Equipment demands to be addressed as "Your Highness."'),
-('cleaning', 7, '2023-09-29 08:30:00', 4, 'Machine is now 90% less sticky.'),
-('inspection', 8, '2023-09-20 13:35:00', 5, 'Confirmed the equipment does not appreciate knock-knock jokes.'),
-('notes', 8, '2023-09-25 10:20:00', 2, 'It believes we sholuld use the Imperial system. Expect slow performance.'),
-('notes', 8, '2023-09-30 16:00:00', 1, 'If the equipment starts glowing, evacuate the building.'),
-('notes', 8, '2023-10-04 8:22:00', 1, 'Do not feed the equipment after midnight. You know the rules.'),
-('notes', 9, '2023-09-21 11:50:00', 3, 'The self-destruct sequence is NOT a feature to be tested.'),
-('inspection', 9, '2023-09-26 14:25:00', 4, 'Found extra parts lying around, but everything seems to work.'),
-('cleaning', 9, '2023-10-01 09:10:00', 5, 'Removed evidence of late-night snack sessions.'),
-('inspection', 10, '2023-09-22 12:05:00', 1, 'The machine is in denial about its age.'),
-('notes', 10, '2023-09-27 15:50:00', 2, 'If the equipment starts smoking, its not on fire—its just stressed.'),
-('notes', 10, '2023-10-02 11:30:00', 3, 'It responds well to compliments.'),
-('notes', 11, '2023-09-23 13:20:00', 4, 'The equipment seems to be communicating in Morse code via blinking lights.'),
-('inspection', 11, '2023-09-28 16:15:00', 5, 'Discovered the source of the beeping—it was just hungry.'),
-('cleaning', 11, '2023-10-03 10:40:00', 1, 'Polished to a shine; can now see your reflection. Need a shave!'),
-('inspection', 12, '2023-09-24 14:00:00', 2, 'Machine believes its a toaster. It is not a toaster.'),
-('notes', 12, '2023-09-29 17:35:00', 3, 'Do not attempt to fix the machine with a hammer. Again.'),
-('cleaning', 12, '2023-10-04 12:55:00', 4, 'Removed traces of glitter bomb. The prank war continues.'),
-('notes', 12, '2023-10-05 09:05:00', 5, 'If found speaking to the equipment, please consult HR. Again'),
-('notes', 12, '2023-10-06 09:03:00', 5, 'Do not mention obsolescence; its a sensitive topic.');
+INSERT INTO equipment_notes (equipment, person, notes) VALUES
+(1, 2, 'The thing still refuses to make coffee.'),
+(1, 3, 'Found a sandwich from 2019 inside the item.'),
+(1, 1, 'Do not press the red button unless you enjoy alarms.'),
+(1, 2, 'Equipment refuses to operate until it gets a motivational speech.'),
+(3, 4, 'Dust levels exceeded recommended safe limits—again.'),
+(3, 2, 'Do not challenge the machine to a staring contest—you will lose.'),
+(3, 5, 'The humming sound is normal. The screaming is not.'),
+(4, 1, 'If this equipment asks for a raise, politely decline.'),
+(4, 3, 'All systems nominal, except for the blinking light of mystery.'),
+(4, 4, 'Removed what seemed to be a nest of paperclips.'),
+(6, 2, 'Machine insists it is not broken, just differently functional.'),
+(6, 5, 'The machine may or may not grant wishes when turned off and on again.'),
+(6, 1, 'Managed to remove the sticker saying "Kick Me".'),
+(7, 3, 'Do not taunt the equipment. It seems to understand sarcasm.'),
+(7, 2, 'Found no issues except a mild attitude problem.'),
+(7, 2, 'Equipment demands to be addressed as "Your Highness."'),
+(7, 4, 'Machine is now 90% less sticky.'),
+(8, 5, 'Confirmed the equipment does not appreciate knock-knock jokes.'),
+(8, 2, 'It believes we sholuld use the Imperial system. Expect slow performance.'),
+(8, 1, 'If the equipment starts glowing, evacuate the building.'),
+(8, 1, 'Do not feed the equipment after midnight. You know the rules.'),
+(9, 3, 'The self-destruct sequence is NOT a feature to be tested.'),
+(9, 4, 'Found extra parts lying around, but everything seems to work.'),
+(9, 5, 'Removed evidence of late-night snack sessions.'),
+(10, 1, 'The machine is in denial about its age.'),
+(10, 2, 'If the equipment starts smoking, its not on fire—its just stressed.'),
+(10, 3, 'It responds well to compliments.'),
+(11, 4, 'The equipment seems to be communicating in Morse code via blinking lights.'),
+(11, 5, 'Discovered the source of the beeping—it was just hungry.'),
+(11, 1, 'Polished to a shine; can now see your reflection. Need a shave!'),
+(12, 2, 'Machine believes its a toaster. It is not a toaster.'),
+(12, 3, 'Do not attempt to fix the machine with a hammer. Again.'),
+(12, 4, 'Removed traces of glitter bomb. The prank war continues.'),
+(12, 5, 'If found speaking to the equipment, please consult HR. Again'),
+(12, 5, 'Do not mention obsolescence; its a sensitive topic.');
 
--- CREATE TABLE equipment_actions (
--- 	id SERIAL PRIMARY KEY,
--- 	action_type TEXT NOT NULL,
--- 	equipment INT NOT NULL REFERENCES equipment(id) ON DELETE CASCADE,
--- 	create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
--- 	person INT NOT NULL REFERENCES people(id),
--- 	notes TEXT
--- );
--- CREATE INDEX equipment_actions_equipment ON equipment_actions (equipment);
--- CREATE INDEX equipment_actions_person ON equipment_actions (person);
--- INSERT INTO equipment_notes (action_type, equipment, create_date, person, notes) VALUES
--- ();
+-- action_type = 'cleaning', 'sterilization', 'preparation', 'edit'
+CREATE TABLE equipment_actions (
+	id SERIAL PRIMARY KEY,
+	action_type TEXT NOT NULL,
+	equipment INT NOT NULL REFERENCES equipment(id) ON DELETE CASCADE,
+	create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	person INT NOT NULL REFERENCES people(id),
+	notes TEXT,
+	field TEXT,
+	old_value TEXT,
+	new_value TEXT,
+	media1 TEXT,
+	media2 TEXT,
+	media3 TEXT,
+	media4 TEXT,
+	media5 TEXT,
+	media6 TEXT,
+	media7 TEXT,
+	media8 TEXT,
+	media9 TEXT,
+	media10 TEXT
+);
+CREATE INDEX equipment_actions_equipment ON equipment_actions (equipment);
+CREATE INDEX equipment_actions_person ON equipment_actions (person);
+INSERT INTO equipment_actions (action_type, equipment, person, notes, field, old_value, new_value) VALUES
+('cleaning', 1, 3, 'Found a tiny civilization of dust bunnies; negotiations are ongoing.', '', '', ''),
+('edit', 1, 5, 'Status changed to "Sentient"; it passed the Turing test.', 'status', 'working', 'broken'),
+('edit', 2, 8, 'Moved to the "Noisy Equipment" section; it wouldnt stop humming.', 'location', 'Under desk', 'Shelve 12, Cell 12, Row E'),
+('edit', 2, 2, 'Updated manual to include "Do not feed after midnight."', 'notes', '', 'No heat for this one'),
+('sterilization', 3, 6, 'Sterilized after it started growing its own cultures.', '', '', ''),
+('cleaning', 3, 9, 'Removed mysterious sticky substance; taste test inconclusive.', '', '', ''),
+('edit', 4, 1, 'Status changed to "Possessed"; it started making eerie sounds.', 'status', 'NeedsCleaning', 'OutOfComission'),
+('edit', 4, 14, 'Edited settings to disable the "Self-Destruct" feature.', 'notes', 'TODO', ''),
+('preparation', 5, 7, 'Prepared for the annual "Equipment Talent Show".', '', '', ''),
+('sterilization', 5, 12, 'Sterilized after it didnt want to join the bacteria union.', '', '', ''),
+('edit', 6, 4, 'Moved to storage; it needs some "alone time".', 'location', 'Shelf Top Floor', 'Basement'),
+('cleaning', 7, 11, 'Cleaned the "Error 404: Cleanliness Not Found".', '', '', ''),
+('edit', 7, 2, 'Status changed to "Mysteriously Wet"; source of moisture unknown.', 'status', 'NeedsCleaning', 'Working'),
+('edit', 7, 13, 'Updated firmware to version 1.21 Flask.', 'notes', 'Reminder: to clean this', ''),
+('preparation', 8, 5, 'Prepared for interdimensional travel; safety not guaranteed.', '', '', ''),
+('sterilization', 9, 10, 'Sterilized after an incident with a radioactive burrito.', '', '', ''),
+('edit', 9, 3, 'Adjusted settings to "Do Not Disturb"; its meditating.', 'status', 'Working', 'NeedsCleaning'),
+('edit', 10, 6, 'Relocated to Lab 42; because its the answer to everything.', 'location', 'Shelf 41', 'Shelf 42'),
+('edit', 11, 8, 'Status changed to "Invisible"; cant find it anywhere.', 'location', 'nowhere', 'Shelf 7'),
+('cleaning', 11, 1, 'Attempted to clean; ended up in a philosophical debate.', '', '', ''),
+('edit', 12, 14, 'Edited user manual to include "Beware of the Leopard".', 'notes', 'Contains Leopard', 'Contains Leptospira'),
+('preparation', 12, 7, 'Prepared for upgrade; hoping it doesnt gain self-awareness.', '', '', ''),
+('cleaning', 12, 9, 'Cleaned glitter residue; who had a party without inviting me?', '', '', '');
+
 
 
 -- CULTURE
