@@ -85,6 +85,7 @@ CREATE TABLE equipment_notes (
 	equipment INT NOT NULL REFERENCES equipment(id) ON DELETE CASCADE,
 	create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	person INT NOT NULL REFERENCES people(id),
+	notes TEXT NOT NULL,
 	media1 TEXT,
 	media2 TEXT,
 	media3 TEXT,
@@ -94,8 +95,7 @@ CREATE TABLE equipment_notes (
 	media7 TEXT,
 	media8 TEXT,
 	media9 TEXT,
-	media10 TEXT,
-	notes TEXT
+	media10 TEXT
 );
 CREATE INDEX equipment_notes_equipment ON equipment_notes (equipment);
 CREATE INDEX equipment_notes_person ON equipment_notes (person);
