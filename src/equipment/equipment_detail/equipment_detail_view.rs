@@ -1,5 +1,8 @@
 use crate::{
-	equipment::{EquipmentCell, EquipmentData},
+	equipment::{
+		/*EquipmentActionsData,*/ EquipmentCell, EquipmentData,
+		EquipmentNotesData,
+	},
 	error_template::ErrorTemplate,
 	icons::EquipmentLogo,
 };
@@ -30,6 +33,12 @@ pub fn EquipmentDetail() -> impl IntoView {
 		move |id| get_equipment_data_by_id(id),
 	);
 
+	#[expect(clippy::redundant_closure)]
+	let notes_data = create_resource(
+		move || params.with(|p| p.get("id").cloned().unwrap_or_default()),
+		move |id| get_notes_for_equipment(id),
+	);
+
 	view! {
 		<h1>
 			<EquipmentLogo />
@@ -44,10 +53,10 @@ pub fn EquipmentDetail() -> impl IntoView {
 						move || {
 							if equipment_data.get().is_some() {
 								match equipment_data.get().unwrap() {
-									Err(e) => {
-										go_to_listing.set(true);
+									Err(error) => {
 										view! {
-											<pre class="error">Server Error: {e.to_string()}</pre>
+											go_to_listing.set(true);
+											<pre class="error">Server Error: {error.to_string()}</pre>
 										}
 											.into_view()
 									}
@@ -136,7 +145,40 @@ pub fn EquipmentDetail() -> impl IntoView {
 							}
 						}
 					};
-					view! { <div>{equipment}</div> }
+					let notes = {
+						move || {
+							if notes_data.get().is_some() {
+								match notes_data.get().unwrap() {
+									Err(error) => {
+										view! {
+											<pre class="error">
+												Notes Server Error: {error.to_string()}
+											</pre>
+										}
+											.into_view()
+									}
+									Ok((notes, _)) => {
+										notes
+											.into_iter()
+											.map(|note| {
+												view! {
+													<div>{note.person} {note.notes}</div>
+												}
+											})
+											.collect_view()
+									}
+								}
+							} else {
+								view! {
+									<div>No Notes found</div>
+								}
+									.into_view()
+							}
+						}
+					};
+					view! {
+						<div>{equipment} <h2>Notes:</h2> {notes}</div>
+					}
 				}}
 			</ErrorBoundary>
 		</Transition>
@@ -165,4 +207,31 @@ pub async fn get_equipment_data_by_id(
 	})?;
 
 	Ok(equipment_sql_data.into())
+}
+
+#[server]
+pub async fn get_notes_for_equipment(
+	id: String,
+) -> Result<(Vec<EquipmentNotesData>, i64), ServerFnError> {
+	use crate::{db::ssr::get_db, equipment::EquipmentNotesSQLData};
+
+	let notes_sql_data = sqlx::query_as::<_, EquipmentNotesSQLData>(
+		"SELECT * FROM equipment_notes WHERE equipment = $1",
+	)
+	.bind(id.parse::<i32>().expect("Invalid id"))
+	.fetch_all(get_db())
+	.await
+	.map_err::<ServerFnError, _>(|error| {
+		ServerFnError::ServerError(error.to_string())
+	})?;
+
+	let notes_data: Vec<EquipmentNotesData> =
+		notes_sql_data.into_iter().map(Into::into).collect();
+
+	let row_count: i64 =
+		sqlx::query_scalar("SELECT COUNT(*) FROM equipment_notes")
+			.fetch_one(get_db())
+			.await?;
+
+	Ok((notes_data, row_count))
 }

@@ -48,7 +48,7 @@ impl EquipmentActionType {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(feature = "ssr", derive(FromRow))]
-pub struct EquipmentActionSQLData {
+pub struct EquipmentActionsSQLData {
 	pub id: i32,
 	pub action_type: String,
 	pub equipment: i32,
@@ -71,7 +71,7 @@ pub struct EquipmentActionSQLData {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct EquipmentActionData {
+pub struct EquipmentActionsData {
 	pub id: i32,
 	pub action_type: EquipmentActionType,
 	pub equipment: i32,
@@ -93,7 +93,7 @@ pub struct EquipmentActionData {
 	pub media10: Option<String>,
 }
 
-impl EquipmentActionData {
+impl EquipmentActionsData {
 	pub fn get_fields() -> Vec<(String, String)> {
 		vec![
 			(String::from("id"), String::from("ID")),
@@ -119,9 +119,9 @@ impl EquipmentActionData {
 	}
 }
 
-impl std::default::Default for EquipmentActionData {
+impl std::default::Default for EquipmentActionsData {
 	fn default() -> Self {
-		EquipmentActionData {
+		EquipmentActionsData {
 			id: Default::default(),
 			action_type: Default::default(),
 			equipment: Default::default(),
@@ -145,9 +145,9 @@ impl std::default::Default for EquipmentActionData {
 	}
 }
 
-impl From<EquipmentActionSQLData> for EquipmentActionData {
-	fn from(val: EquipmentActionSQLData) -> Self {
-		EquipmentActionData {
+impl From<EquipmentActionsSQLData> for EquipmentActionsData {
+	fn from(val: EquipmentActionsSQLData) -> Self {
+		EquipmentActionsData {
 			id: val.id,
 			action_type: EquipmentActionType::parse(val.action_type),
 			equipment: val.equipment,
