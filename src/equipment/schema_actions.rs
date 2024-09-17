@@ -1,7 +1,9 @@
+use crate::equipment::{PeopleData, PeopleSQLData};
+
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
-use sqlx::FromRow;
+use sqlx::{FromRow, Row};
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub enum EquipmentActionType {
@@ -167,6 +169,76 @@ impl From<EquipmentActionsSQLData> for EquipmentActionsData {
 			media8: val.media8,
 			media9: val.media9,
 			media10: val.media10,
+		}
+	}
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ActionsPersonSQL {
+	pub action: EquipmentActionsSQLData,
+	pub person: PeopleSQLData,
+}
+
+#[cfg(feature = "ssr")]
+impl sqlx::FromRow<'_, sqlx::postgres::PgRow> for ActionsPersonSQL {
+	fn from_row(row: &sqlx::postgres::PgRow) -> Result<Self, sqlx::Error> {
+		let action = EquipmentActionsSQLData {
+			id: row.try_get("action_id")?,
+			action_type: row.try_get("action_action_type")?,
+			equipment: row.try_get("action_equipment")?,
+			create_date: row.try_get("action_create_date")?,
+			person: row.try_get("action_person")?,
+			notes: row.try_get("action_notes")?,
+			field: row.try_get("action_field")?,
+			old_value: row.try_get("action_old_value")?,
+			new_value: row.try_get("action_new_value")?,
+			media1: row.try_get("action_media1")?,
+			media2: row.try_get("action_media2")?,
+			media3: row.try_get("action_media3")?,
+			media4: row.try_get("action_media4")?,
+			media5: row.try_get("action_media5")?,
+			media6: row.try_get("action_media6")?,
+			media7: row.try_get("action_media7")?,
+			media8: row.try_get("action_media8")?,
+			media9: row.try_get("action_media9")?,
+			media10: row.try_get("action_media10")?,
+		};
+
+		let person = PeopleSQLData {
+			id: row.try_get("person_id")?,
+			employee_id: row.try_get("person_employee_id")?,
+			status: row.try_get("person_status")?,
+			first_name: row.try_get("person_first_name")?,
+			last_name: row.try_get("person_last_name")?,
+			preferred_name: row.try_get("person_preferred_name")?,
+			email: row.try_get("person_email")?,
+			phone_number: row.try_get("person_phone_number")?,
+			department: row.try_get("person_department")?,
+			role: row.try_get("person_role")?,
+			hire_date: row.try_get("person_hire_date")?,
+			emergency_contact: row.try_get("person_emergency_contact")?,
+			certifications: row.try_get("person_certifications")?,
+			specializations: row.try_get("person_specializations")?,
+			picture: row.try_get("person_picture")?,
+			bio: row.try_get("person_bio")?,
+			create_date: row.try_get("person_create_date")?,
+		};
+
+		Ok(ActionsPersonSQL { action, person })
+	}
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ActionsPerson {
+	pub action: EquipmentActionsData,
+	pub person: PeopleData,
+}
+
+impl From<ActionsPersonSQL> for ActionsPerson {
+	fn from(val: ActionsPersonSQL) -> Self {
+		ActionsPerson {
+			action: val.action.into(),
+			person: val.person.into(),
 		}
 	}
 }
