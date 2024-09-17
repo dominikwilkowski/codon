@@ -14,7 +14,9 @@ pub fn FieldBuilder(hidden_fields: Vec<(String, String)>) -> impl IntoView {
 
 #[component]
 pub fn PaginationPrev(
-	action: &'static str,
+	action: String,
+	page_key: &'static str,
+	ipp_key: &'static str,
 	query_page: RwSignal<u16>,
 	query_ipp: RwSignal<u8>,
 	hidden_fields: Vec<(String, String)>,
@@ -24,14 +26,14 @@ pub fn PaginationPrev(
 			<FieldBuilder hidden_fields />
 			<input
 				type="hidden"
-				name="page"
+				name=page_key
 				value=if query_page.get() == 1 {
 					1
 				} else {
 					query_page.get() - 1
 				}
 			/>
-			<input type="hidden" name="items_per_page" value=query_ipp.get() />
+			<input type="hidden" name=ipp_key value=query_ipp.get() />
 			<button type="submit" disabled=query_page.get() == 1 class=css::btn>
 				Previous
 			</button>
@@ -41,7 +43,9 @@ pub fn PaginationPrev(
 
 #[component]
 pub fn PaginationNext(
-	action: &'static str,
+	action: String,
+	page_key: &'static str,
+	ipp_key: &'static str,
 	query_page: RwSignal<u16>,
 	query_ipp: RwSignal<u8>,
 	row_count: i64,
@@ -55,7 +59,7 @@ pub fn PaginationNext(
 			<FieldBuilder hidden_fields />
 			<input
 				type="hidden"
-				name="page"
+				name=page_key
 				value=move || {
 					if !is_last_page {
 						query_page.get() + 1
@@ -64,7 +68,7 @@ pub fn PaginationNext(
 					}
 				}
 			/>
-			<input type="hidden" name="items_per_page" value=query_ipp.get() />
+			<input type="hidden" name=ipp_key value=query_ipp.get() />
 			<button type="submit" disabled=move || is_last_page class=css::btn>
 				Next
 			</button>
@@ -74,7 +78,9 @@ pub fn PaginationNext(
 
 #[component]
 pub fn ItemsPerPage(
-	action: &'static str,
+	action: String,
+	page_key: &'static str,
+	ipp_key: &'static str,
 	query_page: RwSignal<u16>,
 	query_ipp: RwSignal<u8>,
 	row_count: i64,
@@ -89,13 +95,13 @@ pub fn ItemsPerPage(
 	view! {
 		<form action=action method="get" class=css::ipp_form>
 			<FieldBuilder hidden_fields />
-			<input type="hidden" name="page" value=query_page.get() />
+			<input type="hidden" name=page_key value=query_page.get() />
 			<label>
 				"Items per page: "
 				<input
 					class=css::ipp_input
 					type="number"
-					name="items_per_page"
+					name=ipp_key
 					value=query_ipp.get()
 					min="1"
 					max="255"
@@ -113,7 +119,9 @@ pub fn ItemsPerPage(
 
 #[component]
 pub fn Pages(
-	action: &'static str,
+	action: String,
+	page_key: &'static str,
+	ipp_key: &'static str,
 	query_page: RwSignal<u16>,
 	query_ipp: RwSignal<u8>,
 	row_count: i64,
@@ -128,7 +136,7 @@ pub fn Pages(
 				.map(move |page| {
 					view! {
 						<form
-							action=action
+							action=action.clone()
 							method="get"
 							class=if page == query_page.get() as i64 {
 								"is_current"
@@ -137,12 +145,8 @@ pub fn Pages(
 							}
 						>
 							<FieldBuilder hidden_fields=hidden_fields.clone() />
-							<input
-								type="hidden"
-								name="items_per_page"
-								value=query_ipp.get()
-							/>
-							<input type="hidden" name="page" value=page />
+							<input type="hidden" name=ipp_key value=query_ipp.get() />
+							<input type="hidden" name=page_key value=page />
 							<button
 								type="submit"
 								class=format!("{} input_shadow", css::btn)
@@ -198,7 +202,9 @@ fn get_page_range_test() {
 
 #[component]
 pub fn Pagination(
-	action: &'static str,
+	action: String,
+	page_key: &'static str,
+	ipp_key: &'static str,
 	query_page: RwSignal<u16>,
 	query_ipp: RwSignal<u8>,
 	row_count: i64,
@@ -207,7 +213,9 @@ pub fn Pagination(
 	view! {
 		<div class=css::pagination>
 			<ItemsPerPage
-				action
+				action=action.clone()
+				page_key
+				ipp_key
 				query_page
 				query_ipp
 				row_count
@@ -215,13 +223,17 @@ pub fn Pagination(
 			/>
 			<div class=css::pagination_group>
 				<PaginationPrev
-					action
+					action=action.clone()
+					page_key
+					ipp_key
 					query_page
 					query_ipp
 					hidden_fields=hidden_fields.clone()
 				/>
 				<Pages
-					action
+					action=action.clone()
+					page_key
+					ipp_key
 					query_page
 					query_ipp
 					row_count
@@ -229,6 +241,8 @@ pub fn Pagination(
 				/>
 				<PaginationNext
 					action
+					page_key
+					ipp_key
 					query_page
 					query_ipp
 					row_count

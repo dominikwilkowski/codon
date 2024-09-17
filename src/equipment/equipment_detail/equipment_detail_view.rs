@@ -1,4 +1,5 @@
 use crate::{
+	components::pagination::Pagination,
 	equipment::{ActionsPerson, EquipmentCell, EquipmentData, NotesPerson},
 	error_template::ErrorTemplate,
 	icons::EquipmentLogo,
@@ -12,7 +13,58 @@ stylance::import_style!(css, "equipment_details.module.css");
 #[component]
 pub fn EquipmentDetail() -> impl IntoView {
 	let params = use_params_map();
+	let query = use_query_map();
 	let navigate = use_navigate();
+
+	let notes_query_page = create_rw_signal({
+		let page = query
+			.with(|p| p.get("notes_page").cloned().unwrap_or(String::from("1")))
+			.parse::<u16>()
+			.unwrap_or(1);
+		if page > 0 {
+			page
+		} else {
+			1
+		}
+	});
+	let notes_query_ipp = create_rw_signal({
+		let ipp = query
+			.with(|p| {
+				p.get("notes_items_per_page").cloned().unwrap_or(String::from("25"))
+			})
+			.parse::<u8>()
+			.unwrap_or(25);
+		if ipp > 0 {
+			ipp
+		} else {
+			1
+		}
+	});
+
+	let actions_query_page = create_rw_signal({
+		let page = query
+			.with(|p| p.get("actions_page").cloned().unwrap_or(String::from("1")))
+			.parse::<u16>()
+			.unwrap_or(1);
+		if page > 0 {
+			page
+		} else {
+			1
+		}
+	});
+	let actions_query_ipp = create_rw_signal({
+		let ipp = query
+			.with(|p| {
+				p.get("actions_items_per_page").cloned().unwrap_or(String::from("25"))
+			})
+			.parse::<u8>()
+			.unwrap_or(25);
+		if ipp > 0 {
+			ipp
+		} else {
+			1
+		}
+	});
 
 	let go_to_listing = create_rw_signal(false);
 
@@ -30,16 +82,22 @@ pub fn EquipmentDetail() -> impl IntoView {
 		move |id| get_equipment_data_by_id(id),
 	);
 
-	#[expect(clippy::redundant_closure)]
 	let notes_data = create_resource(
 		move || params.with(|p| p.get("id").cloned().unwrap_or_default()),
-		move |id| get_notes_for_equipment(id),
+		move |id| {
+			get_notes_for_equipment(id, notes_query_page.get(), notes_query_ipp.get())
+		},
 	);
 
-	#[expect(clippy::redundant_closure)]
 	let actions_data = create_resource(
 		move || params.with(|p| p.get("id").cloned().unwrap_or_default()),
-		move |id| get_actions_for_equipment(id),
+		move |id| {
+			get_actions_for_equipment(
+				id,
+				actions_query_page.get(),
+				actions_query_ipp.get(),
+			)
+		},
 	);
 
 	view! {
@@ -161,8 +219,29 @@ pub fn EquipmentDetail() -> impl IntoView {
 											.into_view()
 									}
 									Ok((notes, count)) => {
+										let params = use_params_map();
+										let id = params
+											.with(|p| p.get("id").cloned().unwrap_or_default());
+										let hidden_fields = vec![
+											(
+												String::from("actions_page"),
+												actions_query_page.get().to_string(),
+											),
+											(
+												String::from("actions_items_per_page"),
+												actions_query_ipp.get().to_string(),
+											),
+										];
 										view! {
-											<span>count:{count}</span>
+											<Pagination
+												action=format!("/equipment/{id}")
+												page_key="notes_page"
+												ipp_key="notes_items_per_page"
+												query_page=notes_query_page
+												query_ipp=notes_query_ipp
+												row_count=count
+												hidden_fields
+											/>
 											{notes
 												.into_iter()
 												.map(|note| {
@@ -193,8 +272,29 @@ pub fn EquipmentDetail() -> impl IntoView {
 											.into_view()
 									}
 									Ok((actions, count)) => {
+										let params = use_params_map();
+										let id = params
+											.with(|p| p.get("id").cloned().unwrap_or_default());
+										let hidden_fields = vec![
+											(
+												String::from("notes_page"),
+												notes_query_page.get().to_string(),
+											),
+											(
+												String::from("notes_items_per_page"),
+												notes_query_ipp.get().to_string(),
+											),
+										];
 										view! {
-											<span>count:{count}</span>
+											<Pagination
+												action=format!("/equipment/{id}")
+												page_key="actions_page"
+												ipp_key="actions_items_per_page"
+												query_page=actions_query_page
+												query_ipp=actions_query_ipp
+												row_count=count
+												hidden_fields
+											/>
 											{actions
 												.into_iter()
 												.map(|note| {
@@ -217,8 +317,8 @@ pub fn EquipmentDetail() -> impl IntoView {
 					};
 					view! {
 						<div>
-							{equipment} <h2>Notes:</h2> {notes} <h2>Actions:</h2>
-							{actions}
+							{equipment} <h2>Notes:</h2> {notes}
+							<h2>Actions:</h2> {actions}
 						</div>
 					}
 				}}
@@ -254,6 +354,8 @@ pub async fn get_equipment_data_by_id(
 #[server]
 pub async fn get_notes_for_equipment(
 	id: String,
+	page: u16,
+	items_per_page: u8,
 ) -> Result<(Vec<NotesPerson>, i64), ServerFnError> {
 	use crate::{db::ssr::get_db, equipment::NotesPersonSQL};
 
@@ -261,6 +363,9 @@ pub async fn get_notes_for_equipment(
 		Ok(value) => value,
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
 	};
+
+	let limit = items_per_page as i64;
+	let offset = (page as i64 - 1) * items_per_page as i64;
 
 	let notes_sql_data = sqlx::query_as::<_, NotesPersonSQL>(
 		r#"SELECT
@@ -301,9 +406,12 @@ pub async fn get_notes_for_equipment(
 			equipment_notes
 		JOIN people ON equipment_notes.person = people.id
 		WHERE
-			equipment_notes.equipment = $1"#,
+			equipment_notes.equipment = $1
+		LIMIT $2 OFFSET $3"#,
 	)
 	.bind(id)
+	.bind(limit)
+	.bind(offset)
 	.fetch_all(get_db())
 	.await
 	.map_err::<ServerFnError, _>(|error| {
@@ -326,6 +434,8 @@ pub async fn get_notes_for_equipment(
 #[server]
 pub async fn get_actions_for_equipment(
 	id: String,
+	page: u16,
+	items_per_page: u8,
 ) -> Result<(Vec<ActionsPerson>, i64), ServerFnError> {
 	use crate::{db::ssr::get_db, equipment::ActionsPersonSQL};
 
@@ -333,6 +443,9 @@ pub async fn get_actions_for_equipment(
 		Ok(value) => value,
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
 	};
+
+	let limit = items_per_page as i64;
+	let offset = (page as i64 - 1) * items_per_page as i64;
 
 	let notes_sql_data = sqlx::query_as::<_, ActionsPersonSQL>(
 		r#"SELECT
@@ -377,9 +490,12 @@ pub async fn get_actions_for_equipment(
 			equipment_actions
 		JOIN people ON equipment_actions.person = people.id
 		WHERE
-			equipment_actions.equipment = $1"#,
+			equipment_actions.equipment = $1
+		LIMIT $2 OFFSET $3"#,
 	)
 	.bind(id)
+	.bind(limit)
+	.bind(offset)
 	.fetch_all(get_db())
 	.await
 	.map_err::<ServerFnError, _>(|error| {

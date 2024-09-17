@@ -58,7 +58,9 @@ pub fn Ds() -> impl IntoView {
 		<section class=css::section>
 			<h2>Pagination</h2>
 			<Pagination
-				action="/ds"
+				action=String::from("/ds")
+				page_key="page"
+				ipp_key="items_per_page"
 				query_page=create_rw_signal(1)
 				query_ipp=create_rw_signal(25)
 				row_count=200

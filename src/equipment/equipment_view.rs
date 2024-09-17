@@ -97,7 +97,9 @@ pub fn Equipment() -> impl IntoView {
 									];
 									view! {
 										<Pagination
-											action="/equipment"
+											action=String::from("/equipment")
+											page_key="page"
+											ipp_key="items_per_page"
 											query_page
 											query_ipp
 											row_count
@@ -166,7 +168,9 @@ pub fn Equipment() -> impl IntoView {
 											</table>
 										</div>
 										<Pagination
-											action="/equipment"
+											action=String::from("/equipment")
+											page_key="page"
+											ipp_key="items_per_page"
 											query_page
 											query_ipp
 											row_count
@@ -220,7 +224,7 @@ pub async fn get_equipment_data(
 	let offset = (page as i64 - 1) * items_per_page as i64;
 
 	let query = format!(
-		"SELECT *, COUNT(*) OVER() as row_count FROM equipment ORDER BY {field_sanitized} {order_sanitized} LIMIT $1 OFFSET $2",
+		"SELECT * FROM equipment ORDER BY {field_sanitized} {order_sanitized} LIMIT $1 OFFSET $2",
 	);
 
 	let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLData>(&query)
