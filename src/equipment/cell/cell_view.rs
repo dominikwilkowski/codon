@@ -150,27 +150,22 @@ fn StringCell(item: String) -> impl IntoView {
 
 impl EquipmentCellView for DateTime<Utc> {
 	fn view(self) -> impl IntoView {
-		view! { <DateCell item=Some(self) /> }
+		view! { <DateCell item=self /> }
 	}
 }
 
 impl EquipmentCellView for Option<DateTime<Utc>> {
 	fn view(self) -> impl IntoView {
 		match self {
-			Some(_) => view! { <DateCell item=self /> }.into_view(),
+			Some(item) => view! { <DateCell item /> }.into_view(),
 			None => view! {}.into_view(),
 		}
 	}
 }
 
 #[component]
-fn DateCell(item: Option<DateTime<Utc>>) -> impl IntoView {
-	match item {
-		Some(d) => {
-			view! { <span>{d.format("%d %b %Y").to_string()}</span> }.into_view()
-		},
-		None => view! {}.into_view(),
-	}
+fn DateCell(item: DateTime<Utc>) -> impl IntoView {
+	view! { <span>{item.format("%d %b %Y").to_string()}</span> }
 }
 
 #[component]

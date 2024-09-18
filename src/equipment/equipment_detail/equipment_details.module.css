@@ -1,3 +1,33 @@
-.qrcode {
-	max-width: 5rem;
+.details {
+	margin: 1rem 0;
+}
+
+.heading small {
+	font-weight: 100;
+	font-size: 0.75rem;
+	margin: 0 1rem;
+}
+
+.list {
+	display: grid;
+	grid-template-columns: auto 1fr;
+}
+
+.list dd {
+	margin: 0;
+}
+
+.list dd,
+.list dt {
+	padding: 1rem;
+}
+
+.list *:nth-child(4n),
+.list *:nth-child(4n - 1) {
+	background: #ffffff05;
+}
+
+.list dt {
+	display: grid;
+	align-items: center;
 }

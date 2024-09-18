@@ -1,5 +1,5 @@
 .equipment_type {
-	display: grid;
+	display: inline-grid;
 	justify-items: center;
 	text-align: center;
 	gap: 0.5rem;

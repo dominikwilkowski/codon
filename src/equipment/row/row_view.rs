@@ -19,70 +19,70 @@ pub fn Row(
 					<Show when=move || {
 						field_filter.get().contains(&String::from("id"))
 					}>
-						<td>
+						<td class="equipment_listing_id">
 							<EquipmentCell cell=equipment.id />
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("equipment_type"))
 					}>
-						<td>
+						<td class="equipment_listing_equipment_type">
 							<EquipmentCell cell=equipment.equipment_type.clone() />
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("qrcode"))
 					}>
-						<td>
+						<td class="equipment_listing_qrcode">
 							<EquipmentCell cell=equipment.qrcode.clone() />
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("create_date"))
 					}>
-						<td>
+						<td class="equipment_listing_create_date">
 							<EquipmentCell cell=equipment.create_date />
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("name"))
 					}>
-						<td>
+						<td class="equipment_listing_name">
 							<EquipmentCell cell=equipment.name.clone() />
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("status"))
 					}>
-						<td>
+						<td class="equipment_listing_status">
 							<EquipmentCell cell=equipment.status.clone() />
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("manufacturer"))
 					}>
-						<td>
+						<td class="equipment_listing_manufacturer">
 							<EquipmentCell cell=equipment.manufacturer.clone() />
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("purchase_date"))
 					}>
-						<td>
+						<td class="equipment_listing_purchase_date">
 							<EquipmentCell cell=equipment.purchase_date />
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("vendor"))
 					}>
-						<td>
+						<td class="equipment_listing_vendor">
 							<EquipmentCell cell=equipment.vendor.clone() />
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("cost_in_cent"))
 					}>
-						<td>
+						<td class="equipment_listing_cost_in_cent">
 							<EquipmentCell cell=equipment.cost_in_cent.clone() />
 						</td>
 					</Show>
@@ -91,31 +91,31 @@ pub fn Row(
 							.get()
 							.contains(&String::from("warranty_expiration_date"))
 					}>
-						<td>
+						<td class="equipment_listing_warranty_expiration_date">
 							<EquipmentCell cell=equipment.warranty_expiration_date />
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("location"))
 					}>
-						<td>
+						<td class="equipment_listing_location">
 							<EquipmentCell cell=equipment.location.clone() />
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("notes"))
 					}>
-						<td>
+						<td class="equipment_listing_notes">
 							<EquipmentCell cell=equipment.notes.clone() />
 						</td>
 					</Show>
-					<td>
+					<td class="equipment_listing_details_link">
 						<A href=format!("/equipment/{}", equipment.id)>Details</A>
 					</td>
-					<td>
+					<td class="equipment_listing_edit_link">
 						<A href=format!("edit/{}", equipment.id)>Edit</A>
 					</td>
-					<td>
+					<td class="equipment_listing_delete_link">
 						<button
 							class=css::delete
 							on:click=move |_| {

@@ -27,6 +27,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 			1
 		}
 	});
+
 	let notes_query_ipp = create_rw_signal({
 		let ipp = query
 			.with(|p| {
@@ -52,6 +53,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 			1
 		}
 	});
+
 	let actions_query_ipp = create_rw_signal({
 		let ipp = query
 			.with(|p| {
@@ -123,15 +125,13 @@ pub fn EquipmentDetail() -> impl IntoView {
 									}
 									Ok(equipment) => {
 										view! {
-											<div>
-												<A href=format!("/equipment/edit/{}", equipment.id)>Edit</A>
-												<h2>{equipment.name.clone()}</h2>
-												<img
-													src=format!("/qrcodes/{}", equipment.qrcode)
-													alt=format!("The QR code for {}", equipment.name)
-													class=css::qrcode
-												/>
-												<dl>
+											<A href=format!("/equipment/edit/{}", equipment.id)>Edit</A>
+											<div class=css::details>
+												<h2 class=css::heading>
+													{equipment.name.clone()} <small>{equipment.id}</small>
+												</h2>
+
+												<dl class=css::list>
 													<dt>ID</dt>
 													<dd>
 														<EquipmentCell cell=equipment.id />
@@ -148,8 +148,9 @@ pub fn EquipmentDetail() -> impl IntoView {
 													</dd>
 
 													<dt>Qrcode</dt>
-													<EquipmentCell cell=equipment.qrcode />
-													<dd></dd>
+													<dd>
+														<EquipmentCell cell=equipment.qrcode />
+													</dd>
 
 													<dt>Create Date</dt>
 													<dd>
@@ -317,8 +318,8 @@ pub fn EquipmentDetail() -> impl IntoView {
 					};
 					view! {
 						<div>
-							{equipment} <h2>Notes:</h2> {notes}
-							<h2>Actions:</h2> {actions}
+							{equipment} <h2>Notes:</h2> {notes} <h2>Actions:</h2>
+							{actions}
 						</div>
 					}
 				}}

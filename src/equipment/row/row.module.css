@@ -7,3 +7,8 @@
 	color: var(--action);
 	text-decoration: underline;
 }
+
+td:global(.equipment_listing_equipment_type),
+td:global(.equipment_listing_status) {
+	text-align: center;
+}

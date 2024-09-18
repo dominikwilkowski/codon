@@ -2,3 +2,7 @@
 	color: var(--action);
 	background: transparent;
 }
+
+:global(.codon_multiselect) div {
+	display: inline-flex;
+}

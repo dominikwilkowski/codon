@@ -25,7 +25,7 @@ pub fn MultiSelect(
 ) -> impl IntoView {
 	view! {
 		<ThawMultiSelect
-			class="input_shadow"
+			class="input_shadow codon_multiselect"
 			value
 			options
 			clearable=clearable
