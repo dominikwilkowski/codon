@@ -1,5 +1,5 @@
 use crate::{
-	components::{avatar::Avatar, pagination::Pagination},
+	components::{avatar::Avatar, multiline::MultiLine, pagination::Pagination},
 	equipment::{ActionsPerson, EquipmentCell, EquipmentData, NotesPerson},
 	error_template::ErrorTemplate,
 	icons::EquipmentLogo,
@@ -250,7 +250,9 @@ pub fn EquipmentDetail() -> impl IntoView {
 														.map(|note| {
 															view! {
 																<Avatar data=note.person />
-																<span>{note.note.notes}</span>
+																<span>
+																	<MultiLine text=note.note.notes />
+																</span>
 															}
 														})
 														.collect_view()}
@@ -311,7 +313,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 																<Avatar data=action.person />
 																<span>
 																	-{format!("{}", action.action.action_type)}-
-																	{action.action.notes}
+																	<MultiLine text=action.action.notes.unwrap_or_default() />
 																</span>
 															}
 														})

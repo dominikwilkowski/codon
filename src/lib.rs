@@ -8,6 +8,7 @@ pub mod components {
 	pub mod checkbox;
 	pub mod datepicker;
 	pub mod input;
+	pub mod multiline;
 	pub mod pagination;
 	pub mod radio;
 	pub mod select;

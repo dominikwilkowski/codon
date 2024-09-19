@@ -57,7 +57,7 @@ impl EquipmentCellView for EquipmentStatus {
 			},
 			EquipmentStatus::NeedsCleaning => view! {
 				<div class=css::needscleaning>
-					<span class="">NeedsCleaning</span>
+					<span class="">Needs Cleaning</span>
 				</div>
 			},
 			EquipmentStatus::Preparation => view! {
@@ -77,7 +77,7 @@ impl EquipmentCellView for EquipmentStatus {
 			},
 			EquipmentStatus::OutOfCommission => view! {
 				<div class=css::outofcommission>
-					<span class="">OutOfCommission</span>
+					<span class="">Out Of Commission</span>
 				</div>
 			},
 		}
