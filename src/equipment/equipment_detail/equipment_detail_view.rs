@@ -1,5 +1,5 @@
 use crate::{
-	components::{pagination::Pagination, avatar::Avatar},
+	components::{avatar::Avatar, pagination::Pagination},
 	equipment::{ActionsPerson, EquipmentCell, EquipmentData, NotesPerson},
 	error_template::ErrorTemplate,
 	icons::EquipmentLogo,
@@ -103,10 +103,6 @@ pub fn EquipmentDetail() -> impl IntoView {
 	);
 
 	view! {
-		<h1>
-			<EquipmentLogo />
-			" Equipment Details"
-		</h1>
 		<Transition fallback=move || view! { <p>Loading equipment...</p> }>
 			<ErrorBoundary fallback=|errors| {
 				view! { <ErrorTemplate errors=errors /> }
@@ -125,11 +121,14 @@ pub fn EquipmentDetail() -> impl IntoView {
 									}
 									Ok(equipment) => {
 										view! {
-											<A href=format!("/equipment/edit/{}", equipment.id)>Edit</A>
 											<div class=css::details>
-												<h2 class=css::heading>
-													{equipment.name.clone()} <small>{equipment.id}</small>
-												</h2>
+												<h1 class=css::heading>
+													<EquipmentLogo />
+													" "
+													{equipment.name.clone()}
+													<small>{equipment.id}</small>
+													<A href=format!("/equipment/edit/{}", equipment.id)>Edit</A>
+												</h1>
 
 												<dl class=css::list>
 													<dt>ID</dt>
@@ -246,17 +245,15 @@ pub fn EquipmentDetail() -> impl IntoView {
 													hidden_fields
 												/>
 												<div class=css::items>
-													{
-														notes
-															.into_iter()
-															.map(|note| {
-																view! {
-																	<Avatar data=note.person />
-																	<span>{note.note.notes}</span>
-																}
-															})
-															.collect_view()
-													}
+													{notes
+														.into_iter()
+														.map(|note| {
+															view! {
+																<Avatar data=note.person />
+																<span>{note.note.notes}</span>
+															}
+														})
+														.collect_view()}
 												</div>
 											</div>
 										}
@@ -307,17 +304,18 @@ pub fn EquipmentDetail() -> impl IntoView {
 													hidden_fields
 												/>
 												<div class=css::items>
-													{
-														actions
+													{actions
 														.into_iter()
 														.map(|action| {
 															view! {
 																<Avatar data=action.person />
-																<span>{format!("{}", action.action.action_type)} {action.action.notes}</span>
+																<span>
+																	{format!("{}", action.action.action_type)}
+																	{action.action.notes}
+																</span>
 															}
 														})
-														.collect_view()
-													}
+														.collect_view()}
 												</div>
 											</div>
 										}
@@ -329,13 +327,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 							}
 						}
 					};
-					view! {
-						<div>
-							{equipment}
-							{notes}
-							{actions}
-						</div>
-					}
+					view! { <div>{equipment} {notes} {actions}</div> }
 				}}
 			</ErrorBoundary>
 		</Transition>
