@@ -72,14 +72,14 @@ INSERT INTO equipment (equipment_type, qrcode, create_date, name, status, manufa
 ('Vessel','qr_00002_V.svg','2024-08-15T12:45:59.324310806Z','Britta','NeedsCleaning','VesselForge','2022-06-10T12:45:59.324310806Z','ScienceStash',75000,'2024-06-10T12:45:59.324310806Z','In the cafeterias fridge','Has a crack on the top left'),
 ('Flask','qr_00003_F.svg','2023-01-12T12:45:59.324310806Z','Flasky McFlaskface','Sterilization','BeakerMakers','2022-12-01T12:45:59.324310806Z','LabGear Galore',62050,'2026-01-12T12:45:59.324310806Z','Top Shelf, Aisle 5','Always keeps it clean!'),
 ('Vessel','qr_00004_V.svg','2023-05-20T12:45:59.324310806Z','Vessela','Broken','VesselMakers Inc.','2021-07-15T12:45:59.324310806Z','SupplySidekick',82000,'2023-11-20T12:45:59.324310806Z','Storage Room B, Shelf 3','Handle with care... or not.'),
-('IncubationCabinet','qr_00005_I.svg','2022-11-05T12:45:59.324310806Z','Flasknado','NeedsCleaning','FlaskForge','2022-10-25T12:45:59.324310806Z','ScienceStash',58099,'2025-10-05T12:45:59.324310806Z','Chemical Lab, Table 4','Whips up a storm in experiments!'),
+('IncubationCabinet','qr_00005_I.svg','2022-11-05T12:45:59.324310806Z','Microbe Motel','NeedsCleaning','Germination Station Inc.','2022-10-25T12:45:59.324310806Z','ScienceStash',58099,'2025-10-05T12:45:59.324310806Z','Chemical Lab, Table 4','Whips up a storm in experiments!'),
 ('Vessel','qr_00006_V.svg','2024-03-30T12:45:59.324310806Z','Vesselina','OutOfCommission','VesselVentures','2023-04-18T12:45:59.324310806Z','LabGear Galore',99000,'2024-03-30T12:45:59.324310806Z','Main Lab, Counter 12','All sailed out.'),
-('IncubationCabinet','qr_00007_I.svg','2024-02-10T12:45:59.324310806Z','Sir Mix-a-Lot','Working','Flasky Foundry','2023-11-11T12:45:59.324310806Z','SupplySidekick',73000,'2027-02-10T12:45:59.324310806Z','Mixology Lab, Station 8','Holds mixes like a pro!'),
+('IncubationCabinet','qr_00007_I.svg','2024-02-10T12:45:59.324310806Z','Microbe Mansion','Working','Hot Box Industries','2023-11-11T12:45:59.324310806Z','SupplySidekick',73000,'2027-02-10T12:45:59.324310806Z','Mixology Lab, Station 8','Holds mixes like a pro!'),
 ('IncubationCabinet','qr_00008_I.svg','2023-07-22T12:45:59.324310806Z','Captain Contain','Preparation','Containment Creations','2022-08-02T12:45:59.324310806Z','ScienceStash',67000,'2026-07-22T12:45:59.324310806Z','Secure Storage, Area 3','A true captain of containment.'),
 ('Flask','qr_00009_F.svg','2023-09-09T12:45:59.324310806Z','Dr. Flaskenstein','Working','Mad Flask Labs','2023-05-19T12:45:59.324310806Z','LabGear Galore',52069,'2025-09-09T12:45:59.324310806Z','Experiment Zone, Bay 2','Brings experiments to life!'),
 ('Vessel','qr_00010_V.svg','2024-04-15T12:45:59.324310806Z','Vesselocity','Sterilization','Vessel Velocity Inc.','2023-07-01T12:45:59.324310806Z','SupplySidekick',84500,'2026-04-15T12:45:59.324310806Z','High-Speed Lab, Corner 9','Speedy and sleek, always on the go!'),
 ('Flask','qr_00011_F.svg','2024-01-18T12:45:59.324310806Z','Flask-in-a-Box','Working','Boxed Labs','2022-12-15T12:45:59.324310806Z','ScienceStash',54000,'2027-01-18T12:45:59.324310806Z','Storage Unit 12, Shelf 4','Comes with a twist!'),
-('IncubationCabinet','qr_00012_I.svg','2023-10-25T12:45:59.324310806Z','Vessel of Wonder','NeedsCleaning','WonderVessels','2022-03-11T12:45:59.324310806Z','LabGear Galore',91010,'2024-10-25T12:45:59.324310806Z','Mystery Lab, Area 7','A cabinet full of surprises!');
+('IncubationCabinet','qr_00012_I.svg','2023-10-25T12:45:59.324310806Z','Spore Spa','NeedsCleaning','WonderCabinets','2022-03-11T12:45:59.324310806Z','LabGear Galore',91010,'2024-10-25T12:45:59.324310806Z','Mystery Lab, Area 7','A cabinet full of surprises!');
 
 CREATE TABLE equipment_notes (
 	id SERIAL PRIMARY KEY,
@@ -147,17 +147,7 @@ CREATE TABLE equipment_actions (
 	notes TEXT,
 	field TEXT,
 	old_value TEXT,
-	new_value TEXT,
-	media1 TEXT,
-	media2 TEXT,
-	media3 TEXT,
-	media4 TEXT,
-	media5 TEXT,
-	media6 TEXT,
-	media7 TEXT,
-	media8 TEXT,
-	media9 TEXT,
-	media10 TEXT
+	new_value TEXT
 );
 CREATE INDEX equipment_actions_equipment ON equipment_actions (equipment);
 CREATE INDEX equipment_actions_person ON equipment_actions (person);
@@ -184,7 +174,8 @@ INSERT INTO equipment_actions (action_type, equipment, person, notes, field, old
 ('cleaning', 11, 1, 'Attempted to clean; ended up in a philosophical debate.', NULL, NULL, NULL),
 ('edit', 12, 14, 'Edited user manual to include "Beware of the Leopard".', 'notes', 'Contains Leopard', 'Contains Leptospira'),
 ('preparation', 12, 7, 'Prepared for upgrade; hoping it doesnt gain self-awareness.', NULL, NULL, NULL),
-('cleaning', 12, 9, 'Cleaned glitter residue; who had a party without inviting me?', NULL, NULL, NULL);
+('cleaning', 12, 9, 'Cleaned glitter residue; who had a party without inviting me?', NULL, NULL, NULL),
+('sterilization', 12, 2, 'Flask sterilized, so clean that even the microbes are afraid to enter!', NULL, NULL, NULL);
 
 
 

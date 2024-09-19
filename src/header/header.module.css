@@ -50,6 +50,6 @@ a.logo_wrapper:hover :global(.logo-codon) {
 .logo_word {
 	font-size: 3rem;
 	text-transform: lowercase;
-	font-weight: 140;
+	font-weight: 270;
 	margin-top: -10px;
 }

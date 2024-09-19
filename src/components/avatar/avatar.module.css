@@ -17,8 +17,25 @@
 	border-color: #f0a020;
 }
 
-.avatar:global(.avata-status-left) div {
+.avatar:global(.avata-status-left) div,
+.avatar:global(.avata-status-left) figcaption {
 	border-color: #d03050;
+	opacity: 0.3;
+}
+
+.avatar:global(.avata-status-left) {
+	position: relative;
+}
+
+.avatar:global(.avata-status-left):after {
+	content: "LEFT";
+	font-size: 70%;
+	position: absolute;
+	top: 1.7rem;
+	background-color: #d03050;
+	padding: 3px 1rem;
+	border-radius: var(--border-radius-sm);
+	transform: rotate(-20deg);
 }
 
 .avatar img {

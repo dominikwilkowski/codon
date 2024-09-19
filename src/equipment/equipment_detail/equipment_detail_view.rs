@@ -293,7 +293,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 										];
 										view! {
 											<div class=css::attachment_list>
-												<h2>Actions:</h2>
+												<h2>Log:</h2>
 												<Pagination
 													action=format!("/equipment/{id}")
 													page_key="actions_page"
@@ -310,7 +310,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 															view! {
 																<Avatar data=action.person />
 																<span>
-																	{format!("{}", action.action.action_type)}
+																	-{format!("{}", action.action.action_type)}-
 																	{action.action.notes}
 																</span>
 															}
@@ -465,16 +465,6 @@ pub async fn get_actions_for_equipment(
 			equipment_actions.field AS action_field,
 			equipment_actions.old_value AS action_old_value,
 			equipment_actions.new_value AS action_new_value,
-			equipment_actions.media1 AS action_media1,
-			equipment_actions.media2 AS action_media2,
-			equipment_actions.media3 AS action_media3,
-			equipment_actions.media4 AS action_media4,
-			equipment_actions.media5 AS action_media5,
-			equipment_actions.media6 AS action_media6,
-			equipment_actions.media7 AS action_media7,
-			equipment_actions.media8 AS action_media8,
-			equipment_actions.media9 AS action_media9,
-			equipment_actions.media10 AS action_media10,
 
 			people.id AS person_id,
 			people.employee_id AS person_employee_id,
