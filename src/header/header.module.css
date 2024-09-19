@@ -22,22 +22,23 @@ a.logo_wrapper {
 }
 
 a.logo_wrapper:hover :global(.logo-codon) {
-	color: var(--action);
-	animation: hue 80s infinite linear;
+	animation: hue 3s infinite linear 30s;
 }
 
 @keyframes hue {
 	from {
+		color: var(--action);
 		filter: hue-rotate(0);
 	}
 	to {
+		color: var(--action);
 		filter: hue-rotate(-360deg);
 	}
 }
 
 .logo_wrapper :global(.logo-codon) {
 	height: 4rem;
-	transition: color ease 30s;
+	transition: color easy 1s;
 }
 
 @media (min-width: 60rem) {
