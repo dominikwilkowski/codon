@@ -6,6 +6,10 @@
 	font-weight: 100;
 	font-size: 0.75rem;
 	margin: 0 1rem;
+	border: 1px solid #ffffff50;
+	padding: 0.1rem 0.5rem;
+	border-radius: var(--border-radius-md);
+	vertical-align: middle;
 }
 
 .list {
@@ -17,9 +21,14 @@
 	margin: 0;
 }
 
+.list dt {
+	text-align: right;
+}
+
 .list dd,
 .list dt {
 	padding: 1rem;
+	border-radius: var(--border-radius-md);
 }
 
 .list *:nth-child(4n),
@@ -30,4 +39,21 @@
 .list dt {
 	display: grid;
 	align-items: center;
+}
+
+.attachment_list {
+	border: 3px dashed #ffffff10;
+	border-radius: var(--border-radius-lg);
+	padding: 1rem;
+	margin-top: 2rem;
+}
+
+.attachment_list .items {
+	display: grid;
+	gap: 2.5rem 1rem;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	max-height: 50rem;
+	overflow: auto;
+	padding: 1rem 0;
 }

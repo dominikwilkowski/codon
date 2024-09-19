@@ -1,5 +1,5 @@
 use crate::{
-	components::pagination::Pagination,
+	components::{pagination::Pagination, avatar::Avatar},
 	equipment::{ActionsPerson, EquipmentCell, EquipmentData, NotesPerson},
 	error_template::ErrorTemplate,
 	icons::EquipmentLogo,
@@ -234,23 +234,31 @@ pub fn EquipmentDetail() -> impl IntoView {
 											),
 										];
 										view! {
-											<Pagination
-												action=format!("/equipment/{id}")
-												page_key="notes_page"
-												ipp_key="notes_items_per_page"
-												query_page=notes_query_page
-												query_ipp=notes_query_ipp
-												row_count=count
-												hidden_fields
-											/>
-											{notes
-												.into_iter()
-												.map(|note| {
-													view! {
-														<div>{note.person.preferred_name} {note.note.notes}</div>
+											<div class=css::attachment_list>
+												<h2>Notes</h2>
+												<Pagination
+													action=format!("/equipment/{id}")
+													page_key="notes_page"
+													ipp_key="notes_items_per_page"
+													query_page=notes_query_page
+													query_ipp=notes_query_ipp
+													row_count=count
+													hidden_fields
+												/>
+												<div class=css::items>
+													{
+														notes
+															.into_iter()
+															.map(|note| {
+																view! {
+																	<Avatar data=note.person />
+																	<span>{note.note.notes}</span>
+																}
+															})
+															.collect_view()
 													}
-												})
-												.collect_view()}
+												</div>
+											</div>
 										}
 											.into_view()
 									}
@@ -287,26 +295,31 @@ pub fn EquipmentDetail() -> impl IntoView {
 											),
 										];
 										view! {
-											<Pagination
-												action=format!("/equipment/{id}")
-												page_key="actions_page"
-												ipp_key="actions_items_per_page"
-												query_page=actions_query_page
-												query_ipp=actions_query_ipp
-												row_count=count
-												hidden_fields
-											/>
-											{actions
-												.into_iter()
-												.map(|note| {
-													view! {
-														<div>
-															{note.person.preferred_name}
-															{format!("{}", note.action.action_type)} {note.action.notes}
-														</div>
+											<div class=css::attachment_list>
+												<h2>Actions:</h2>
+												<Pagination
+													action=format!("/equipment/{id}")
+													page_key="actions_page"
+													ipp_key="actions_items_per_page"
+													query_page=actions_query_page
+													query_ipp=actions_query_ipp
+													row_count=count
+													hidden_fields
+												/>
+												<div class=css::items>
+													{
+														actions
+														.into_iter()
+														.map(|action| {
+															view! {
+																<Avatar data=action.person />
+																<span>{format!("{}", action.action.action_type)} {action.action.notes}</span>
+															}
+														})
+														.collect_view()
 													}
-												})
-												.collect_view()}
+												</div>
+											</div>
 										}
 											.into_view()
 									}
@@ -318,7 +331,8 @@ pub fn EquipmentDetail() -> impl IntoView {
 					};
 					view! {
 						<div>
-							{equipment} <h2>Notes:</h2> {notes} <h2>Actions:</h2>
+							{equipment}
+							{notes}
 							{actions}
 						</div>
 					}

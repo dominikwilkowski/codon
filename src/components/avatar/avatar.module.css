@@ -1,0 +1,31 @@
+.avatar {
+	display: inline-grid;
+	margin: 0;
+	justify-items: center;
+	gap: 0.25rem;
+}
+
+.avatar div {
+	border-radius: 100%;
+	overflow: hidden;
+	width: 4.5rem;
+	height: 4.5rem;
+	border: #18a058 2px solid;
+}
+
+.avatar:global(.avata-status-onleave) div {
+	border-color: #f0a020;
+}
+
+.avatar:global(.avata-status-left) div {
+	border-color: #d03050;
+}
+
+.avatar img {
+	display: inline-block;
+	max-width: 100%;
+}
+
+.avatar figcaption {
+	font-size: 70%;
+}

@@ -94,7 +94,7 @@ impl EquipmentCellView for QRCode {
 	fn view(self) -> impl IntoView {
 		view! {
 			<img
-				src=format!("/qrcodes/{self}")
+				src=format!("/qrcodes/equipment/{self}")
 				alt="The QR code"
 				class=css::qrcode
 			/>

@@ -31,20 +31,20 @@ CREATE TABLE people (
 	create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 INSERT INTO people (employee_id, first_name, last_name, preferred_name, email, phone_number, bio, department, role, hire_date, status, emergency_contact, certifications, specializations, picture) VALUES
-('BIO10-0001', 'Gene', 'Splicer', 'Gene Splicer', 'gene.splicer@biolab.com', '555-0100', 'Always on the cutting edge.', 'Genetics', 'Senior Scientist', '2020-01-15', 'Active', 'Dr. Helix (555-1111)', 'PhD in Genetics', 'DNA recombination', 'gene_splicer.jpg'),
-('BIO10-0002', 'Elle', 'Ment', 'Elle Ment', 'elle.ment@biolab.com', '555-0101', 'Her experiments always have great chemistry.', 'Chemistry', 'Lab Assistant', '2021-06-01', 'Active', 'Sam Ment (555-2222)', 'BSc in Chemistry', 'Chemical analysis', 'elle_ment.jpg'),
-('BIO10-0003', 'Adam', 'Zyme', 'Adam Zyme', 'adam.zyme@biolab.com', '555-0102', 'Enzymes are his catalyst.', 'Biochemistry', 'Research Scientist', '2019-09-10', 'Active', 'Eve Zyme (555-3333)', 'PhD in Biochemistry', 'Enzymology', 'adam_zyme.jpg'),
-('BIO10-0004', 'Ann', 'Tibody', 'Ann Tibody', 'ann.tibody@biolab.com', '555-0103', 'Her work is highly defensive.', 'Immunology', 'Lab Technician', '2018-05-20', 'Active', 'Ian Tibody (555-4444)', 'BSc in Biology', 'Antibody production', 'ann_tibody.jpg'),
-('BIO10-0005', 'Phil', 'Ter', 'Phil Ter', 'phil.ter@biolab.com', '555-0104', 'Filtering out the impurities.', 'Microbiology', 'Lab Assistant', '2022-02-14', 'Active', 'Sue Ter (555-5555)', 'BSc in Microbiology', 'Filtration techniques', 'phil_ter.jpg'),
-('BIO10-0006', 'Ben', 'Doyle', 'Ben Doyle', 'ben.doyle@biolab.com', '555-0105', 'Digging deep into research.', 'Geology', 'Research Scientist', '2017-11-01', 'Active', 'Maggie Doyle (555-6666)', 'PhD in Geology', 'Soil analysis', 'ben_doyle.jpg'),
-('BIO10-0007', 'Ari', 'Ous', 'Ari Ous', 'ari.ous@biolab.com', '555-0106', 'Her ideas are contagious.', 'Virology', 'Senior Scientist', '2016-07-30', 'Active', 'Val Ous (555-7777)', 'PhD in Virology', 'Virus research', 'ari_ous.jpg'),
-('BIO10-0008', 'Polly', 'Merase', 'Polly Merase', 'polly.merase@biolab.com', '555-0107', 'She never stops copying.', 'Molecular Biology', 'Lab Technician', '2021-03-12', 'Active', 'Ruth Merase (555-8888)', 'BSc in Molecular Biology', 'PCR techniques', 'polly_merase.jpg'),
-('BIO10-0009', 'Dee', 'N.A.', 'Dee N.A.', 'dee.na@biolab.com', '555-0108', 'At the core of every discovery.', 'Genomics', 'Research Scientist', '2018-08-24', 'Active', 'Jay N.A. (555-9999)', 'PhD in Genomics', 'Genome sequencing', 'dee_na.jpg'),
-('BIO10-0010', 'Helix', 'Turner', 'Helix Turner', 'helix.turner@biolab.com', '555-0109', 'Twists and turns in his research.', 'Structural Biology', 'Lab Assistant', '2020-12-05', 'Active', 'Felix Turner (555-1010)', 'BSc in Structural Biology', 'Protein folding', 'helix_turner.jpg'),
-('BIO10-0011', 'Max', 'A Million', 'Max A Million', 'max.a.million@biolab.com', '555-0110', 'Always reaching for the maximum.', 'Data Analysis', 'Data Scientist', '2019-04-01', 'Active', 'Mina Million (555-1111)', 'MSc in Data Science', 'Big data analytics', 'max_a_million.jpg'),
-('BIO10-0012', 'Eve', 'Olution', 'Eve Olution', 'eve.olution@biolab.com', '555-0111', 'Constantly adapting.', 'Evolutionary Biology', 'Senior Scientist', '2015-10-10', 'Active', 'Adam Olution (555-1212)', 'PhD in Evolutionary Biology', 'Species adaptation', 'eve_olution.jpg'),
-('BIO10-0013', 'Michael', 'Shipley', 'Mic Shipley', 'mic@biolab.com', '555-25372', 'Calm but busy', 'Operations', 'Research Operations', '2011-01-12', 'Active', 'Briar (555-836417)', 'PhD in Patience', 'Species of Dune', 'mic.jpg'),
-('BIO10-0014', 'Dominik', 'Wilkowski', 'Dom', 'dom.wilko@biolab.com', '555-666', 'Total nerd.', 'Computer science', 'Senior Dork', '2023-12-24', 'Active', 'Belle (555-11101)', 'Dropout', 'Compiling things', 'dom.jpg');
+('BIO10-0001', 'Gene', 'Splicer', 'Gene Splicer', 'gene.splicer@biolab.com', '555-0100', 'Always on the cutting edge.', 'Genetics', 'Senior Scientist', '2020-01-15', 'Active', 'Dr. Helix (555-1111)', 'PhD in Genetics', 'DNA recombination', 'gene_splicer.png'),
+('BIO10-0002', 'Elle', 'Ment', 'Elle Ment', 'elle.ment@biolab.com', '555-0101', 'Her experiments always have great chemistry.', 'Chemistry', 'Lab Assistant', '2021-06-01', 'Active', 'Sam Ment (555-2222)', 'BSc in Chemistry', 'Chemical analysis', 'elle_ment.png'),
+('BIO10-0003', 'Adam', 'Zyme', 'Adam Zyme', 'adam.zyme@biolab.com', '555-0102', 'Enzymes are his catalyst.', 'Biochemistry', 'Research Scientist', '2019-09-10', 'Left', 'Eve Zyme (555-3333)', 'PhD in Biochemistry', 'Enzymology', 'adam_zyme.png'),
+('BIO10-0004', 'Ann', 'Tibody', 'Ann Tibody', 'ann.tibody@biolab.com', '555-0103', 'Her work is highly defensive.', 'Immunology', 'Lab Technician', '2018-05-20', 'OnLeave', 'Ian Tibody (555-4444)', 'BSc in Biology', 'Antibody production', 'ann_tibody.png'),
+('BIO10-0005', 'Phil', 'Ter', 'Phil Ter', 'phil.ter@biolab.com', '555-0104', 'Filtering out the impurities.', 'Microbiology', 'Lab Assistant', '2022-02-14', 'Active', 'Sue Ter (555-5555)', 'BSc in Microbiology', 'Filtration techniques', 'phil_ter.png'),
+('BIO10-0006', 'Ben', 'Doyle', 'Ben Doyle', 'ben.doyle@biolab.com', '555-0105', 'Digging deep into research.', 'Geology', 'Research Scientist', '2017-11-01', 'Left', 'Maggie Doyle (555-6666)', 'PhD in Geology', 'Soil analysis', 'ben_doyle.png'),
+('BIO10-0007', 'Ari', 'Ous', 'Ari Ous', 'ari.ous@biolab.com', '555-0106', 'Her ideas are contagious.', 'Virology', 'Senior Scientist', '2016-07-30', 'Active', 'Val Ous (555-7777)', 'PhD in Virology', 'Virus research', 'ari_ous.png'),
+('BIO10-0008', 'Polly', 'Merase', 'Polly Merase', 'polly.merase@biolab.com', '555-0107', 'She never stops copying.', 'Molecular Biology', 'Lab Technician', '2021-03-12', 'OnLeave', 'Ruth Merase (555-8888)', 'BSc in Molecular Biology', 'PCR techniques', 'polly_merase.png'),
+('BIO10-0009', 'Dee', 'N.A.', 'Dee N.A.', 'dee.na@biolab.com', '555-0108', 'At the core of every discovery.', 'Genomics', 'Research Scientist', '2018-08-24', 'Left', 'Jay N.A. (555-9999)', 'PhD in Genomics', 'Genome sequencing', 'dee_na.png'),
+('BIO10-0010', 'Helix', 'Turner', 'Helix Turner', 'helix.turner@biolab.com', '555-0109', 'Twists and turns in his research.', 'Structural Biology', 'Lab Assistant', '2020-12-05', 'Left', 'Felix Turner (555-1010)', 'BSc in Structural Biology', 'Protein folding', 'helix_turner.png'),
+('BIO10-0011', 'Max', 'A Million', 'Max A Million', 'max.a.million@biolab.com', '555-0110', 'Always reaching for the maximum.', 'Data Analysis', 'Data Scientist', '2019-04-01', 'Left', 'Mina Million (555-1111)', 'MSc in Data Science', 'Big data analytics', 'max_a_million.png'),
+('BIO10-0012', 'Eve', 'Olution', 'Eve Olution', 'eve.olution@biolab.com', '555-0111', 'Constantly adapting.', 'Evolutionary Biology', 'Senior Scientist', '2015-10-10', 'Active', 'Adam Olution (555-1212)', 'PhD in Evolutionary Biology', 'Species adaptation', 'eve_olution.png'),
+('BIO10-0013', 'Michael', 'Shipley', 'Mic Shipley', 'mic@biolab.com', '555-25372', 'Calm but busy', 'Operations', 'Research Operations', '2011-01-12', 'Active', 'Briar (555-836417)', 'PhD in Patience', 'Species of Dune', 'mic.png'),
+('BIO10-0014', 'Dominik', 'Wilkowski', 'Dom', 'dom.wilko@biolab.com', '555-666', 'Total nerd.', 'Computer science', 'Senior Dork', '2023-12-24', 'Active', 'Belle (555-11101)', 'Dropout', 'Compiling things', NULL);
 
 
 
@@ -68,18 +68,18 @@ CREATE TABLE equipment (
 	notes TEXT
 );
 INSERT INTO equipment (equipment_type, qrcode, create_date, name, status, manufacturer, purchase_date, vendor, cost_in_cent, warranty_expiration_date, location, notes) VALUES
-('Flask','equipment/qr_00001_F.svg','2022-09-18T12:45:59.324310806Z','Stevens Flask','Working','Flasktastic Labs','2022-09-19T12:45:59.324310806Z','SupplySidekick',50000,'2025-01-15T12:45:59.324310806Z','Back Row D, Column 27','This one is a working horse!'),
-('Vessel','equipment/qr_00002_V.svg','2024-08-15T12:45:59.324310806Z','Britta','NeedsCleaning','VesselForge','2022-06-10T12:45:59.324310806Z','ScienceStash',75000,'2024-06-10T12:45:59.324310806Z','In the cafeterias fridge','Has a crack on the top left'),
-('Flask','equipment/qr_00003_F.svg','2023-01-12T12:45:59.324310806Z','Flasky McFlaskface','Sterilization','BeakerMakers','2022-12-01T12:45:59.324310806Z','LabGear Galore',62050,'2026-01-12T12:45:59.324310806Z','Top Shelf, Aisle 5','Always keeps it clean!'),
-('Vessel','equipment/qr_00004_V.svg','2023-05-20T12:45:59.324310806Z','Vessela','Broken','VesselMakers Inc.','2021-07-15T12:45:59.324310806Z','SupplySidekick',82000,'2023-11-20T12:45:59.324310806Z','Storage Room B, Shelf 3','Handle with care... or not.'),
-('IncubationCabinet','equipment/qr_00005_I.svg','2022-11-05T12:45:59.324310806Z','Flasknado','NeedsCleaning','FlaskForge','2022-10-25T12:45:59.324310806Z','ScienceStash',58099,'2025-10-05T12:45:59.324310806Z','Chemical Lab, Table 4','Whips up a storm in experiments!'),
-('Vessel','equipment/qr_00006_V.svg','2024-03-30T12:45:59.324310806Z','Vesselina','OutOfCommission','VesselVentures','2023-04-18T12:45:59.324310806Z','LabGear Galore',99000,'2024-03-30T12:45:59.324310806Z','Main Lab, Counter 12','All sailed out.'),
-('IncubationCabinet','equipment/qr_00007_I.svg','2024-02-10T12:45:59.324310806Z','Sir Mix-a-Lot','Working','Flasky Foundry','2023-11-11T12:45:59.324310806Z','SupplySidekick',73000,'2027-02-10T12:45:59.324310806Z','Mixology Lab, Station 8','Holds mixes like a pro!'),
-('IncubationCabinet','equipment/qr_00008_I.svg','2023-07-22T12:45:59.324310806Z','Captain Contain','Preparation','Containment Creations','2022-08-02T12:45:59.324310806Z','ScienceStash',67000,'2026-07-22T12:45:59.324310806Z','Secure Storage, Area 3','A true captain of containment.'),
-('Flask','equipment/qr_00009_F.svg','2023-09-09T12:45:59.324310806Z','Dr. Flaskenstein','Working','Mad Flask Labs','2023-05-19T12:45:59.324310806Z','LabGear Galore',52069,'2025-09-09T12:45:59.324310806Z','Experiment Zone, Bay 2','Brings experiments to life!'),
-('Vessel','equipment/qr_00010_V.svg','2024-04-15T12:45:59.324310806Z','Vesselocity','Sterilization','Vessel Velocity Inc.','2023-07-01T12:45:59.324310806Z','SupplySidekick',84500,'2026-04-15T12:45:59.324310806Z','High-Speed Lab, Corner 9','Speedy and sleek, always on the go!'),
-('Flask','equipment/qr_00011_F.svg','2024-01-18T12:45:59.324310806Z','Flask-in-a-Box','Working','Boxed Labs','2022-12-15T12:45:59.324310806Z','ScienceStash',54000,'2027-01-18T12:45:59.324310806Z','Storage Unit 12, Shelf 4','Comes with a twist!'),
-('IncubationCabinet','equipment/qr_00012_I.svg','2023-10-25T12:45:59.324310806Z','Vessel of Wonder','NeedsCleaning','WonderVessels','2022-03-11T12:45:59.324310806Z','LabGear Galore',91010,'2024-10-25T12:45:59.324310806Z','Mystery Lab, Area 7','A cabinet full of surprises!');
+('Flask','qr_00001_F.svg','2022-09-18T12:45:59.324310806Z','Stevens Flask','Working','Flasktastic Labs','2022-09-19T12:45:59.324310806Z','SupplySidekick',50000,'2025-01-15T12:45:59.324310806Z','Back Row D, Column 27','This one is a working horse!'),
+('Vessel','qr_00002_V.svg','2024-08-15T12:45:59.324310806Z','Britta','NeedsCleaning','VesselForge','2022-06-10T12:45:59.324310806Z','ScienceStash',75000,'2024-06-10T12:45:59.324310806Z','In the cafeterias fridge','Has a crack on the top left'),
+('Flask','qr_00003_F.svg','2023-01-12T12:45:59.324310806Z','Flasky McFlaskface','Sterilization','BeakerMakers','2022-12-01T12:45:59.324310806Z','LabGear Galore',62050,'2026-01-12T12:45:59.324310806Z','Top Shelf, Aisle 5','Always keeps it clean!'),
+('Vessel','qr_00004_V.svg','2023-05-20T12:45:59.324310806Z','Vessela','Broken','VesselMakers Inc.','2021-07-15T12:45:59.324310806Z','SupplySidekick',82000,'2023-11-20T12:45:59.324310806Z','Storage Room B, Shelf 3','Handle with care... or not.'),
+('IncubationCabinet','qr_00005_I.svg','2022-11-05T12:45:59.324310806Z','Flasknado','NeedsCleaning','FlaskForge','2022-10-25T12:45:59.324310806Z','ScienceStash',58099,'2025-10-05T12:45:59.324310806Z','Chemical Lab, Table 4','Whips up a storm in experiments!'),
+('Vessel','qr_00006_V.svg','2024-03-30T12:45:59.324310806Z','Vesselina','OutOfCommission','VesselVentures','2023-04-18T12:45:59.324310806Z','LabGear Galore',99000,'2024-03-30T12:45:59.324310806Z','Main Lab, Counter 12','All sailed out.'),
+('IncubationCabinet','qr_00007_I.svg','2024-02-10T12:45:59.324310806Z','Sir Mix-a-Lot','Working','Flasky Foundry','2023-11-11T12:45:59.324310806Z','SupplySidekick',73000,'2027-02-10T12:45:59.324310806Z','Mixology Lab, Station 8','Holds mixes like a pro!'),
+('IncubationCabinet','qr_00008_I.svg','2023-07-22T12:45:59.324310806Z','Captain Contain','Preparation','Containment Creations','2022-08-02T12:45:59.324310806Z','ScienceStash',67000,'2026-07-22T12:45:59.324310806Z','Secure Storage, Area 3','A true captain of containment.'),
+('Flask','qr_00009_F.svg','2023-09-09T12:45:59.324310806Z','Dr. Flaskenstein','Working','Mad Flask Labs','2023-05-19T12:45:59.324310806Z','LabGear Galore',52069,'2025-09-09T12:45:59.324310806Z','Experiment Zone, Bay 2','Brings experiments to life!'),
+('Vessel','qr_00010_V.svg','2024-04-15T12:45:59.324310806Z','Vesselocity','Sterilization','Vessel Velocity Inc.','2023-07-01T12:45:59.324310806Z','SupplySidekick',84500,'2026-04-15T12:45:59.324310806Z','High-Speed Lab, Corner 9','Speedy and sleek, always on the go!'),
+('Flask','qr_00011_F.svg','2024-01-18T12:45:59.324310806Z','Flask-in-a-Box','Working','Boxed Labs','2022-12-15T12:45:59.324310806Z','ScienceStash',54000,'2027-01-18T12:45:59.324310806Z','Storage Unit 12, Shelf 4','Comes with a twist!'),
+('IncubationCabinet','qr_00012_I.svg','2023-10-25T12:45:59.324310806Z','Vessel of Wonder','NeedsCleaning','WonderVessels','2022-03-11T12:45:59.324310806Z','LabGear Galore',91010,'2024-10-25T12:45:59.324310806Z','Mystery Lab, Area 7','A cabinet full of surprises!');
 
 CREATE TABLE equipment_notes (
 	id SERIAL PRIMARY KEY,
@@ -162,29 +162,29 @@ CREATE TABLE equipment_actions (
 CREATE INDEX equipment_actions_equipment ON equipment_actions (equipment);
 CREATE INDEX equipment_actions_person ON equipment_actions (person);
 INSERT INTO equipment_actions (action_type, equipment, person, notes, field, old_value, new_value) VALUES
-('cleaning', 1, 3, 'Found a tiny civilization of dust bunnies; negotiations are ongoing.', '', '', ''),
+('cleaning', 1, 3, 'Found a tiny civilization of dust bunnies; negotiations are ongoing.', NULL, NULL, NULL),
 ('edit', 1, 5, 'Status changed to "Sentient"; it passed the Turing test.', 'status', 'working', 'broken'),
 ('edit', 2, 8, 'Moved to the "Noisy Equipment" section; it wouldnt stop humming.', 'location', 'Under desk', 'Shelve 12, Cell 12, Row E'),
-('edit', 2, 2, 'Updated manual to include "Do not feed after midnight."', 'notes', '', 'No heat for this one'),
-('sterilization', 3, 6, 'Sterilized after it started growing its own cultures.', '', '', ''),
-('cleaning', 3, 9, 'Removed mysterious sticky substance; taste test inconclusive.', '', '', ''),
+('edit', 2, 2, 'Updated manual to include "Do not feed after midnight."', 'notes', NULL, 'No heat for this one'),
+('sterilization', 3, 6, 'Sterilized after it started growing its own cultures.', NULL, NULL, NULL),
+('cleaning', 3, 9, 'Removed mysterious sticky substance; taste test inconclusive.', NULL, NULL, NULL),
 ('edit', 4, 1, 'Status changed to "Possessed"; it started making eerie sounds.', 'status', 'NeedsCleaning', 'OutOfComission'),
-('edit', 4, 14, 'Edited settings to disable the "Self-Destruct" feature.', 'notes', 'TODO', ''),
-('preparation', 5, 7, 'Prepared for the annual "Equipment Talent Show".', '', '', ''),
-('sterilization', 5, 12, 'Sterilized after it didnt want to join the bacteria union.', '', '', ''),
+('edit', 4, 14, 'Edited settings to disable the "Self-Destruct" feature.', 'notes', 'TODO', NULL),
+('preparation', 5, 7, 'Prepared for the annual "Equipment Talent Show".', NULL, NULL, NULL),
+('sterilization', 5, 12, 'Sterilized after it didnt want to join the bacteria union.', NULL, NULL, NULL),
 ('edit', 6, 4, 'Moved to storage; it needs some "alone time".', 'location', 'Shelf Top Floor', 'Basement'),
-('cleaning', 7, 11, 'Cleaned the "Error 404: Cleanliness Not Found".', '', '', ''),
+('cleaning', 7, 11, 'Cleaned the "Error 404: Cleanliness Not Found".', NULL, NULL, NULL),
 ('edit', 7, 2, 'Status changed to "Mysteriously Wet"; source of moisture unknown.', 'status', 'NeedsCleaning', 'Working'),
-('edit', 7, 13, 'Updated firmware to version 1.21 Flask.', 'notes', 'Reminder: to clean this', ''),
-('preparation', 8, 5, 'Prepared for interdimensional travel; safety not guaranteed.', '', '', ''),
-('sterilization', 9, 10, 'Sterilized after an incident with a radioactive burrito.', '', '', ''),
+('edit', 7, 13, 'Updated firmware to version 1.21 Flask.', 'notes', 'Reminder: to clean this', NULL),
+('preparation', 8, 5, 'Prepared for interdimensional travel; safety not guaranteed.', NULL, NULL, NULL),
+('sterilization', 9, 10, 'Sterilized after an incident with a radioactive burrito.', NULL, NULL, NULL),
 ('edit', 9, 3, 'Adjusted settings to "Do Not Disturb"; its meditating.', 'status', 'Working', 'NeedsCleaning'),
 ('edit', 10, 6, 'Relocated to Lab 42; because its the answer to everything.', 'location', 'Shelf 41', 'Shelf 42'),
 ('edit', 11, 8, 'Status changed to "Invisible"; cant find it anywhere.', 'location', 'nowhere', 'Shelf 7'),
-('cleaning', 11, 1, 'Attempted to clean; ended up in a philosophical debate.', '', '', ''),
+('cleaning', 11, 1, 'Attempted to clean; ended up in a philosophical debate.', NULL, NULL, NULL),
 ('edit', 12, 14, 'Edited user manual to include "Beware of the Leopard".', 'notes', 'Contains Leopard', 'Contains Leptospira'),
-('preparation', 12, 7, 'Prepared for upgrade; hoping it doesnt gain self-awareness.', '', '', ''),
-('cleaning', 12, 9, 'Cleaned glitter residue; who had a party without inviting me?', '', '', '');
+('preparation', 12, 7, 'Prepared for upgrade; hoping it doesnt gain self-awareness.', NULL, NULL, NULL),
+('cleaning', 12, 9, 'Cleaned glitter residue; who had a party without inviting me?', NULL, NULL, NULL);
 
 
 

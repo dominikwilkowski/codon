@@ -3,6 +3,7 @@ pub mod macros;
 
 pub mod app;
 pub mod components {
+	pub mod avatar;
 	pub mod button;
 	pub mod checkbox;
 	pub mod datepicker;
