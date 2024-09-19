@@ -113,8 +113,8 @@ pub fn EquipmentDetail() -> impl IntoView {
 							if equipment_data.get().is_some() {
 								match equipment_data.get().unwrap() {
 									Err(error) => {
+										go_to_listing.set(true);
 										view! {
-											go_to_listing.set(true);
 											<pre class="error">Server Error: {error.to_string()}</pre>
 										}
 											.into_view()
