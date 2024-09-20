@@ -13,7 +13,7 @@
 
 .footer_name span {
 	color: var(--text-muted);
-	margin-right: 0.25rem;
+	margin-right: -0.5rem;
 }
 
 .footer_list {

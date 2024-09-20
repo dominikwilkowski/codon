@@ -1,6 +1,6 @@
 -- init.sql
 CREATE TABLE samples (
-	id SERIAL PRIMARY KEY,
+	id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 	sample_type VARCHAR(100),
 	analyst VARCHAR(100)
 );
@@ -12,7 +12,7 @@ INSERT INTO samples (sample_type, analyst) VALUES ('sample_type1', 'Analyst One'
 
 -- people_status = 'Active', 'OnLeave', 'Left'
 CREATE TABLE people (
-	id SERIAL PRIMARY KEY,
+	id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 	employee_id TEXT UNIQUE,
 	status TEXT NOT NULL,
 	first_name TEXT,
@@ -53,7 +53,7 @@ INSERT INTO people (employee_id, first_name, last_name, preferred_name, email, p
 -- equipment_type = 'Flask', 'Vessel', 'IncubationCabinet'
 -- status = 'Working', 'NeedsCleaning', 'Preparation', 'Sterilization', 'Broken', 'OutOfCommission'
 CREATE TABLE equipment (
-	id SERIAL PRIMARY KEY,
+	id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 	equipment_type TEXT NOT NULL,
 	qrcode TEXT UNIQUE,
 	create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -82,7 +82,7 @@ INSERT INTO equipment (equipment_type, qrcode, create_date, name, status, manufa
 ('IncubationCabinet','qr_00012_I.svg','2023-10-25T12:45:59.324310806Z','Spore Spa','NeedsCleaning','WonderCabinets','2022-03-11T12:45:59.324310806Z','LabGear Galore',91010,'2024-10-25T12:45:59.324310806Z','Mystery Lab, Area 7',E'Welcome to the "Spore Spa"—where fungi come to relax, rejuvenate, and sporulate! 🧖‍♂️🍄\nBrought to you by WonderCabinets, this state-of-the-art incubation cabinet is the pinnacle of fungal luxury.\nOur team of intrepid scientists and researchers are on a mission to mold a better future by discovering sustainable solutions that are good for the planet.\n\nSo sit back, relax, and let the spores do the work—because saving the world shouldn\'t be a mushroom for error!');
 
 CREATE TABLE equipment_notes (
-	id SERIAL PRIMARY KEY,
+	id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 	equipment INT NOT NULL REFERENCES equipment(id) ON DELETE CASCADE,
 	create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	person INT NOT NULL REFERENCES people(id),
@@ -139,7 +139,7 @@ INSERT INTO equipment_notes (equipment, person, notes) VALUES
 
 -- action_type = 'cleaning', 'sterilization', 'preparation', 'edit'
 CREATE TABLE equipment_actions (
-	id SERIAL PRIMARY KEY,
+	id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 	action_type TEXT NOT NULL,
 	equipment INT NOT NULL REFERENCES equipment(id) ON DELETE CASCADE,
 	create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -183,7 +183,7 @@ INSERT INTO equipment_actions (action_type, equipment, person, notes, field, old
 
 -- culture_contamination_status = 'Clean', 'Xenic', 'Monoxenic', 'Axenic', 'Contaminated', 'ParentContaminated', 'CleanWasContaminated'
 CREATE TABLE culture (
-	id SERIAL PRIMARY KEY,
+	id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 	qrcode TEXT NOT NULL UNIQUE,
 	create_date TIMESTAMPTZ DEFAULT CURRENT_DATE,
 	create_by INT REFERENCES people(id),
