@@ -2,6 +2,7 @@ use crate::{
 	ds::Ds,
 	equipment::{Equipment, EquipmentAdd, EquipmentDetail, EquipmentEdit},
 	error_template::{AppError, ErrorTemplate},
+	footer::Footer,
 	header::Header,
 	home::Home,
 	samples::Samples,
@@ -89,7 +90,7 @@ pub fn App() -> impl IntoView {
 						</Routes>
 					</main>
 				</Router>
-				<footer>Footer</footer>
+				<Footer />
 			</MessageProvider>
 		</ThemeProvider>
 	}

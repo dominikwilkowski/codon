@@ -244,15 +244,23 @@ pub fn EquipmentDetail() -> impl IntoView {
 													row_count=count
 													hidden_fields
 												/>
+												Form here
 												<div class=css::items>
 													{notes
 														.into_iter()
 														.map(|note| {
 															view! {
 																<Avatar data=note.person />
-																<span>
+																<div>
+																	<small>
+																		{note
+																			.note
+																			.create_date
+																			.format("%d %b %Y %I:%M:%S %P")
+																			.to_string()}
+																	</small>
 																	<MultiLine text=note.note.notes />
-																</span>
+																</div>
 															}
 														})
 														.collect_view()}
@@ -416,6 +424,7 @@ pub async fn get_notes_for_equipment(
 		JOIN people ON equipment_notes.person = people.id
 		WHERE
 			equipment_notes.equipment = $1
+		ORDER BY equipment_notes.id DESC
 		LIMIT $2 OFFSET $3"#,
 	)
 	.bind(id)
@@ -490,6 +499,7 @@ pub async fn get_actions_for_equipment(
 		JOIN people ON equipment_actions.person = people.id
 		WHERE
 			equipment_actions.equipment = $1
+		ORDER BY equipment_actions.id DESC
 		LIMIT $2 OFFSET $3"#,
 	)
 	.bind(id)

@@ -19,31 +19,57 @@
 
 .list {
 	display: grid;
-	grid-template-columns: auto 1fr;
+	grid-template-columns: 1fr;
 }
 
 .list dd {
-	margin: 0;
-}
-
-.list dt {
-	text-align: right;
+	margin: 0 0 2rem 0;
 }
 
 .list dd,
 .list dt {
-	padding: 1rem;
-	border-radius: var(--border-radius-md);
-}
-
-.list *:nth-child(4n),
-.list *:nth-child(4n - 1) {
-	background: #ffffff05;
+	padding: 0.5rem;
 }
 
 .list dt {
 	display: grid;
 	align-items: center;
+	background: #ffffff05;
+}
+
+@media (min-width: 42rem) {
+	.list {
+		grid-template-columns: auto 1fr;
+	}
+
+	.list dt {
+		text-align: right;
+	}
+
+	.list dd {
+		border-top-right-radius: var(--border-radius-md);
+		border-bottom-right-radius: var(--border-radius-md);
+		margin: 0;
+	}
+
+	.list dt {
+		border-top-left-radius: var(--border-radius-md);
+		border-bottom-left-radius: var(--border-radius-md);
+	}
+
+	.list dt {
+		background: transparent;
+	}
+
+	.list dd,
+	.list dt {
+		padding: 1rem;
+	}
+
+	.list dd:nth-child(4n),
+	.list dt:nth-child(4n - 1) {
+		background: #ffffff05;
+	}
 }
 
 .attachment_list {
@@ -57,8 +83,14 @@
 	display: grid;
 	gap: 2.5rem 1rem;
 	grid-template-columns: auto 1fr;
-	align-items: center;
 	max-height: 50rem;
 	overflow: auto;
 	padding: 1rem 0;
+}
+
+.attachment_list .items small {
+	display: block;
+	font-size: 70%;
+	color: var(--text-muted);
+	margin-bottom: 0.5rem;
 }

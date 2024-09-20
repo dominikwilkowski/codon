@@ -20,70 +20,94 @@ pub fn Row(
 						field_filter.get().contains(&String::from("id"))
 					}>
 						<td class="equipment_listing_id">
-							<EquipmentCell cell=equipment.id />
+							<EquipmentCell cell=equipment.id table_view=true />
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("equipment_type"))
 					}>
 						<td class="equipment_listing_equipment_type">
-							<EquipmentCell cell=equipment.equipment_type.clone() />
+							<EquipmentCell
+								cell=equipment.equipment_type.clone()
+								table_view=true
+							/>
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("qrcode"))
 					}>
 						<td class="equipment_listing_qrcode">
-							<EquipmentCell cell=equipment.qrcode.clone() />
+							<EquipmentCell
+								cell=equipment.qrcode.clone()
+								table_view=true
+							/>
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("create_date"))
 					}>
 						<td class="equipment_listing_create_date">
-							<EquipmentCell cell=equipment.create_date />
+							<EquipmentCell cell=equipment.create_date table_view=true />
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("name"))
 					}>
 						<td class="equipment_listing_name">
-							<EquipmentCell cell=equipment.name.clone() />
+							<EquipmentCell
+								cell=equipment.name.clone()
+								table_view=true
+							/>
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("status"))
 					}>
 						<td class="equipment_listing_status">
-							<EquipmentCell cell=equipment.status.clone() />
+							<EquipmentCell
+								cell=equipment.status.clone()
+								table_view=true
+							/>
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("manufacturer"))
 					}>
 						<td class="equipment_listing_manufacturer">
-							<EquipmentCell cell=equipment.manufacturer.clone() />
+							<EquipmentCell
+								cell=equipment.manufacturer.clone()
+								table_view=true
+							/>
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("purchase_date"))
 					}>
 						<td class="equipment_listing_purchase_date">
-							<EquipmentCell cell=equipment.purchase_date />
+							<EquipmentCell
+								cell=equipment.purchase_date
+								table_view=true
+							/>
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("vendor"))
 					}>
 						<td class="equipment_listing_vendor">
-							<EquipmentCell cell=equipment.vendor.clone() />
+							<EquipmentCell
+								cell=equipment.vendor.clone()
+								table_view=true
+							/>
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("cost_in_cent"))
 					}>
 						<td class="equipment_listing_cost_in_cent">
-							<EquipmentCell cell=equipment.cost_in_cent.clone() />
+							<EquipmentCell
+								cell=equipment.cost_in_cent.clone()
+								table_view=true
+							/>
 						</td>
 					</Show>
 					<Show when=move || {
@@ -92,21 +116,30 @@ pub fn Row(
 							.contains(&String::from("warranty_expiration_date"))
 					}>
 						<td class="equipment_listing_warranty_expiration_date">
-							<EquipmentCell cell=equipment.warranty_expiration_date />
+							<EquipmentCell
+								cell=equipment.warranty_expiration_date
+								table_view=true
+							/>
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("location"))
 					}>
 						<td class="equipment_listing_location">
-							<EquipmentCell cell=equipment.location.clone() />
+							<EquipmentCell
+								cell=equipment.location.clone()
+								table_view=true
+							/>
 						</td>
 					</Show>
 					<Show when=move || {
 						field_filter.get().contains(&String::from("notes"))
 					}>
 						<td class="equipment_listing_notes">
-							<EquipmentCell cell=equipment.notes.clone() />
+							<EquipmentCell
+								cell=equipment.notes.clone()
+								table_view=true
+							/>
 						</td>
 					</Show>
 					<td class="equipment_listing_details_link">

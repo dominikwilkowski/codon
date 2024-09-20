@@ -1,0 +1,120 @@
+.footer {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	margin: 17rem 0 2rem 0;
+	padding: 0 3rem;
+}
+
+.footer_name {
+	text-transform: uppercase;
+	font-weight: 900;
+	font-size: 1.5rem;
+}
+
+.footer_name span {
+	color: var(--text-muted);
+	margin-right: 0.25rem;
+}
+
+.footer_list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	font-size: 70%;
+	margin-top: 1rem;
+}
+
+.footer_list a {
+	display: inline-block;
+	margin: 0.25rem 0;
+	color: var(--text-muted);
+	text-decoration: none;
+	transition: color 0.3s ease;
+}
+
+.footer_list a:hover {
+	color: var(--action);
+}
+
+.footer_logo {
+	text-align: right;
+}
+
+.footer_logo :global(.logo-codon) {
+	width: 5.2rem;
+}
+
+.footer_logo :global(.logo-codon):hover :global(.logo-codon-p1) {
+	animation: hue1 3s infinite linear 5s;
+}
+
+.footer_logo :global(.logo-codon):hover :global(.logo-codon-p2) {
+	animation: hue2 3s infinite linear 5s;
+}
+
+.footer_logo :global(.logo-codon):hover :global(.logo-codon-p3) {
+	animation: hue3 3s infinite linear 5s;
+}
+
+.footer_logo :global(.logo-codon):hover :global(.logo-codon-p4) {
+	animation: hue4 3s infinite linear 5s;
+}
+
+.footer_logo :global(.logo-codon):hover :global(.logo-codon-p5) {
+	animation: hue5 3s infinite linear 5s;
+}
+
+@keyframes hue1 {
+	from {
+		color: red;
+		filter: hue-rotate(0);
+	}
+	to {
+		color: red;
+		filter: hue-rotate(-360deg);
+	}
+}
+
+@keyframes hue2 {
+	from {
+		color: green;
+		filter: hue-rotate(0);
+	}
+	to {
+		color: green;
+		filter: hue-rotate(-360deg);
+	}
+}
+
+@keyframes hue3 {
+	from {
+		color: blue;
+		filter: hue-rotate(0);
+	}
+	to {
+		color: blue;
+		filter: hue-rotate(-360deg);
+	}
+}
+
+@keyframes hue4 {
+	from {
+		color: hotpink;
+		filter: hue-rotate(0);
+	}
+	to {
+		color: hotpink;
+		filter: hue-rotate(-360deg);
+	}
+}
+
+@keyframes hue5 {
+	from {
+		color: rebeccapurple;
+		filter: hue-rotate(0);
+	}
+	to {
+		color: rebeccapurple;
+		filter: hue-rotate(-360deg);
+	}
+}

@@ -18,6 +18,7 @@ pub mod db;
 pub mod ds;
 pub mod equipment;
 pub mod error_template;
+pub mod footer;
 pub mod header;
 pub mod home;
 pub mod icons;
