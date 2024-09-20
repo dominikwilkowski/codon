@@ -1,6 +1,11 @@
 use crate::{
-	components::{avatar::Avatar, multiline::MultiLine, pagination::Pagination},
-	equipment::{ActionsPerson, EquipmentCell, EquipmentData, NotesPerson},
+	components::{
+		avatar::Avatar, button::Button, multiline::MultiLine,
+		pagination::Pagination,
+	},
+	equipment::{
+		ActionsPerson, EquipmentCell, EquipmentData, EquipmentStatus, NotesPerson,
+	},
 	error_template::ErrorTemplate,
 	icons::EquipmentLogo,
 };
@@ -120,13 +125,14 @@ pub fn EquipmentDetail() -> impl IntoView {
 											.into_view()
 									}
 									Ok(equipment) => {
+										let is_archived = equipment.status.clone()
+											== EquipmentStatus::Archived;
 										view! {
 											<div class=css::details>
 												<h1 class=css::heading>
 													<EquipmentLogo />
 													" "
 													{equipment.name.clone()}
-													<small>{equipment.id}</small>
 													<A href=format!("/equipment/edit/{}", equipment.id)>Edit</A>
 												</h1>
 
@@ -143,7 +149,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Equipment Type</dt>
 													<dd>
-														<EquipmentCell cell=equipment.equipment_type />
+														<EquipmentCell cell=equipment.equipment_type.clone() />
 													</dd>
 
 													<dt>Qrcode</dt>
@@ -158,7 +164,19 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Status</dt>
 													<dd>
-														<EquipmentCell cell=equipment.status />
+														<EquipmentCell cell=equipment.status.clone() />
+
+														<Button>
+															"Mark as \""
+															{EquipmentStatus::get_next_status(
+																	equipment.status.clone(),
+																	equipment.equipment_type,
+																)
+																.to_string()}"\""
+														</Button>
+														<Show when=move || !is_archived>
+															<Button>"Archive"</Button>
+														</Show>
 													</dd>
 
 													<dt>Manufacturer</dt>

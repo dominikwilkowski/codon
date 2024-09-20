@@ -44,24 +44,24 @@ impl EquipmentType {
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub enum EquipmentStatus {
+	Cleaned,
+	Prepared,
+	Sterilized,
+	InUse,
 	#[default]
-	Working,
-	NeedsCleaning,
-	Preparation,
-	Sterilization,
-	Broken,
-	OutOfCommission,
+	Dirty,
+	Archived,
 }
 
 impl EquipmentStatus {
 	pub fn parse(input: String) -> Self {
 		match input.to_lowercase().as_str() {
-			"working" => EquipmentStatus::Working,
-			"needscleaning" => EquipmentStatus::NeedsCleaning,
-			"preparation" => EquipmentStatus::Preparation,
-			"sterilization" => EquipmentStatus::Sterilization,
-			"broken" => EquipmentStatus::Broken,
-			"outofcommission" => EquipmentStatus::OutOfCommission,
+			"cleaned" => EquipmentStatus::Cleaned,
+			"prepared" => EquipmentStatus::Prepared,
+			"sterilized" => EquipmentStatus::Sterilized,
+			"inuse" => EquipmentStatus::InUse,
+			"dirty" => EquipmentStatus::Dirty,
+			"archived" => EquipmentStatus::Archived,
 			_ => Default::default(),
 		}
 	}
@@ -70,12 +70,12 @@ impl EquipmentStatus {
 impl std::fmt::Display for EquipmentStatus {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		match self {
-			EquipmentStatus::Working => write!(f, "Working"),
-			EquipmentStatus::NeedsCleaning => write!(f, "Needs Cleaning"),
-			EquipmentStatus::Preparation => write!(f, "Preparation"),
-			EquipmentStatus::Sterilization => write!(f, "Sterilization"),
-			EquipmentStatus::Broken => write!(f, "Broken"),
-			EquipmentStatus::OutOfCommission => write!(f, "Out Of Commission"),
+			EquipmentStatus::Cleaned => write!(f, "Cleaned"),
+			EquipmentStatus::Prepared => write!(f, "Prepared"),
+			EquipmentStatus::Sterilized => write!(f, "Sterilized"),
+			EquipmentStatus::InUse => write!(f, "In Use"),
+			EquipmentStatus::Dirty => write!(f, "Dirty"),
+			EquipmentStatus::Archived => write!(f, "Archived"),
 		}
 	}
 }
@@ -83,13 +83,31 @@ impl std::fmt::Display for EquipmentStatus {
 impl EquipmentStatus {
 	pub fn get_fields() -> Vec<String> {
 		vec![
-			String::from("Working"),
-			String::from("NeedsCleaning"),
-			String::from("Preparation"),
-			String::from("Sterilization"),
-			String::from("Broken"),
-			String::from("OutOfCommission"),
+			String::from("Cleaned"),
+			String::from("Prepared"),
+			String::from("Sterilized"),
+			String::from("InUse"),
+			String::from("Dirty"),
+			String::from("Archived"),
 		]
+	}
+
+	pub fn get_next_status(current: Self, _etype: EquipmentType) -> Self {
+		match current {
+			EquipmentStatus::Cleaned => EquipmentStatus::Prepared,
+			EquipmentStatus::Prepared => {
+				// In the future we may add a Bio Reactor which won't be able to be sterilized
+				// if etype == EquipmentType::BioReactor {
+				// 	EquipmentStatus::InUse
+				// } else {
+				EquipmentStatus::Sterilized
+				// }
+			},
+			EquipmentStatus::Sterilized => EquipmentStatus::InUse,
+			EquipmentStatus::InUse => EquipmentStatus::Dirty,
+			EquipmentStatus::Dirty => EquipmentStatus::Cleaned,
+			EquipmentStatus::Archived => EquipmentStatus::Dirty,
+		}
 	}
 }
 

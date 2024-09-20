@@ -51,7 +51,7 @@ INSERT INTO people (employee_id, first_name, last_name, preferred_name, email, p
 -- EQUIPMENT --
 
 -- equipment_type = 'Flask', 'Vessel', 'IncubationCabinet'
--- status = 'Working', 'NeedsCleaning', 'Preparation', 'Sterilization', 'Broken', 'OutOfCommission'
+-- status = 'Cleaned', 'Prepared', 'Sterilized', 'InUse', 'Dirty', 'Archived'
 CREATE TABLE equipment (
 	id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 	equipment_type TEXT NOT NULL,
@@ -68,18 +68,18 @@ CREATE TABLE equipment (
 	notes TEXT
 );
 INSERT INTO equipment (equipment_type, qrcode, create_date, name, status, manufacturer, purchase_date, vendor, cost_in_cent, warranty_expiration_date, location, notes) VALUES
-('Flask','qr_00001_F.svg','2022-09-18T12:45:59.324310806Z','Stevens Flask','Working','Flasktastic Labs','2022-09-19T12:45:59.324310806Z','SupplySidekick',50000,'2025-01-15T12:45:59.324310806Z','Back Row D, Column 27','This one is a working horse!'),
-('Vessel','qr_00002_V.svg','2024-08-15T12:45:59.324310806Z','Britta','NeedsCleaning','VesselForge','2022-06-10T12:45:59.324310806Z','ScienceStash',75000,'2024-06-10T12:45:59.324310806Z','In the cafeterias fridge','Has a crack on the top left'),
-('Flask','qr_00003_F.svg','2023-01-12T12:45:59.324310806Z','Flasky McFlaskface','Sterilization','BeakerMakers','2022-12-01T12:45:59.324310806Z','LabGear Galore',62050,'2026-01-12T12:45:59.324310806Z','Top Shelf, Aisle 5','Always keeps it clean!'),
-('Vessel','qr_00004_V.svg','2023-05-20T12:45:59.324310806Z','Vessela','Broken','VesselMakers Inc.','2021-07-15T12:45:59.324310806Z','SupplySidekick',82000,'2023-11-20T12:45:59.324310806Z','Storage Room B, Shelf 3','Handle with care... or not.'),
-('IncubationCabinet','qr_00005_I.svg','2022-11-05T12:45:59.324310806Z','Microbe Motel','NeedsCleaning','Germination Station Inc.','2022-10-25T12:45:59.324310806Z','ScienceStash',58099,'2025-10-05T12:45:59.324310806Z','Chemical Lab, Table 4','Whips up a storm in experiments!'),
-('Vessel','qr_00006_V.svg','2024-03-30T12:45:59.324310806Z','Vesselina','OutOfCommission','VesselVentures','2023-04-18T12:45:59.324310806Z','LabGear Galore',99000,'2024-03-30T12:45:59.324310806Z','Main Lab, Counter 12','All sailed out.'),
-('IncubationCabinet','qr_00007_I.svg','2024-02-10T12:45:59.324310806Z','Microbe Mansion','Working','Hot Box Industries','2023-11-11T12:45:59.324310806Z','SupplySidekick',73000,'2027-02-10T12:45:59.324310806Z','Mixology Lab, Station 8','Holds mixes like a pro!'),
-('IncubationCabinet','qr_00008_I.svg','2023-07-22T12:45:59.324310806Z','Captain Contain','Preparation','Containment Creations','2022-08-02T12:45:59.324310806Z','ScienceStash',67000,'2026-07-22T12:45:59.324310806Z','Secure Storage, Area 3','A true captain of containment.'),
-('Flask','qr_00009_F.svg','2023-09-09T12:45:59.324310806Z','Dr. Flaskenstein','Working','Mad Flask Labs','2023-05-19T12:45:59.324310806Z','LabGear Galore',52069,'2025-09-09T12:45:59.324310806Z','Experiment Zone, Bay 2','Brings experiments to life!'),
-('Vessel','qr_00010_V.svg','2024-04-15T12:45:59.324310806Z','Vesselocity','Sterilization','Vessel Velocity Inc.','2023-07-01T12:45:59.324310806Z','SupplySidekick',84500,'2026-04-15T12:45:59.324310806Z','High-Speed Lab, Corner 9','Speedy and sleek, always on the go!'),
-('Flask','qr_00011_F.svg','2024-01-18T12:45:59.324310806Z','Flask-in-a-Box','Working','Boxed Labs','2022-12-15T12:45:59.324310806Z','ScienceStash',54000,'2027-01-18T12:45:59.324310806Z','Storage Unit 12, Shelf 4','Comes with a twist!'),
-('IncubationCabinet','qr_00012_I.svg','2023-10-25T12:45:59.324310806Z','Spore Spa','NeedsCleaning','WonderCabinets','2022-03-11T12:45:59.324310806Z','LabGear Galore',91010,'2024-10-25T12:45:59.324310806Z','Mystery Lab, Area 7',E'Welcome to the "Spore Spa"—where fungi come to relax, rejuvenate, and sporulate! 🧖‍♂️🍄\nBrought to you by WonderCabinets, this state-of-the-art incubation cabinet is the pinnacle of fungal luxury.\nOur team of intrepid scientists and researchers are on a mission to mold a better future by discovering sustainable solutions that are good for the planet.\n\nSo sit back, relax, and let the spores do the work—because saving the world shouldn\'t be a mushroom for error!');
+('Flask','qr_00001_F.svg','2022-09-18T12:45:59.324310806Z','Stevens Flask','Cleaned','Flasktastic Labs','2022-09-19T12:45:59.324310806Z','SupplySidekick',50000,'2025-01-15T12:45:59.324310806Z','Back Row D, Column 27','This one is a working horse!'),
+('Vessel','qr_00002_V.svg','2024-08-15T12:45:59.324310806Z','Britta','Dirty','VesselForge','2022-06-10T12:45:59.324310806Z','ScienceStash',75000,'2024-06-10T12:45:59.324310806Z','In the cafeterias fridge','Has a crack on the top left'),
+('Flask','qr_00003_F.svg','2023-01-12T12:45:59.324310806Z','Flasky McFlaskface','Sterilized','BeakerMakers','2022-12-01T12:45:59.324310806Z','LabGear Galore',62050,'2026-01-12T12:45:59.324310806Z','Top Shelf, Aisle 5','Always keeps it clean!'),
+('Vessel','qr_00004_V.svg','2023-05-20T12:45:59.324310806Z','Vessela','Archived','VesselMakers Inc.','2021-07-15T12:45:59.324310806Z','SupplySidekick',82000,'2023-11-20T12:45:59.324310806Z','Storage Room B, Shelf 3','Handle with care... or not.'),
+('IncubationCabinet','qr_00005_I.svg','2022-11-05T12:45:59.324310806Z','Microbe Motel','Dirty','Germination Station Inc.','2022-10-25T12:45:59.324310806Z','ScienceStash',58099,'2025-10-05T12:45:59.324310806Z','Chemical Lab, Table 4','Whips up a storm in experiments!'),
+('Vessel','qr_00006_V.svg','2024-03-30T12:45:59.324310806Z','Vesselina','Archived','VesselVentures','2023-04-18T12:45:59.324310806Z','LabGear Galore',99000,'2024-03-30T12:45:59.324310806Z','Main Lab, Counter 12','All sailed out.'),
+('IncubationCabinet','qr_00007_I.svg','2024-02-10T12:45:59.324310806Z','Microbe Mansion','Cleaned','Hot Box Industries','2023-11-11T12:45:59.324310806Z','SupplySidekick',73000,'2027-02-10T12:45:59.324310806Z','Mixology Lab, Station 8','Holds mixes like a pro!'),
+('IncubationCabinet','qr_00008_I.svg','2023-07-22T12:45:59.324310806Z','Captain Contain','Prepared','Containment Creations','2022-08-02T12:45:59.324310806Z','ScienceStash',67000,'2026-07-22T12:45:59.324310806Z','Secure Storage, Area 3','A true captain of containment.'),
+('Flask','qr_00009_F.svg','2023-09-09T12:45:59.324310806Z','Dr. Flaskenstein','InUse','Mad Flask Labs','2023-05-19T12:45:59.324310806Z','LabGear Galore',52069,'2025-09-09T12:45:59.324310806Z','Experiment Zone, Bay 2','Brings experiments to life!'),
+('Vessel','qr_00010_V.svg','2024-04-15T12:45:59.324310806Z','Vesselocity','Sterilized','Vessel Velocity Inc.','2023-07-01T12:45:59.324310806Z','SupplySidekick',84500,'2026-04-15T12:45:59.324310806Z','High-Speed Lab, Corner 9','Speedy and sleek, always on the go!'),
+('Flask','qr_00011_F.svg','2024-01-18T12:45:59.324310806Z','Flask-in-a-Box','InUse','Boxed Labs','2022-12-15T12:45:59.324310806Z','ScienceStash',54000,'2027-01-18T12:45:59.324310806Z','Storage Unit 12, Shelf 4','Comes with a twist!'),
+('IncubationCabinet','qr_00012_I.svg','2023-10-25T12:45:59.324310806Z','Spore Spa','Prepared','WonderCabinets','2022-03-11T12:45:59.324310806Z','LabGear Galore',91010,'2024-10-25T12:45:59.324310806Z','Mystery Lab, Area 7',E'Welcome to the "Spore Spa"—where fungi come to relax, rejuvenate, and sporulate! 🧖‍♂️🍄\nBrought to you by WonderCabinets, this state-of-the-art incubation cabinet is the pinnacle of fungal luxury.\nOur team of intrepid scientists and researchers are on a mission to mold a better future by discovering sustainable solutions that are good for the planet.\n\nSo sit back, relax, and let the spores do the work—because saving the world shouldn\'t be a mushroom for error!');
 
 CREATE TABLE equipment_notes (
 	id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -158,17 +158,17 @@ INSERT INTO equipment_actions (action_type, equipment, person, notes, field, old
 ('edit', 2, 2, E'Updated manual to include "Do not feed after midnight."', 'notes', NULL, 'No heat for this one'),
 ('sterilization', 3, 6, E'Sterilized after it started growing it\'s own cultures.', NULL, NULL, NULL),
 ('cleaning', 3, 9, E'Removed mysterious sticky substance; taste test inconclusive.', NULL, NULL, NULL),
-('edit', 4, 1, E'Status changed to "Possessed"; it started making eerie sounds.', 'status', 'NeedsCleaning', 'OutOfComission'),
+('edit', 4, 1, E'Status changed to "Possessed"; it started making eerie sounds.', 'status', 'Dirty', 'OutOfComission'),
 ('edit', 4, 14, E'Edited settings to disable the "Self-Destruct" feature.', 'notes', 'TODO', NULL),
 ('preparation', 5, 7, E'Prepared for the annual "Equipment Talent Show".', NULL, NULL, NULL),
 ('sterilization', 5, 12, E'Sterilized after it didnt want to join the bacteria union.', NULL, NULL, NULL),
 ('edit', 6, 4, E'Moved to storage; it needs some "alone time".', 'location', 'Shelf Top Floor', 'Basement'),
 ('cleaning', 7, 11, E'Cleaned the "Error 404: Cleanliness Not Found".', NULL, NULL, NULL),
-('edit', 7, 2, E'Status changed to "Mysteriously Wet"; source of moisture unknown.', 'status', 'NeedsCleaning', 'Working'),
+('edit', 7, 2, E'Status changed to "Mysteriously Wet"; source of moisture unknown.', 'status', 'Dirty', 'InUse'),
 ('edit', 7, 13, E'Updated firmware to version 1.21 Flask.', 'notes', 'Reminder: to clean this', NULL),
 ('preparation', 8, 5, E'Prepared for interdimensional travel; safety not guaranteed.', NULL, NULL, NULL),
 ('sterilization', 9, 10, E'Sterilized after an incident with a radioactive burrito.', NULL, NULL, NULL),
-('edit', 9, 3, E'Adjusted settings to "Do Not Disturb"; it\'s meditating.', 'status', 'Working', 'NeedsCleaning'),
+('edit', 9, 3, E'Adjusted settings to "Do Not Disturb"; it\'s meditating.', 'status', 'InUse', 'Dirty'),
 ('edit', 10, 6, E'Relocated to Lab 42; because it\'s the answer to everything.', 'location', 'Shelf 41', 'Shelf 42'),
 ('edit', 11, 8, E'Status changed to "Invisible"; cant find it anywhere.', 'location', 'nowhere', 'Shelf 7'),
 ('cleaning', 11, 1, E'Attempted to clean; ended up in a philosophical debate.', NULL, NULL, NULL),

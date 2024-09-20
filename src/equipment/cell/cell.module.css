@@ -1,3 +1,11 @@
+.equipment_id {
+	font-weight: 200;
+	border: 1px solid #ffffff50;
+	padding: 0.1rem 0.5rem;
+	border-radius: var(--border-radius-md);
+	vertical-align: middle;
+}
+
 .equipment_type {
 	display: inline-grid;
 	justify-items: center;
@@ -11,12 +19,12 @@
 	display: inline-block;
 }
 
-.working,
-.needscleaning,
-.preparation,
-.sterilization,
-.broken,
-.outofcommission {
+.cleaned,
+.prepared,
+.sterilized,
+.inuse,
+.dirty,
+.archived {
 	display: inline-flex;
 	height: 28px;
 	align-items: center;
@@ -29,33 +37,33 @@
 	border-radius: var(--border-radius-sm);
 }
 
-.working {
+.cleaned {
 	background-color: #161e1a;
 	color: #18a058;
 	border: 1px solid #18a058;
 }
-.needscleaning {
+.prepared {
 	background-color: #1e1c16;
 	color: #f0a020;
 	border: 1px solid #f0a020;
 }
-.preparation {
+.sterilized {
 	background-color: #1f2122;
 	color: #ccc;
-	border: 1px dashed #ccc;
+	border: 1px solid #ccc;
 }
-.sterilization {
+.inuse {
 	background-color: #191622;
 	color: var(--secondary);
 	border: 1px solid var(--secondary);
 }
-.broken {
+.dirty {
 	background-color: #221a1a;
 	color: #d03050;
 	border: 1px solid #d03050;
 }
-.outofcommission {
+.archived {
 	background-color: #1f2122;
 	color: #ccc;
-	border: 1px solid #ccc;
+	border: 1px dashed #ccc;
 }

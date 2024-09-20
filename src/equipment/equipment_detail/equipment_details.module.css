@@ -2,16 +2,6 @@
 	margin: 1rem 0;
 }
 
-.heading small {
-	font-weight: 100;
-	font-size: 0.75rem;
-	margin: 0 1rem;
-	border: 1px solid #ffffff50;
-	padding: 0.1rem 0.5rem;
-	border-radius: var(--border-radius-md);
-	vertical-align: middle;
-}
-
 .heading a {
 	font-weight: 400;
 	font-size: 1rem;

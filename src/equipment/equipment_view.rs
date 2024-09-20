@@ -47,6 +47,12 @@ pub fn Equipment() -> impl IntoView {
 			1
 		}
 	});
+	let query_archived = create_rw_signal({
+		query
+			.with(|p| p.get("archive").cloned().unwrap_or(String::from("false")))
+			.parse::<bool>()
+			.unwrap_or(false)
+	});
 
 	let field_filter = create_rw_signal(vec![
 		String::from("id"),
@@ -65,6 +71,7 @@ pub fn Equipment() -> impl IntoView {
 				query_order.get(),
 				query_page.get(),
 				query_ipp.get(),
+				query_archived.get(),
 			)
 		},
 	);
@@ -94,6 +101,7 @@ pub fn Equipment() -> impl IntoView {
 									let hidden_fields = vec![
 										(String::from("field"), query_field.get()),
 										(String::from("order"), query_order.get()),
+										(String::from("archive"), query_archived.get().to_string()),
 									];
 									view! {
 										<Pagination
@@ -106,7 +114,7 @@ pub fn Equipment() -> impl IntoView {
 											hidden_fields=hidden_fields.clone()
 										/>
 										<div class=css::filter>
-											"Filter: "
+											"Columns: "
 											<MultiSelect
 												value=field_filter
 												options=create_rw_signal(
@@ -128,8 +136,37 @@ pub fn Equipment() -> impl IntoView {
 														);
 												}
 											>
-												Select all
+												All
 											</Button>
+											<form
+												action="/equipment"
+												method="get"
+												class=css::filter_switch
+											>
+												<input type="hidden" name="field" value=query_field.get() />
+												<input type="hidden" name="order" value=query_order.get() />
+												<input type="hidden" name="page" value=query_page.get() />
+												<input
+													type="hidden"
+													name="items_per_page"
+													value=query_ipp.get()
+												/>
+												<input
+													type="hidden"
+													name="archive"
+													value=(!query_archived.get()).to_string()
+												/>
+												<button type="submit">
+													Archived:
+													<div class=format!(
+														"input_shadow {} fake_switch-{}",
+														css::fake_switch,
+														query_archived.get().to_string(),
+													)>
+														<div />
+													</div>
+												</button>
+											</form>
 										</div>
 										<div class=css::table_wrapper>
 											<table class=css::table>
@@ -147,6 +184,11 @@ pub fn Equipment() -> impl IntoView {
 																type="hidden"
 																name="items_per_page"
 																value=query_ipp.get()
+															/>
+															<input
+																type="hidden"
+																name="archive"
+																value=query_archived.get().to_string()
 															/>
 														</THead>
 													</tr>
@@ -194,6 +236,7 @@ pub async fn get_equipment_data(
 	order: String,
 	page: u16,
 	items_per_page: u8,
+	show_archived: bool,
 ) -> Result<(Vec<EquipmentData>, i64), ServerFnError> {
 	use crate::{db::ssr::get_db, equipment::EquipmentSQLData};
 
@@ -222,9 +265,14 @@ pub async fn get_equipment_data(
 
 	let limit = items_per_page as i64;
 	let offset = (page as i64 - 1) * items_per_page as i64;
+	let status_where = if show_archived {
+		""
+	} else {
+		"WHERE status IS DISTINCT FROM 'Archived'"
+	};
 
 	let query = format!(
-		"SELECT * FROM equipment ORDER BY {field_sanitized} {order_sanitized} LIMIT $1 OFFSET $2",
+		"SELECT * FROM equipment {status_where} ORDER BY {field_sanitized} {order_sanitized} LIMIT $1 OFFSET $2",
 	);
 
 	let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLData>(&query)
@@ -239,9 +287,11 @@ pub async fn get_equipment_data(
 	let equipment_data: Vec<EquipmentData> =
 		equipment_sql_data.into_iter().map(Into::into).collect();
 
-	let row_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM equipment")
-		.fetch_one(get_db())
-		.await?;
+	let row_count: i64 = sqlx::query_scalar(&format!(
+		"SELECT COUNT(*) FROM equipment {status_where}"
+	))
+	.fetch_one(get_db())
+	.await?;
 
 	Ok((equipment_data, row_count))
 }

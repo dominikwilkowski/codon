@@ -16,9 +16,54 @@
 
 .filter {
 	display: grid;
-	grid-template-columns: auto 1fr auto;
+	grid-template-columns: auto 1fr auto auto;
 	align-items: center;
 	gap: 0.5rem;
 	margin: 1rem 0;
 	font-size: 75%;
+}
+
+.filter_switch {
+	margin: 0;
+	padding: 0;
+}
+
+.filter_switch button {
+	appearance: none;
+	border: none;
+	background: transparent;
+	box-shadow: none;
+	color: var(--text);
+	display: grid;
+	grid-auto-flow: column;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.fake_switch {
+	width: 40px;
+	height: 22px;
+	border-radius: 11px;
+	position: relative;
+	background: var(--input-bg);
+}
+
+.fake_switch div {
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	display: inline-block;
+	width: 18px;
+	height: 18px;
+	border-radius: 9px;
+	background-color: #fff;
+	box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.3), inset 0 0 1px 0 rgba(0, 0, 0, 0.05);
+}
+
+.fake_switch:global(.fake_switch-true) {
+	background: var(--action);
+}
+
+.fake_switch:global(.fake_switch-true) div {
+	left: 20px;
 }

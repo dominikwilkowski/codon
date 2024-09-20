@@ -132,39 +132,38 @@ pub struct ActionsPersonSQL {
 #[cfg(feature = "ssr")]
 impl sqlx::FromRow<'_, sqlx::postgres::PgRow> for ActionsPersonSQL {
 	fn from_row(row: &sqlx::postgres::PgRow) -> Result<Self, sqlx::Error> {
-		let action = EquipmentActionsSQLData {
-			id: row.try_get("action_id")?,
-			action_type: row.try_get("action_action_type")?,
-			equipment: row.try_get("action_equipment")?,
-			create_date: row.try_get("action_create_date")?,
-			person: row.try_get("action_person")?,
-			notes: row.try_get("action_notes")?,
-			field: row.try_get("action_field")?,
-			old_value: row.try_get("action_old_value")?,
-			new_value: row.try_get("action_new_value")?,
-		};
-
-		let person = PeopleSQLData {
-			id: row.try_get("person_id")?,
-			employee_id: row.try_get("person_employee_id")?,
-			status: row.try_get("person_status")?,
-			first_name: row.try_get("person_first_name")?,
-			last_name: row.try_get("person_last_name")?,
-			preferred_name: row.try_get("person_preferred_name")?,
-			email: row.try_get("person_email")?,
-			phone_number: row.try_get("person_phone_number")?,
-			department: row.try_get("person_department")?,
-			role: row.try_get("person_role")?,
-			hire_date: row.try_get("person_hire_date")?,
-			emergency_contact: row.try_get("person_emergency_contact")?,
-			certifications: row.try_get("person_certifications")?,
-			specializations: row.try_get("person_specializations")?,
-			picture: row.try_get("person_picture")?,
-			bio: row.try_get("person_bio")?,
-			create_date: row.try_get("person_create_date")?,
-		};
-
-		Ok(ActionsPersonSQL { action, person })
+		Ok(ActionsPersonSQL {
+			action: EquipmentActionsSQLData {
+				id: row.try_get("action_id")?,
+				action_type: row.try_get("action_action_type")?,
+				equipment: row.try_get("action_equipment")?,
+				create_date: row.try_get("action_create_date")?,
+				person: row.try_get("action_person")?,
+				notes: row.try_get("action_notes")?,
+				field: row.try_get("action_field")?,
+				old_value: row.try_get("action_old_value")?,
+				new_value: row.try_get("action_new_value")?,
+			},
+			person: PeopleSQLData {
+				id: row.try_get("person_id")?,
+				employee_id: row.try_get("person_employee_id")?,
+				status: row.try_get("person_status")?,
+				first_name: row.try_get("person_first_name")?,
+				last_name: row.try_get("person_last_name")?,
+				preferred_name: row.try_get("person_preferred_name")?,
+				email: row.try_get("person_email")?,
+				phone_number: row.try_get("person_phone_number")?,
+				department: row.try_get("person_department")?,
+				role: row.try_get("person_role")?,
+				hire_date: row.try_get("person_hire_date")?,
+				emergency_contact: row.try_get("person_emergency_contact")?,
+				certifications: row.try_get("person_certifications")?,
+				specializations: row.try_get("person_specializations")?,
+				picture: row.try_get("person_picture")?,
+				bio: row.try_get("person_bio")?,
+				create_date: row.try_get("person_create_date")?,
+			},
+		})
 	}
 }
 

@@ -15,7 +15,7 @@ pub trait EquipmentCellView {
 
 impl EquipmentCellView for i32 {
 	fn view(self, _: bool) -> impl IntoView {
-		view! { <span>{format!("{self}")}</span> }
+		view! { <span class=css::equipment_id>{format!("{self:06}")}</span> }
 	}
 }
 
@@ -51,25 +51,23 @@ impl EquipmentCellView for EquipmentType {
 impl EquipmentCellView for EquipmentStatus {
 	fn view(self, _: bool) -> impl IntoView {
 		match self {
-			EquipmentStatus::Working => {
-				view! { <div class=css::working>"Working"</div> }
+			EquipmentStatus::Cleaned => {
+				view! { <div class=css::cleaned>"Cleaned"</div> }
 			},
-			EquipmentStatus::NeedsCleaning => {
-				view! { <div class=css::needscleaning>"Needs" "\u{00A0}" "Cleaning"</div> }
+			EquipmentStatus::Prepared => {
+				view! { <div class=css::prepared>"Prepared"</div> }
 			},
-			EquipmentStatus::Preparation => {
-				view! { <div class=css::preparation>"Preparation"</div> }
+			EquipmentStatus::Sterilized => {
+				view! { <div class=css::sterilized>"Sterilized"</div> }
 			},
-			EquipmentStatus::Sterilization => {
-				view! { <div class=css::sterilization>"Sterilization"</div> }
+			EquipmentStatus::InUse => {
+				view! { <div class=css::inuse>"In" "\u{00A0}" "Use"</div> }
 			},
-			EquipmentStatus::Broken => {
-				view! { <div class=css::broken>"Broken"</div> }
+			EquipmentStatus::Dirty => {
+				view! { <div class=css::dirty>"Dirty"</div> }
 			},
-			EquipmentStatus::OutOfCommission => view! {
-				<div class=css::outofcommission>
-					"Out" "\u{00A0}" "Of" "\u{00A0}" "Commission"
-				</div>
+			EquipmentStatus::Archived => {
+				view! { <div class=css::archived>"Archived"</div> }
 			},
 		}
 	}
