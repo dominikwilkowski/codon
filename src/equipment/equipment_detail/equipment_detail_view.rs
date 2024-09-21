@@ -1,7 +1,7 @@
 use crate::{
 	components::{
-		avatar::Avatar, button::Button, multiline::MultiLine,
-		pagination::Pagination,
+		avatar::Avatar, button::Button, media_upload_form::MediaUploadForm,
+		multiline::MultiLine, pagination::Pagination,
 	},
 	equipment::{
 		ActionsPerson, EquipmentCell, EquipmentData, EquipmentStatus, NotesPerson,
@@ -355,7 +355,9 @@ pub fn EquipmentDetail() -> impl IntoView {
 							}
 						}
 					};
-					view! { <div>{equipment} {notes} {actions}</div> }
+					view! {
+						<div>{equipment} <MediaUploadForm />{notes} {actions}</div>
+					}
 				}}
 			</ErrorBoundary>
 		</Transition>

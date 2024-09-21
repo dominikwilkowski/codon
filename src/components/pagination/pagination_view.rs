@@ -33,8 +33,12 @@ pub fn PaginationPrev(
 					query_page.get() - 1
 				}
 			/>
-			<input type="hidden" name=ipp_key value=query_ipp.get() />
-			<button type="submit" disabled=query_page.get() == 1 class=css::btn>
+			<input type="hidden" name=ipp_key value=move || query_ipp.get() />
+			<button
+				type="submit"
+				disabled=move || query_page.get() == 1
+				class=css::btn
+			>
 				Previous
 			</button>
 		</form>
@@ -68,7 +72,7 @@ pub fn PaginationNext(
 					}
 				}
 			/>
-			<input type="hidden" name=ipp_key value=query_ipp.get() />
+			<input type="hidden" name=ipp_key value=move || query_ipp.get() />
 			<button type="submit" disabled=move || is_last_page class=css::btn>
 				Next
 			</button>
@@ -95,14 +99,14 @@ pub fn ItemsPerPage(
 	view! {
 		<form action=action method="get" class=css::ipp_form>
 			<FieldBuilder hidden_fields />
-			<input type="hidden" name=page_key value=query_page.get() />
+			<input type="hidden" name=page_key value=move || query_page.get() />
 			<label>
 				"Items per page: "
 				<input
 					class=css::ipp_input
 					type="number"
 					name=ipp_key
-					value=query_ipp.get()
+					value=move || query_ipp.get()
 					min="1"
 					max="255"
 				/>
@@ -145,7 +149,11 @@ pub fn Pages(
 							}
 						>
 							<FieldBuilder hidden_fields=hidden_fields.clone() />
-							<input type="hidden" name=ipp_key value=query_ipp.get() />
+							<input
+								type="hidden"
+								name=ipp_key
+								value=move || query_ipp.get()
+							/>
 							<input type="hidden" name=page_key value=page />
 							<button
 								type="submit"
