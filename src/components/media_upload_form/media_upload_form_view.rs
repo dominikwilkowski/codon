@@ -1,7 +1,6 @@
 use leptos::*;
 use server_fn::codec::{MultipartData, MultipartFormData};
-use wasm_bindgen::JsCast;
-use web_sys::{console, FormData, HtmlFormElement, SubmitEvent};
+use web_sys::{FormData, SubmitEvent};
 
 stylance::import_style!(css, "media_upload_form.module.css");
 
@@ -12,42 +11,28 @@ pub fn MediaUploadForm() -> impl IntoView {
 		save_file(data.into())
 	});
 
-	let form_ref = create_node_ref::<HtmlFormElement>();
+	let form_ref = NodeRef::<html::Form>::new();
 
 	view! {
-		<form method="post" action="#" enctype="multipart/form-data" ref=form_ref on:submit=move |event: SubmitEvent| {
-			event.prevent_default();
-			let form = match form_ref.get() {
-				Some(form) => {
-					console::log_1(&"Successfully obtained form via ref".into());
-					form
-				},
-				None => {
-					console::error_1(&"Failed to get form element from ref".into());
-					return;
-				}
-			};
-
-			// Create FormData from the form
-			let form_data = match FormData::new_with_form(&form) {
-				Ok(fd) => {
-					console::log_1(&"FormData created successfully".into());
-					fd
-				},
-				Err(err) => {
-					console::error_1(&"Failed to create FormData".into());
-					console::error_1(&format!("{:?}", err).into());
-					return;
-				}
-			};
-
-			// let target = event
-			// 	.target()
-			// 	.unwrap()
-			// 	.unchecked_into::<HtmlFormElement>();
-			// let form_data = FormData::new_with_form(&target).unwrap();
-			upload_action.dispatch(form_data);
-		}>
+		<form
+			ref=form_ref
+			method="post"
+			action="#"
+			enctype="multipart/form-data"
+			on:submit=move |event: SubmitEvent| {
+				event.prevent_default();
+				let form = form_ref.get().unwrap();
+				let form_data = match FormData::new_with_form(&form) {
+					Ok(fd) => fd,
+					Err(error) => {
+						logging::log!("Failed to create FormData");
+						logging::log!("{error:?}");
+						return;
+					}
+				};
+				upload_action.dispatch(form_data);
+			}
+		>
 			<h3>File Upload</h3>
 			<input
 				type="file"
