@@ -6,10 +6,10 @@ stylance::import_style!(css, "media_upload_form.module.css");
 
 #[component]
 pub fn MediaUploadForm() -> impl IntoView {
-	let upload_action = create_action(|data: &FormData| {
-		let data = data.clone();
-		save_file(data.into())
-	});
+	let upload_action =
+		create_action(|data: &FormData| save_file(data.clone().into()));
+
+	// , format!("equipment-id0002536")
 
 	let form_ref = NodeRef::<html::Form>::new();
 
@@ -87,6 +87,11 @@ pub async fn save_file(
 		if let Some(chunk) = first_chunk {
 			if !chunk.is_empty() {
 				let original_name = field.file_name().unwrap_or("unknown").to_string();
+				let extension = Path::new(&original_name)
+					.extension()
+					.and_then(|ext| ext.to_str())
+					.unwrap_or("");
+
 				let new_name = format!("new_{}", original_name);
 				let file_path = Path::new("public/upload_media/").join(&new_name);
 
@@ -114,7 +119,7 @@ pub async fn save_file(
 	}
 
 	if uploaded_files.is_empty() {
-		Err(ServerFnError::ServerError("Failed to save file".into()))
+		Err(ServerFnError::ServerError(String::from("Failed to save file")))
 	} else {
 		return Ok(uploaded_files);
 	}
