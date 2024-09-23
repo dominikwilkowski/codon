@@ -74,30 +74,28 @@ pub fn EquipmentDetail() -> impl IntoView {
 	});
 
 	let go_to_listing = create_rw_signal(false);
+	let id =
+		create_rw_signal(params.with(|p| p.get("id").cloned().unwrap_or_default()));
 
 	create_effect(move |_| {
-		if params.with(|p| p.get("id").cloned().unwrap_or_default()).is_empty()
-			|| go_to_listing.get()
-		{
+		if id.get().is_empty() || go_to_listing.get() {
 			navigate("/equipment", Default::default());
 		}
 	});
 
 	#[expect(clippy::redundant_closure)]
-	let equipment_data = create_resource(
-		move || params.with(|p| p.get("id").cloned().unwrap_or_default()),
-		move |id| get_equipment_data_by_id(id),
-	);
+	let equipment_data =
+		create_resource(move || id.get(), move |id| get_equipment_data_by_id(id));
 
 	let notes_data = create_resource(
-		move || params.with(|p| p.get("id").cloned().unwrap_or_default()),
+		move || id.get(),
 		move |id| {
 			get_notes_for_equipment(id, notes_query_page.get(), notes_query_ipp.get())
 		},
 	);
 
 	let actions_data = create_resource(
-		move || params.with(|p| p.get("id").cloned().unwrap_or_default()),
+		move || id.get(),
 		move |id| {
 			get_actions_for_equipment(
 				id,
@@ -356,7 +354,9 @@ pub fn EquipmentDetail() -> impl IntoView {
 						}
 					};
 					view! {
-						<div>{equipment} <MediaUploadForm />{notes} {actions}</div>
+						<div>
+							{equipment} <MediaUploadForm id=id.get() />{notes} {actions}
+						</div>
 					}
 				}}
 			</ErrorBoundary>

@@ -435,6 +435,7 @@ dependencies = [
  "tower",
  "tower-http",
  "tracing",
+ "uuid",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
@@ -3355,6 +3356,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "81dfa00651efa65069b0b6b651f4aaa31ba9e3c3ce0137aaad053604ee7e0314"
 dependencies = [
  "getrandom",
+ "serde",
+ "wasm-bindgen",
 ]
 
 [[package]]
