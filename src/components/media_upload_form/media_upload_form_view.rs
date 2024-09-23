@@ -9,7 +9,7 @@ pub fn MediaUploadForm(id: String) -> impl IntoView {
 	let upload_action =
 		create_action(|data: &FormData| save_file(data.clone().into()));
 
-	let form_ref = NodeRef::<html::Form>::new();
+	let form_ref = create_node_ref::<html::Form>();
 
 	view! {
 		<form

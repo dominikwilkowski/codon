@@ -99,7 +99,7 @@ pub fn ItemsPerPage(
 	view! {
 		<form action=action method="get" class=css::ipp_form>
 			<FieldBuilder hidden_fields />
-			<input type="hidden" name=page_key value=move || query_page.get() />
+			<input type="hidden" name=page_key value=1 />
 			<label>
 				"Items per page: "
 				<input
