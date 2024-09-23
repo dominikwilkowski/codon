@@ -75,11 +75,10 @@ pub fn MediaUploadForm(id: String) -> impl IntoView {
 pub async fn save_file(
 	data: MultipartData,
 ) -> Result<Vec<String>, ServerFnError> {
-	use crate::{
-		db::ssr::get_db,
-		equipment::{EquipmentData, EquipmentSQLData, EquipmentType},
-	};
+	use crate::{db::ssr::get_db, equipment::EquipmentType};
 
+	use serde::{Deserialize, Serialize};
+	use sqlx::FromRow;
 	use std::path::{Path, PathBuf};
 	use tokio::{
 		fs::{rename, File},
@@ -95,8 +94,8 @@ pub async fn save_file(
 		while temp_files.len() > 0 {
 			let (temp_path, file_name) = temp_files.pop().unwrap();
 			let new_path = Path::new(base_path).join(file_name.clone());
-			rename(temp_path, new_path).await?;
-			uploaded_files.push(file_name);
+			rename(temp_path, new_path.clone()).await?;
+			uploaded_files.push(format!("{}", new_path.to_string_lossy()));
 		}
 		Ok(())
 	}
@@ -118,8 +117,14 @@ pub async fn save_file(
 						},
 					};
 
-					let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLData>(
-						"SELECT * FROM equipment WHERE id = $1",
+					#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+					struct EquipmentSQLIDType {
+						id: i32,
+						equipment_type: String,
+					}
+
+					let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLIDType>(
+						"SELECT id, equipment_type FROM equipment WHERE id = $1",
 					)
 					.bind(id)
 					.fetch_one(get_db())
@@ -127,14 +132,15 @@ pub async fn save_file(
 					.map_err::<ServerFnError, _>(|error| {
 						ServerFnError::ServerError(error.to_string())
 					})?;
-					let equipment_data: EquipmentData = equipment_sql_data.into();
 
-					let category = match equipment_data.equipment_type {
-						EquipmentType::Flask => "F",
-						EquipmentType::Vessel => "V",
-						EquipmentType::IncubationCabinet => "I",
-					};
-					equipment_path = Some(format!("{category}-{}/", equipment_data.id));
+					let category =
+						match EquipmentType::parse(equipment_sql_data.equipment_type) {
+							EquipmentType::Flask => "F",
+							EquipmentType::Vessel => "V",
+							EquipmentType::IncubationCabinet => "I",
+						};
+					equipment_path =
+						Some(format!("{category}-{}/", equipment_sql_data.id));
 					tokio::fs::create_dir_all(format!(
 						"public/upload_media/{}",
 						equipment_path.clone().unwrap()
@@ -148,7 +154,8 @@ pub async fn save_file(
 					)
 					.await?;
 				},
-				"media1" | "media2" | "media3" => {
+				"media1" | "media2" | "media3" | "media4" | "media5" | "media6"
+				| "media7" | "media8" | "media9" | "media10" => {
 					let first_chunk = field.chunk().await?;
 					if let Some(chunk) = first_chunk {
 						if !chunk.is_empty() {
@@ -168,10 +175,12 @@ pub async fn save_file(
 								)
 								.await?;
 
-								uploaded_files.push(name.clone());
-								PathBuf::from("public/upload_media/")
+								let final_path = PathBuf::from("public/upload_media/")
 									.join(&equipment_path)
-									.join(&name)
+									.join(&name);
+								uploaded_files
+									.push(format!("{}", final_path.clone().to_string_lossy()));
+								final_path
 							} else {
 								// ID has not been processed yet so we store the files in a temp folder until it is
 								let temp_path =
