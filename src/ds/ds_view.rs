@@ -3,6 +3,7 @@ use crate::{
 		button::{use_message, Button, MessageOptions, MessageVariant},
 		checkbox::{Checkbox, CheckboxGroup, CheckboxItem},
 		datepicker::DatePicker,
+		file_input::FileInput,
 		input::{Input, MoneyInput, TextArea},
 		pagination::Pagination,
 		radio::{Radio, RadioGroup, RadioItem},
@@ -204,6 +205,16 @@ pub fn Ds() -> impl IntoView {
 				>
 					Error toast
 				</Button>
+			</div>
+		</section>
+
+		<section class=css::section>
+			<h2>FileInput</h2>
+			<div class=css::stack_inline>
+				<FileInput
+					name="media1"
+					value=create_rw_signal(String::new())
+				/>
 			</div>
 		</section>
 

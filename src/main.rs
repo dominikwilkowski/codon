@@ -7,6 +7,7 @@ pub mod components {
 	pub mod button;
 	pub mod checkbox;
 	pub mod datepicker;
+	pub mod file_input;
 	pub mod input;
 	pub mod media_upload_form;
 	pub mod multiline;
