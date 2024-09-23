@@ -11,6 +11,11 @@ pub mod equipment_detail {
 }
 pub use equipment_detail::equipment_detail_view::*;
 
+pub mod notes_form {
+	pub mod notes_form_view;
+}
+pub use notes_form::notes_form_view::*;
+
 pub mod equipment_add {
 	pub mod equipment_add_view;
 }

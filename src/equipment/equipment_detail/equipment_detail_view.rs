@@ -1,10 +1,11 @@
 use crate::{
 	components::{
-		avatar::Avatar, button::Button, media_upload_form::MediaUploadForm,
-		multiline::MultiLine, pagination::Pagination,
+		avatar::Avatar, button::Button, multiline::MultiLine,
+		pagination::Pagination,
 	},
 	equipment::{
-		ActionsPerson, EquipmentCell, EquipmentData, EquipmentStatus, NotesPerson,
+		ActionsPerson, EquipmentCell, EquipmentData, EquipmentStatus, NotesForm,
+		NotesPerson,
 	},
 	error_template::ErrorTemplate,
 	icons::EquipmentLogo,
@@ -355,7 +356,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 					};
 					view! {
 						<div>
-							{equipment} <MediaUploadForm id=id.get() />{notes} {actions}
+							{equipment} <NotesForm id=id.get() />{notes} {actions}
 						</div>
 					}
 				}}

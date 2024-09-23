@@ -30,5 +30,5 @@ style/bundle.css
 .env
 
 # uploads
-upload_media/*
+public/upload_media/*
 !upload_media/.keep
