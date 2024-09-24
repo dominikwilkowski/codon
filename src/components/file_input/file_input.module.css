@@ -1,9 +1,10 @@
 .file_input_wrapper:global(.input_shadow) {
 	position: relative;
+	display: inline-block;
 	border: 1px solid var(--action) !important;
 	border-radius: 5px;
-	padding: 0 0.875rem;
-	line-height: 2;
+	padding: 0.25rem 0.875rem;
+	line-height: 1;
 	overflow: hidden;
 }
 
@@ -22,7 +23,7 @@
 }
 
 .file_input_wrapper span {
-	display: block;
+	display: inline-block;
 	max-width: 12rem;
 	text-overflow: ellipsis;
 	white-space: nowrap;

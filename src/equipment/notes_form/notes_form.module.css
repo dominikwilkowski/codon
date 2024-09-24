@@ -1,0 +1,13 @@
+.form {
+	position: relative;
+	overflow: hidden;
+}
+
+.form span:global(.is_hidden) {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	top: -10px;
+	left: -10px;
+	overflow: hidden;
+}

@@ -1,3 +1,5 @@
+use crate::components::{file_input::FileInput, input::TextArea};
+
 use leptos::*;
 use server_fn::codec::{MultipartData, MultipartFormData};
 use web_sys::{FormData, SubmitEvent};
@@ -11,9 +13,21 @@ pub fn NotesForm(id: String) -> impl IntoView {
 
 	let form_ref = create_node_ref::<html::Form>();
 
+	let media1 = create_rw_signal(String::new());
+	let media2 = create_rw_signal(String::new());
+	let media3 = create_rw_signal(String::new());
+	let media4 = create_rw_signal(String::new());
+	let media5 = create_rw_signal(String::new());
+	let media6 = create_rw_signal(String::new());
+	let media7 = create_rw_signal(String::new());
+	let media8 = create_rw_signal(String::new());
+	let media9 = create_rw_signal(String::new());
+	let media10 = create_rw_signal(String::new());
+
 	view! {
 		<form
 			ref=form_ref
+			class=css::form
 			method="post"
 			action="#"
 			enctype="multipart/form-data"
@@ -31,70 +45,64 @@ pub fn NotesForm(id: String) -> impl IntoView {
 				upload_action.dispatch(form_data);
 			}
 		>
-			<h3>File Upload</h3>
+			<h3>New Note</h3>
 			<input type="hidden" name="id" value=id />
-			<input type="text" name="name" />
-			<textarea name="note"></textarea>
-			<input
-				type="file"
-				name="media1"
-				accept="image/*;video/*;capture=camera"
-				capture="environment"
-			/>
-			<input
-				type="file"
-				name="media2"
-				accept="image/*;video/*;capture=camera"
-				capture="environment"
-			/>
-			<input
-				type="file"
-				name="media3"
-				accept="image/*;video/*;capture=camera"
-				capture="environment"
-			/>
-			<input
-				type="file"
-				name="media4"
-				accept="image/*;video/*;capture=camera"
-				capture="environment"
-			/>
-			<input
-				type="file"
-				name="media5"
-				accept="image/*;video/*;capture=camera"
-				capture="environment"
-			/>
-			<input
-				type="file"
-				name="media6"
-				accept="image/*;video/*;capture=camera"
-				capture="environment"
-			/>
-			<input
-				type="file"
-				name="media7"
-				accept="image/*;video/*;capture=camera"
-				capture="environment"
-			/>
-			<input
-				type="file"
-				name="media8"
-				accept="image/*;video/*;capture=camera"
-				capture="environment"
-			/>
-			<input
-				type="file"
-				name="media9"
-				accept="image/*;video/*;capture=camera"
-				capture="environment"
-			/>
-			<input
-				type="file"
-				name="media10"
-				accept="image/*;video/*;capture=camera"
-				capture="environment"
-			/>
+			<label>
+				<span>Note:</span>
+				<TextArea
+					name="note"
+					value=create_rw_signal(String::from(""))
+					placeholder="Textarea"
+				/>
+			</label>
+			<div>
+				<FileInput name="media1" value=media1 />
+				<span class=move || {
+					if media1.get().is_empty() { "is_hidden" } else { "" }
+				}>
+					<FileInput name="media2" value=media2 />
+				</span>
+				<span class=move || {
+					if media2.get().is_empty() { "is_hidden" } else { "" }
+				}>
+					<FileInput name="media3" value=media3 />
+				</span>
+				<span class=move || {
+					if media3.get().is_empty() { "is_hidden" } else { "" }
+				}>
+					<FileInput name="media4" value=media4 />
+				</span>
+				<span class=move || {
+					if media4.get().is_empty() { "is_hidden" } else { "" }
+				}>
+					<FileInput name="media5" value=media5 />
+				</span>
+				<span class=move || {
+					if media5.get().is_empty() { "is_hidden" } else { "" }
+				}>
+					<FileInput name="media6" value=media6 />
+				</span>
+				<span class=move || {
+					if media6.get().is_empty() { "is_hidden" } else { "" }
+				}>
+					<FileInput name="media7" value=media7 />
+				</span>
+				<span class=move || {
+					if media7.get().is_empty() { "is_hidden" } else { "" }
+				}>
+					<FileInput name="media8" value=media8 />
+				</span>
+				<span class=move || {
+					if media8.get().is_empty() { "is_hidden" } else { "" }
+				}>
+					<FileInput name="media9" value=media9 />
+				</span>
+				<span class=move || {
+					if media9.get().is_empty() { "is_hidden" } else { "" }
+				}>
+					<FileInput name="media10" value=media10 />
+				</span>
+			</div>
 			<button type="submit">Upload</button>
 		</form>
 		<p>

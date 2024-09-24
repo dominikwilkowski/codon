@@ -261,7 +261,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 													row_count=count
 													hidden_fields
 												/>
-												Form here
+												<NotesForm id=id />
 												<div class=css::items>
 													{notes
 														.into_iter()
@@ -354,11 +354,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 							}
 						}
 					};
-					view! {
-						<div>
-							{equipment} <NotesForm id=id.get() />{notes} {actions}
-						</div>
-					}
+					view! { <div>{equipment} {notes} {actions}</div> }
 				}}
 			</ErrorBoundary>
 		</Transition>

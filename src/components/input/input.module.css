@@ -6,8 +6,11 @@
 .input:not(:global(.thaw-input--disabled)) {
 	border-radius: var(--border-radius-sm);
 	box-shadow:
-		inset 0 0 0 1px hsla(0, 0%, 100%, 0.05), 0 0 0 1px hsla(0, 0%, 0%, 0.05), 0 0.3px 0.4px
-		hsla(0, 0%, 0%, 0.02), 0 0.9px 1.5px hsla(0, 0%, 0%, 0.045), 0 0 2px 1px hsla(0, 0%, 0%, 0.35) !important;
+		inset 0 0 0 1px hsla(0, 0%, 100%, 0.05),
+		0 0 0 1px hsla(0, 0%, 0%, 0.05),
+		0 0.3px 0.4px hsla(0, 0%, 0%, 0.02),
+		0 0.9px 1.5px hsla(0, 0%, 0%, 0.045),
+		0 0 2px 1px hsla(0, 0%, 0%, 0.35) !important;
 }
 
 .input:not(:global(.thaw-input--disabled)),
@@ -120,4 +123,12 @@
 	left: 0.75rem;
 	align-items: center;
 	user-select: none;
+}
+
+.textarea {
+	display: block;
+	min-height: 100px;
+	padding: 0.5rem 0.75rem;
+	margin: 3px;
+	line-height: 1.5;
 }

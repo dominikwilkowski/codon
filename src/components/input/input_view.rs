@@ -1,5 +1,5 @@
 use leptos::*;
-use thaw::{Input as ThawInput, TextArea as ThawTextArea};
+use thaw::Input as ThawInput;
 
 stylance::import_style!(css, "input.module.css");
 
@@ -86,7 +86,15 @@ pub fn TextArea(
 	#[prop(optional)] placeholder: &'static str,
 	#[prop(optional)] value: RwSignal<String>,
 	#[prop(optional)] disabled: RwSignal<bool>,
-	#[prop(attrs)] attrs: Vec<(&'static str, Attribute)>,
+	#[prop(optional)] name: &'static str,
 ) -> impl IntoView {
-	view! { <ThawTextArea value placeholder disabled attrs /> }
+	view! {
+		<textarea
+			class=css::textarea
+			value=value
+			prop:name=name
+			placeholder=placeholder
+			disabled=disabled
+		/>
+	}
 }
