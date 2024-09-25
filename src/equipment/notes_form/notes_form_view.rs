@@ -9,10 +9,10 @@ use web_sys::{FormData, SubmitEvent};
 stylance::import_style!(css, "notes_form.module.css");
 
 #[component]
-pub fn NotesForm(id: String) -> impl IntoView {
-	let upload_action =
-		create_action(|data: &FormData| save_notes(data.clone().into()));
-
+pub fn NotesForm(
+	id: String,
+	notes_upload_action: Action<FormData, Result<String, ServerFnError>>,
+) -> impl IntoView {
 	let form_ref = create_node_ref::<html::Form>();
 
 	let media1 = create_rw_signal(String::new());
@@ -45,15 +45,17 @@ pub fn NotesForm(id: String) -> impl IntoView {
 						return;
 					}
 				};
-				upload_action.dispatch(form_data);
+				notes_upload_action.dispatch(form_data);
 			}
 		>
 			<h3>New Note</h3>
 			<input type="hidden" name="id" value=id />
+			<input type="hidden" name="person" value=12 />
 			<TextArea
-				name="note"
+				name="notes"
 				value=create_rw_signal(String::from(""))
 				placeholder="Your note"
+				required=true
 			/>
 			<div class=css::file_inputs>
 				<span>
@@ -109,20 +111,22 @@ pub fn NotesForm(id: String) -> impl IntoView {
 				<Button loading>Upload</Button>
 				<span>
 					{move || {
-						if upload_action.input().get().is_none()
-							&& upload_action.value().get().is_none()
+						if notes_upload_action.input().get().is_none()
+							&& notes_upload_action.value().get().is_none()
 						{
 							String::from("")
-						} else if upload_action.pending().get() {
+						} else if notes_upload_action.pending().get() {
 							loading.set(true);
 							String::from("")
-						} else if let Some(Ok(files)) = upload_action.value().get()
+						} else if let Some(Ok(files)) = notes_upload_action
+							.value()
+							.get()
 						{
 							loading.set(false);
 							format!("Finished uploading: {:?}", files)
 						} else {
 							loading.set(false);
-							format!("Error: {:?}", upload_action.value().get())
+							format!("Error: {:?}", notes_upload_action.value().get())
 						}
 					}}
 				</span>
@@ -141,14 +145,7 @@ pub async fn save_notes(data: MultipartData) -> Result<String, ServerFnError> {
 	use serde::{Deserialize, Serialize};
 	use sqlx::FromRow;
 
-	std::thread::sleep(std::time::Duration::from_millis(3000));
-
 	let result = file_upload(data, |id| async move {
-		let id = match id.parse::<i32>() {
-			Ok(value) => value,
-			Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
-		};
-
 		#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 		struct EquipmentSQLIDType {
 			id: i32,
@@ -175,6 +172,54 @@ pub async fn save_notes(data: MultipartData) -> Result<String, ServerFnError> {
 		Ok(format!("{category}-{}/", equipment_sql_data.id))
 	})
 	.await?;
+
+	let mut person = None;
+	let mut notes = None;
+
+	for (name, value) in &result.additional_fields {
+		match name.as_str() {
+			"person" => {
+				person = {
+					let value = match value.parse::<i32>() {
+						Ok(value) => value,
+						Err(_) => {
+							return Err(ServerFnError::Request(String::from(
+								"Invalid person ID",
+							)))
+						},
+					};
+					Some(value)
+				}
+			},
+			"notes" => notes = Some(value),
+			_ => {},
+		}
+	}
+
+	sqlx::query!(
+		r#"INSERT INTO equipment_notes
+		(equipment, person, notes, media1, media2, media3, media4, media5, media6, media7, media8, media9, media10)
+		VALUES
+		($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)"#,
+		result.id,
+		person,
+		notes,
+		result.media1,
+		result.media2,
+		result.media3,
+		result.media4,
+		result.media5,
+		result.media6,
+		result.media7,
+		result.media8,
+		result.media9,
+		result.media10,
+	)
+	.execute(get_db())
+	.await
+	.map_err::<ServerFnError, _>(|error| {
+		ServerFnError::ServerError(error.to_string())
+	})?;
 
 	Ok(format!("{result:?}"))
 }

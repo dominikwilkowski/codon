@@ -17,6 +17,7 @@ pub fn Input(
 pub fn MoneyInput(
 	#[prop(optional)] value: RwSignal<String>,
 	#[prop(optional)] disabled: RwSignal<bool>,
+	#[prop(optional)] required: bool,
 ) -> impl IntoView {
 	let dis_class = if disabled.get() {
 		css::money_input_disabled
@@ -36,6 +37,7 @@ pub fn MoneyInput(
 				}
 				disabled=move || disabled.get()
 				step="0.01"
+				required=required
 			/>
 			<div class=css::money_btns>
 				<button
@@ -87,6 +89,7 @@ pub fn TextArea(
 	#[prop(optional)] value: RwSignal<String>,
 	#[prop(optional)] disabled: RwSignal<bool>,
 	#[prop(optional)] name: &'static str,
+	#[prop(optional)] required: bool,
 ) -> impl IntoView {
 	view! {
 		<textarea
@@ -95,6 +98,7 @@ pub fn TextArea(
 			prop:name=name
 			placeholder=placeholder
 			disabled=disabled
+			required=required
 		/>
 	}
 }

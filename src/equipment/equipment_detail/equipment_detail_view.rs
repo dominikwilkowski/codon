@@ -4,8 +4,8 @@ use crate::{
 		pagination::Pagination,
 	},
 	equipment::{
-		ActionsPerson, EquipmentCell, EquipmentData, EquipmentStatus, NotesForm,
-		NotesPerson,
+		save_notes, ActionsPerson, EquipmentCell, EquipmentData, EquipmentStatus,
+		NotesForm, NotesPerson,
 	},
 	error_template::ErrorTemplate,
 	icons::EquipmentLogo,
@@ -13,6 +13,7 @@ use crate::{
 
 use leptos::*;
 use leptos_router::*;
+use web_sys::FormData;
 
 stylance::import_style!(css, "equipment_details.module.css");
 
@@ -84,14 +85,21 @@ pub fn EquipmentDetail() -> impl IntoView {
 		}
 	});
 
+	let notes_upload_action =
+		create_action(|data: &FormData| save_notes(data.clone().into()));
+
 	#[expect(clippy::redundant_closure)]
 	let equipment_data =
 		create_resource(move || id.get(), move |id| get_equipment_data_by_id(id));
 
 	let notes_data = create_resource(
-		move || id.get(),
-		move |id| {
-			get_notes_for_equipment(id, notes_query_page.get(), notes_query_ipp.get())
+		move || (notes_upload_action.version().get(), id.get()),
+		move |_| {
+			get_notes_for_equipment(
+				id.get(),
+				notes_query_page.get(),
+				notes_query_ipp.get(),
+			)
 		},
 	);
 
@@ -261,7 +269,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 													row_count=count
 													hidden_fields
 												/>
-												<NotesForm id=id />
+												<NotesForm id=id notes_upload_action=notes_upload_action />
 												<div class=css::items>
 													{notes
 														.into_iter()

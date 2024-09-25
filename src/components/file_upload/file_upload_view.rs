@@ -27,6 +27,7 @@ async fn move_temp_files(
 #[cfg(feature = "ssr")]
 #[derive(Debug)]
 pub struct FileUploadResult {
+	pub id: i32,
 	pub media1: String,
 	pub media2: String,
 	pub media3: String,
@@ -46,13 +47,14 @@ pub async fn file_upload<F, Fut>(
 	get_folder: F,
 ) -> Result<FileUploadResult, ServerFnError>
 where
-	F: for<'a> Fn(String) -> Fut + Send + Sync + 'static,
+	F: for<'a> Fn(i32) -> Fut + Send + Sync + 'static,
 	Fut: Future<Output = Result<String, ServerFnError>> + Send,
 {
 	use tokio::{fs::File, io::AsyncWriteExt};
 	use uuid::Uuid;
 
 	let mut folder_name: Option<String> = None;
+	let mut equipment_id: Option<i32> = None;
 	let mut data = data.into_inner().unwrap();
 	let mut uploaded_files = Vec::new();
 	let mut files_to_upload = 0;
@@ -64,6 +66,13 @@ where
 			match name {
 				"id" => {
 					let id = field.text().await?;
+					let id = match id.parse::<i32>() {
+						Ok(value) => value,
+						Err(_) => {
+							return Err(ServerFnError::Request(String::from("Invalid ID")))
+						},
+					};
+					equipment_id = Some(id);
 					folder_name = Some(get_folder(id).await?);
 
 					tokio::fs::create_dir_all(format!(
@@ -142,7 +151,7 @@ where
 		}
 	}
 
-	if folder_name.is_none() {
+	if folder_name.is_none() || equipment_id.is_none() {
 		return Err(ServerFnError::ServerError(String::from(
 			"Equipment ID not provided",
 		)));
@@ -152,6 +161,7 @@ where
 		let mut iter = uploaded_files.into_iter();
 
 		return Ok(FileUploadResult {
+			id: equipment_id.unwrap(),
 			media1: iter.next().unwrap_or_default(),
 			media2: iter.next().unwrap_or_default(),
 			media3: iter.next().unwrap_or_default(),
