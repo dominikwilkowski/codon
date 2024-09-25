@@ -6,6 +6,7 @@
 	padding: 0.25rem 0.875rem;
 	line-height: 1;
 	overflow: hidden;
+	cursor: pointer;
 }
 
 .file_input {
@@ -18,8 +19,8 @@
 	width: 1px;
 	height: 1px;
 	position: absolute;
-	top: -1rem;
-	left: -1rem;
+	top: -2rem;
+	left: -2rem;
 }
 
 .file_input_wrapper span {

@@ -1,4 +1,6 @@
-use crate::components::{file_input::FileInput, input::TextArea};
+use crate::components::{
+	button::Button, file_input::FileInput, input::TextArea,
+};
 
 use leptos::*;
 use server_fn::codec::{MultipartData, MultipartFormData};
@@ -23,6 +25,7 @@ pub fn NotesForm(id: String) -> impl IntoView {
 	let media8 = create_rw_signal(String::new());
 	let media9 = create_rw_signal(String::new());
 	let media10 = create_rw_signal(String::new());
+	let loading = create_rw_signal(false);
 
 	view! {
 		<form
@@ -47,16 +50,15 @@ pub fn NotesForm(id: String) -> impl IntoView {
 		>
 			<h3>New Note</h3>
 			<input type="hidden" name="id" value=id />
-			<label>
-				<span>Note:</span>
-				<TextArea
-					name="note"
-					value=create_rw_signal(String::from(""))
-					placeholder="Textarea"
-				/>
-			</label>
-			<div>
-				<FileInput name="media1" value=media1 />
+			<TextArea
+				name="note"
+				value=create_rw_signal(String::from(""))
+				placeholder="Your note"
+			/>
+			<div class=css::file_inputs>
+				<span>
+					<FileInput name="media1" value=media1 />
+				</span>
 				<span class=move || {
 					if media1.get().is_empty() { "is_hidden" } else { "" }
 				}>
@@ -103,23 +105,29 @@ pub fn NotesForm(id: String) -> impl IntoView {
 					<FileInput name="media10" value=media10 />
 				</span>
 			</div>
-			<button type="submit">Upload</button>
+			<div class=css::btn_line>
+				<Button loading>Upload</Button>
+				<span>
+					{move || {
+						if upload_action.input().get().is_none()
+							&& upload_action.value().get().is_none()
+						{
+							String::from("")
+						} else if upload_action.pending().get() {
+							loading.set(true);
+							String::from("")
+						} else if let Some(Ok(files)) = upload_action.value().get()
+						{
+							loading.set(false);
+							format!("Finished uploading: {:?}", files)
+						} else {
+							loading.set(false);
+							format!("Error: {:?}", upload_action.value().get())
+						}
+					}}
+				</span>
+			</div>
 		</form>
-		<p>
-			{move || {
-				if upload_action.input().get().is_none()
-					&& upload_action.value().get().is_none()
-				{
-					"Upload a file.".to_string()
-				} else if upload_action.pending().get() {
-					"Uploading...".to_string()
-				} else if let Some(Ok(files)) = upload_action.value().get() {
-					format!("Finished uploading: {:?}", files)
-				} else {
-					format!("Error: {:?}", upload_action.value().get())
-				}
-			}}
-		</p>
 	}
 }
 
@@ -132,6 +140,8 @@ pub async fn save_notes(data: MultipartData) -> Result<String, ServerFnError> {
 
 	use serde::{Deserialize, Serialize};
 	use sqlx::FromRow;
+
+	std::thread::sleep(std::time::Duration::from_millis(3000));
 
 	let result = file_upload(data, |id| async move {
 		let id = match id.parse::<i32>() {

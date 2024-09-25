@@ -1,6 +1,29 @@
 .form {
 	position: relative;
 	overflow: hidden;
+	padding: 3px;
+	display: grid;
+	gap: 0.5rem;
+	margin-bottom: 2rem;
+}
+
+.form h3 {
+	margin: 0 0 0.5rem 0;
+}
+
+.form textarea {
+	min-height: 8.5em;
+}
+
+.form .file_inputs > span {
+	display: inline-block;
+	margin-top: 3px;
+}
+
+.form .file_inputs {
+	display: flex;
+	gap: 0.25rem;
+	flex-flow: wrap;
 }
 
 .form span:global(.is_hidden) {
@@ -10,4 +33,12 @@
 	top: -10px;
 	left: -10px;
 	overflow: hidden;
+}
+
+.form .btn_line {
+	display: grid;
+	grid-auto-flow: column;
+	grid-template-columns: auto 1fr;
+	gap: 0.5rem;
+	align-items: center;
 }
