@@ -19,7 +19,8 @@ async fn move_temp_files(
 		let (temp_path, file_name) = temp_files.pop().unwrap();
 		let new_path = Path::new(base_path).join(file_name.clone());
 		rename(temp_path, new_path.clone()).await?;
-		uploaded_files.push(format!("{}", new_path.to_string_lossy()));
+		uploaded_files
+			.push(format!("{}", new_path.to_string_lossy().replace("public/", "/")));
 	}
 	Ok(())
 }
@@ -113,8 +114,13 @@ where
 								let final_path = PathBuf::from("public/upload_media/")
 									.join(&folder_name)
 									.join(&name);
-								uploaded_files
-									.push(format!("{}", final_path.clone().to_string_lossy()));
+								uploaded_files.push(format!(
+									"{}",
+									PathBuf::from("/upload_media/")
+										.join(&folder_name)
+										.join(&name)
+										.to_string_lossy()
+								));
 								final_path
 							} else {
 								// ID has not been processed yet so we store the files in a temp folder until it is

@@ -5,7 +5,7 @@ use crate::{
 	},
 	equipment::{
 		save_notes, ActionsPerson, EquipmentCell, EquipmentData, EquipmentStatus,
-		NotesForm, NotesPerson,
+		NotesForm, NotesItem, NotesPerson,
 	},
 	error_template::ErrorTemplate,
 	icons::EquipmentLogo,
@@ -270,26 +270,12 @@ pub fn EquipmentDetail() -> impl IntoView {
 													hidden_fields
 												/>
 												<NotesForm id=id notes_upload_action=notes_upload_action />
-												<div class=css::items>
-													{notes
-														.into_iter()
-														.map(|note| {
-															view! {
-																<Avatar data=note.person />
-																<div>
-																	<small>
-																		{note
-																			.note
-																			.create_date
-																			.format("%d %b %Y %I:%M:%S %P")
-																			.to_string()}
-																	</small>
-																	<MultiLine text=note.note.notes />
-																</div>
-															}
-														})
-														.collect_view()}
-												</div>
+												{notes
+													.into_iter()
+													.map(|note| {
+														view! { <NotesItem note=note /> }
+													})
+													.collect_view()}
 											</div>
 										}
 											.into_view()
@@ -338,7 +324,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 													row_count=count
 													hidden_fields
 												/>
-												<div class=css::items>
+												<div>
 													{actions
 														.into_iter()
 														.map(|action| {

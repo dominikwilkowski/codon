@@ -68,19 +68,3 @@
 	padding: 1rem;
 	margin-top: 4rem;
 }
-
-.attachment_list .items {
-	display: grid;
-	gap: 2.5rem 1rem;
-	grid-template-columns: auto 1fr;
-	max-height: 50rem;
-	overflow: auto;
-	padding: 1rem 0;
-}
-
-.attachment_list .items small {
-	display: block;
-	font-size: 70%;
-	color: var(--text-muted);
-	margin-bottom: 0.5rem;
-}

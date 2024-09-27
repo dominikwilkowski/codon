@@ -1,0 +1,24 @@
+.notes_item {
+	display: grid;
+	gap: 2.5rem 1rem;
+	grid-template-columns: auto 1fr;
+	padding: 1rem 0;
+}
+
+.notes_item small {
+	display: block;
+	font-size: 70%;
+	color: var(--text-muted);
+	margin-bottom: 0.5rem;
+}
+
+.notes_item .imgs {
+	display: flex;
+	gap: 0.25rem;
+	margin: 0.5rem 0;
+}
+
+.notes_item .img {
+	max-height: 2rem;
+	border: 1px solid var(--text);
+}
