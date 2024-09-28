@@ -136,29 +136,33 @@ pub fn NotesImg(img: Option<String>) -> impl IntoView {
 	view! {
 		{if img.is_some() {
 			let img = img.unwrap();
-			view! {
-				<form
-					class=move || {
-						if is_open.get() {
-							format!("{} form-isopen", css::form)
-						} else {
-							css::form.to_string()
+			if !img.is_empty() {
+				view! {
+					<form
+						class=move || {
+							if is_open.get() {
+								format!("{} form-isopen", css::form)
+							} else {
+								css::form.to_string()
+							}
 						}
-					}
-					action=img.clone()
-					method="GET"
-					on:submit=move |event| {
-						event.prevent_default();
-						is_body_scrollable.set(is_open.get());
-						is_open.update(|open| *open = !*open);
-					}
-				>
-					<button type="submit" class=css::btn>
-						<img class=css::img src=img />
-					</button>
-				</form>
+						action=img.clone()
+						method="GET"
+						on:submit=move |event| {
+							event.prevent_default();
+							is_body_scrollable.set(is_open.get());
+							is_open.update(|open| *open = !*open);
+						}
+					>
+						<button type="submit" class=css::btn>
+							<img class=css::img src=img />
+						</button>
+					</form>
+				}
+					.into_view()
+			} else {
+				view! {}.into_view()
 			}
-				.into_view()
 		} else {
 			view! {}.into_view()
 		}}
