@@ -16,6 +16,11 @@ pub mod notes_form {
 }
 pub use notes_form::notes_form_view::*;
 
+pub mod actions {
+	pub mod actions_view;
+}
+pub use actions::actions_view::*;
+
 pub mod notes {
 	pub mod notes_view;
 }

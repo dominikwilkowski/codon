@@ -61,10 +61,3 @@
 		background: #ffffff05;
 	}
 }
-
-.attachment_list {
-	border: 3px dashed #ffffff10;
-	border-radius: var(--border-radius-lg);
-	padding: 1rem;
-	margin-top: 4rem;
-}
