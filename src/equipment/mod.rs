@@ -16,10 +16,10 @@ pub mod notes_form {
 }
 pub use notes_form::notes_form_view::*;
 
-pub mod notes_item {
-	pub mod notes_item_view;
+pub mod notes {
+	pub mod notes_view;
 }
-pub use notes_item::notes_item_view::*;
+pub use notes::notes_view::*;
 
 pub mod equipment_add {
 	pub mod equipment_add_view;

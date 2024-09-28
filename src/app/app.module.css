@@ -67,6 +67,10 @@ body {
 	accent-color: var(--action);
 }
 
+body:global(.not_scrollable) {
+	overflow: hidden;
+}
+
 .main:global(.frame) {
 	padding: 2rem;
 	max-width: 100rem;

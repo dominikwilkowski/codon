@@ -15,6 +15,8 @@ use thaw::*;
 
 stylance::import_style!(css, "app.module.css");
 
+pub type ScrollableBody = RwSignal<bool>;
+
 #[component]
 pub fn App() -> impl IntoView {
 	provide_meta_context();
@@ -49,7 +51,13 @@ pub fn App() -> impl IntoView {
 	theme.select.menu_background_color = String::from("var(--input-bg)");
 	theme.message.background_color = String::from("var(--bg)");
 
+	let is_body_scrollable = create_rw_signal(true);
+	provide_context::<ScrollableBody>(is_body_scrollable);
+
 	view! {
+		<Body class=move || {
+			if is_body_scrollable.get() { "" } else { "not_scrollable" }
+		} />
 		<Stylesheet id="leptos" href="/pkg/codon.css" />
 		<Link
 			rel="preload"
