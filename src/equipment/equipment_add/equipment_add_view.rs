@@ -1,181 +1,35 @@
 use crate::{
-	equipment::{
-		get_equipment_data_by_id, EquipmentData, EquipmentStatus, EquipmentType,
-	},
-	error_template::ErrorTemplate,
+	equipment::{EquipmentStatus, EquipmentType},
 	icons::EquipmentLogo,
 };
 
 use leptos::*;
 use leptos_router::*;
-use serde::de::DeserializeOwned;
-use server_fn::{
-	client::Client, codec::PostUrl, error::NoCustomError, request::ClientReq,
-	ServerFn,
-};
 
 stylance::import_style!(css, "equipment_add.module.css");
 
 #[component]
 pub fn EquipmentAdd() -> impl IntoView {
-	let add_equipment = create_server_action::<AddEquipment>();
+	let add_equipment_action = create_server_action::<AddEquipment>();
 
-	view! {
-		<h2>
-			<EquipmentLogo />
-			" Add new Equipment"
-		</h2>
-		<EquipmentAddEditForm
-			submit_action=add_equipment
-			redirect_on_success="/equipment"
-		/>
-	}
-}
-
-#[component]
-pub fn EquipmentEdit() -> impl IntoView {
-	let edit_equipment = create_server_action::<EditEquipment>();
-	let params = use_params_map();
-	let navigate = use_navigate();
-
-	let go_to_listing = create_rw_signal(false);
-
-	create_effect(move |_| {
-		if params.with(|p| p.get("id").cloned().unwrap_or_default()).is_empty()
-			|| go_to_listing.get()
-		{
-			navigate("/equipment", Default::default());
-		}
-	});
-
-	#[expect(clippy::redundant_closure)]
-	let equipment_data = create_resource(
-		move || params.with(|p| p.get("id").cloned().unwrap_or_default()),
-		move |id| get_equipment_data_by_id(id),
-	);
-
-	view! {
-		<h2>
-			<EquipmentLogo />
-			" Edit Equipment"
-		</h2>
-		<Transition fallback=move || view! { <p>Loading equipment...</p> }>
-			<ErrorBoundary fallback=|errors| {
-				view! { <ErrorTemplate errors=errors /> }
-			}>
-				{move || {
-					view! {
-						{if equipment_data.get().is_some() {
-							match equipment_data.get().unwrap() {
-								Err(e) => {
-									go_to_listing.set(true);
-									view! {
-										<pre class="error">Server Error: {e.to_string()}</pre>
-									}
-										.into_view()
-								}
-								Ok(equipment) => {
-									view! {
-										<EquipmentAddEditForm
-											is_edit=true
-											data=equipment
-											submit_action=edit_equipment
-											redirect_on_success="/equipment"
-										/>
-									}
-								}
-							}
-						} else {
-							view! { <div>Nothing found</div> }.into_view()
-						}}
-					}
-				}}
-			</ErrorBoundary>
-		</Transition>
-	}
-}
-
-#[component]
-pub fn EquipmentAddEditForm<T>(
-	#[prop(optional)] is_edit: bool,
-	#[prop(optional)] data: EquipmentData,
-	submit_action: Action<T, Result<(), ServerFnError>>,
-	redirect_on_success: &'static str,
-) -> impl IntoView
-where
-	T: ServerFn<InputEncoding = PostUrl, Output = (), Error = NoCustomError>
-		+ 'static,
-	T::Error: Clone + 'static,
-	T: DeserializeOwned + 'static,
-	<<<T as ServerFn>::Client as Client<
-		<T as ServerFn>::Error,
-	>>::Request as ClientReq<<T as ServerFn>::Error>>::FormData:
-		From<web_sys::FormData>,
-{
-	let id_value = create_rw_signal(if !is_edit {
-		String::new()
-	} else {
-		data.id.to_string()
-	});
-	let equipment_type_value = create_rw_signal(if !is_edit {
-		String::new()
-	} else {
-		data.equipment_type.to_string()
-	});
-	let name_value =
-		create_rw_signal(if !is_edit { String::new() } else { data.name });
-	let status_value = create_rw_signal(if !is_edit {
-		String::new()
-	} else {
-		data.status.to_string()
-	});
-	let manufacturer_value =
-		create_rw_signal(if !is_edit || data.manufacturer.is_none() {
-			String::new()
-		} else {
-			data.manufacturer.unwrap_or_default()
-		});
-	let purchase_date_value =
-		create_rw_signal(if !is_edit || data.purchase_date.is_none() {
-			String::new()
-		} else {
-			data.purchase_date.unwrap_or_default().to_string()
-		});
-	let vendor_value = create_rw_signal(if !is_edit || data.vendor.is_none() {
-		String::new()
-	} else {
-		data.vendor.unwrap_or_default()
-	});
-	let cost_in_cent_value =
-		create_rw_signal(if !is_edit || data.cost_in_cent.is_none() {
-			String::new()
-		} else {
-			data.cost_in_cent.unwrap_or_default().to_string()
-		});
-	let warranty_expiration_date_value =
-		create_rw_signal(if !is_edit || data.warranty_expiration_date.is_none() {
-			String::new()
-		} else {
-			data.warranty_expiration_date.unwrap_or_default().to_string()
-		});
-	let location_value =
-		create_rw_signal(if !is_edit || data.location.is_none() {
-			String::new()
-		} else {
-			data.location.unwrap_or_default()
-		});
-	let notes_value = create_rw_signal(if !is_edit || data.notes.is_none() {
-		String::new()
-	} else {
-		data.notes.unwrap_or_default().to_string()
-	});
+	let id_value = create_rw_signal(String::new());
+	let equipment_type_value = create_rw_signal(String::new());
+	let name_value = create_rw_signal(String::new());
+	let status_value = create_rw_signal(String::new());
+	let manufacturer_value = create_rw_signal(String::new());
+	let purchase_date_value = create_rw_signal(String::new());
+	let vendor_value = create_rw_signal(String::new());
+	let cost_in_cent_value = create_rw_signal(String::new());
+	let warranty_expiration_date_value = create_rw_signal(String::new());
+	let location_value = create_rw_signal(String::new());
+	let notes_value = create_rw_signal(String::new());
 
 	let navigate = use_navigate();
 	create_effect(move |_| {
-		if let Some(submission) = submit_action.value().get() {
+		if let Some(submission) = add_equipment_action.value().get() {
 			if submission.is_ok() {
 				println!("submit done!");
-				navigate(redirect_on_success, NavigateOptions::default());
+				navigate("/equipment", NavigateOptions::default());
 			} else {
 				println!("{submission:?}");
 			}
@@ -183,7 +37,11 @@ where
 	});
 
 	view! {
-		<ActionForm action=submit_action>
+		<h2>
+			<EquipmentLogo />
+			" Add new Equipment"
+		</h2>
+		<ActionForm action=add_equipment_action>
 			<input type="hidden" name="id" prop:value=id_value />
 			<select
 				name="equipment_type"
@@ -253,9 +111,9 @@ where
 			/>
 			<button
 				type="submit"
-				prop:disabled=move || submit_action.pending().get()
+				prop:disabled=move || add_equipment_action.pending().get()
 			>
-				{if is_edit { "Edit" } else { "Add" }}
+				"Add"
 			</button>
 		</ActionForm>
 	}

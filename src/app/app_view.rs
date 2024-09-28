@@ -1,6 +1,6 @@
 use crate::{
 	ds::Ds,
-	equipment::{Equipment, EquipmentAdd, EquipmentDetail, EquipmentEdit},
+	equipment::{Equipment, EquipmentAdd, EquipmentDetail},
 	error_template::{AppError, ErrorTemplate},
 	footer::Footer,
 	header::Header,
@@ -94,7 +94,6 @@ pub fn App() -> impl IntoView {
 							<Route path="/equipment" view=Equipment />
 							<Route path="/equipment/add" view=EquipmentAdd />
 							<Route path="/equipment/:id" view=EquipmentDetail />
-							<Route path="/equipment/edit/:id" view=EquipmentEdit />
 						</Routes>
 					</main>
 				</Router>

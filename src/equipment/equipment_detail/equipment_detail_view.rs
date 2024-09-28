@@ -108,7 +108,6 @@ pub fn EquipmentDetail() -> impl IntoView {
 													<EquipmentLogo />
 													" "
 													{equipment.name.clone()}
-													<A href=format!("/equipment/edit/{}", equipment.id)>Edit</A>
 												</h1>
 
 												<dl class=css::list>

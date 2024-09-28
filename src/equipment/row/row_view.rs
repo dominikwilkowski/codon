@@ -145,9 +145,6 @@ pub fn Row(
 					<td class="equipment_listing_details_link">
 						<A href=format!("/equipment/{}", equipment.id)>Details</A>
 					</td>
-					<td class="equipment_listing_edit_link">
-						<A href=format!("edit/{}", equipment.id)>Edit</A>
-					</td>
 					<td class="equipment_listing_delete_link">
 						<button
 							class=css::delete
