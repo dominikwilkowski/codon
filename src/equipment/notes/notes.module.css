@@ -28,7 +28,7 @@
 .notes_item .img {
 	max-height: 2rem;
 	border: 1px solid var(--text);
-	transition: all 0.3s ease;
+	transition: max-height 0.3s ease;
 }
 
 .notes_item .btn {
@@ -60,6 +60,5 @@
 }
 
 .notes_item .form:global(.form-isopen) .img {
-	max-height: 95vh;
-	border: none;
+	max-height: calc(95vh - 2px);
 }
