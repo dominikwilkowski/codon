@@ -7,6 +7,7 @@ pub mod components {
 	pub mod button;
 	pub mod checkbox;
 	pub mod datepicker;
+	pub mod dropdown;
 	pub mod file_input;
 	pub mod file_upload;
 	pub mod img_attachment;

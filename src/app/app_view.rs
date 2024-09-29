@@ -49,6 +49,7 @@ pub fn App() -> impl IntoView {
 	theme.select.background_color = String::from("var(--input-bg)");
 	theme.select.menu_background_color = String::from("var(--input-bg)");
 	theme.message.background_color = String::from("var(--bg)");
+	theme.dropdown.background_color = String::from("var(--input-bg)");
 
 	let is_body_scrollable = create_rw_signal(true);
 	provide_context::<ScrollableBody>(is_body_scrollable);

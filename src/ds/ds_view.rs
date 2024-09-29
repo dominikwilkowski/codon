@@ -3,6 +3,7 @@ use crate::{
 		button::{use_message, Button, MessageOptions, MessageVariant},
 		checkbox::{Checkbox, CheckboxGroup, CheckboxItem},
 		datepicker::DatePicker,
+		dropdown::{Dropdown, DropdownItem, DropdownTrigger},
 		file_input::FileInput,
 		input::{Input, MoneyInput, TextArea},
 		pagination::Pagination,
@@ -272,6 +273,20 @@ pub fn Ds() -> impl IntoView {
 
 			<div class=css::stack_inline>
 				<Radio>Single Radio</Radio>
+			</div>
+		</section>
+
+		<section class=css::section>
+			<h2>Dropdown</h2>
+			<div class=css::stack_inline>
+				<Dropdown on_select=move |_| {}>
+					<DropdownTrigger slot>
+						<Button outlined=true>"Click"</Button>
+					</DropdownTrigger>
+					<DropdownItem key="foo" label="Option A"></DropdownItem>
+					<DropdownItem key="bar" label="Option B"></DropdownItem>
+					<DropdownItem key="disabled" disabled=true label="Option C"></DropdownItem>
+				</Dropdown>
 			</div>
 		</section>
 

@@ -26,4 +26,5 @@
 
 .notes_item .menu {
 	height: 1.5rem;
+	cursor: pointer;
 }

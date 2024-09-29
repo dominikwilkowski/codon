@@ -1,5 +1,11 @@
 use crate::{
-	components::{avatar::Avatar, img_attachment::ImgAttachment, multiline::MultiLine, pagination::Pagination},
+	components::{
+		avatar::Avatar,
+		dropdown::{Dropdown, DropdownItem, DropdownPlacement, DropdownTrigger},
+		img_attachment::ImgAttachment,
+		multiline::MultiLine,
+		pagination::Pagination,
+	},
 	equipment::{save_notes, NotesForm, NotesPerson},
 	error_template::ErrorTemplate,
 };
@@ -82,9 +88,20 @@ pub fn NotesItem(note: NotesPerson) -> impl IntoView {
 			<div>
 				<small>
 					{note.note.create_date.format("%d %b %Y %I:%M:%S %P").to_string()}
-					<svg class=css::menu xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-						<path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-					</svg>
+					<Dropdown placement=DropdownPlacement::BottomEnd on_select=move |_| {}>
+						<DropdownTrigger slot>
+							<svg
+								class=css::menu
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+							>
+								<path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+							</svg>
+						</DropdownTrigger>
+						<DropdownItem key="foo" label="Edit" />
+						<DropdownItem key="bar" disabled=false label="Delete" />
+					</Dropdown>
 				</small>
 				<MultiLine text=note.note.notes />
 				<div class="codon_img_attachment">
