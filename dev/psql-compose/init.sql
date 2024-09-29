@@ -68,18 +68,18 @@ CREATE TABLE equipment (
 	notes TEXT
 );
 INSERT INTO equipment (equipment_type, qrcode, create_date, name, status, manufacturer, purchase_date, vendor, cost_in_cent, warranty_expiration_date, location, notes) VALUES
-('Flask','qr_00001_F.svg','2022-09-18T12:45:59.324310806Z','Stevens Flask','Cleaned','Flasktastic Labs','2022-09-19T12:45:59.324310806Z','SupplySidekick',50000,'2025-01-15T12:45:59.324310806Z','Back Row D, Column 27','This one is a working horse!'),
-('Vessel','qr_00002_V.svg','2024-08-15T12:45:59.324310806Z','Britta','Dirty','VesselForge','2022-06-10T12:45:59.324310806Z','ScienceStash',75000,'2024-06-10T12:45:59.324310806Z','In the cafeterias fridge','Has a crack on the top left'),
-('Flask','qr_00003_F.svg','2023-01-12T12:45:59.324310806Z','Flasky McFlaskface','Sterilized','BeakerMakers','2022-12-01T12:45:59.324310806Z','LabGear Galore',62050,'2026-01-12T12:45:59.324310806Z','Top Shelf, Aisle 5','Always keeps it clean!'),
-('Vessel','qr_00004_V.svg','2023-05-20T12:45:59.324310806Z','Vessela','Archived','VesselMakers Inc.','2021-07-15T12:45:59.324310806Z','SupplySidekick',82000,'2023-11-20T12:45:59.324310806Z','Storage Room B, Shelf 3','Handle with care... or not.'),
-('IncubationCabinet','qr_00005_I.svg','2022-11-05T12:45:59.324310806Z','Microbe Motel','Dirty','Germination Station Inc.','2022-10-25T12:45:59.324310806Z','ScienceStash',58099,'2025-10-05T12:45:59.324310806Z','Chemical Lab, Table 4','Whips up a storm in experiments!'),
-('Vessel','qr_00006_V.svg','2024-03-30T12:45:59.324310806Z','Vesselina','Archived','VesselVentures','2023-04-18T12:45:59.324310806Z','LabGear Galore',99000,'2024-03-30T12:45:59.324310806Z','Main Lab, Counter 12','All sailed out.'),
-('IncubationCabinet','qr_00007_I.svg','2024-02-10T12:45:59.324310806Z','Microbe Mansion','Cleaned','Hot Box Industries','2023-11-11T12:45:59.324310806Z','SupplySidekick',73000,'2027-02-10T12:45:59.324310806Z','Mixology Lab, Station 8','Holds mixes like a pro!'),
-('IncubationCabinet','qr_00008_I.svg','2023-07-22T12:45:59.324310806Z','Captain Contain','Prepared','Containment Creations','2022-08-02T12:45:59.324310806Z','ScienceStash',67000,'2026-07-22T12:45:59.324310806Z','Secure Storage, Area 3','A true captain of containment.'),
-('Flask','qr_00009_F.svg','2023-09-09T12:45:59.324310806Z','Dr. Flaskenstein','InUse','Mad Flask Labs','2023-05-19T12:45:59.324310806Z','LabGear Galore',52069,'2025-09-09T12:45:59.324310806Z','Experiment Zone, Bay 2','Brings experiments to life!'),
-('Vessel','qr_00010_V.svg','2024-04-15T12:45:59.324310806Z','Vesselocity','Sterilized','Vessel Velocity Inc.','2023-07-01T12:45:59.324310806Z','SupplySidekick',84500,'2026-04-15T12:45:59.324310806Z','High-Speed Lab, Corner 9','Speedy and sleek, always on the go!'),
-('Flask','qr_00011_F.svg','2024-01-18T12:45:59.324310806Z','Flask-in-a-Box','InUse','Boxed Labs','2022-12-15T12:45:59.324310806Z','ScienceStash',54000,'2027-01-18T12:45:59.324310806Z','Storage Unit 12, Shelf 4','Comes with a twist!'),
-('IncubationCabinet','qr_00012_I.svg','2023-10-25T12:45:59.324310806Z','Spore Spa','Prepared','WonderCabinets','2022-03-11T12:45:59.324310806Z','LabGear Galore',91010,'2024-10-25T12:45:59.324310806Z','Mystery Lab, Area 7',E'Welcome to the "Spore Spa"—where fungi come to relax, rejuvenate, and sporulate! 🧖‍♂️🍄\nBrought to you by WonderCabinets, this state-of-the-art incubation cabinet is the pinnacle of fungal luxury.\nOur team of intrepid scientists and researchers are on a mission to mold a better future by discovering sustainable solutions that are good for the planet.\n\nSo sit back, relax, and let the spores do the work—because saving the world shouldn\'t be a mushroom for error!');
+('Flask', 'qr_00001_F.svg', '2022-09-18T12:45:59.324310806Z', 'Stevens Flask', 'Cleaned', 'Flasktastic Labs', '2022-09-19T12:45:59.324310806Z', 'SupplySidekick',50000,'2025-01-15T12:45:59.324310806Z', 'Back Row D, Column 27', 'This one is a working horse!'),
+('Vessel', 'qr_00002_V.svg', '2024-08-15T12:45:59.324310806Z', 'Britta', 'Dirty', 'VesselForge', '2022-06-10T12:45:59.324310806Z', 'ScienceStash',75000,'2024-06-10T12:45:59.324310806Z', 'In the cafeterias fridge', 'Has a crack on the top left'),
+('Flask', 'qr_00003_F.svg', '2023-01-12T12:45:59.324310806Z', 'Flasky McFlaskface', 'Sterilized', 'BeakerMakers', '2022-12-01T12:45:59.324310806Z', 'LabGear Galore',62050,'2026-01-12T12:45:59.324310806Z', 'Top Shelf, Aisle 5', 'Always keeps it clean!'),
+('Vessel', 'qr_00004_V.svg', '2023-05-20T12:45:59.324310806Z', 'Vessela', 'Archived', 'VesselMakers Inc.', '2021-07-15T12:45:59.324310806Z', 'SupplySidekick',82000,'2023-11-20T12:45:59.324310806Z', 'Storage Room B, Shelf 3', 'Handle with care... or not.'),
+('IncubationCabinet', 'qr_00005_I.svg', '2022-11-05T12:45:59.324310806Z', 'Microbe Motel', 'Dirty', 'Germination Station Inc.', '2022-10-25T12:45:59.324310806Z', 'ScienceStash',58099,'2025-10-05T12:45:59.324310806Z', 'Chemical Lab, Table 4', 'Whips up a storm in experiments!'),
+('Vessel', 'qr_00006_V.svg', '2024-03-30T12:45:59.324310806Z', 'Vesselina', 'Archived', 'VesselVentures', '2023-04-18T12:45:59.324310806Z', 'LabGear Galore',99000,'2024-03-30T12:45:59.324310806Z', 'Main Lab, Counter 12', 'All sailed out.'),
+('IncubationCabinet', 'qr_00007_I.svg', '2024-02-10T12:45:59.324310806Z', 'Microbe Mansion', 'Cleaned', 'Hot Box Industries', '2023-11-11T12:45:59.324310806Z', 'SupplySidekick',73000,'2027-02-10T12:45:59.324310806Z', 'Mixology Lab, Station 8', 'Holds mixes like a pro!'),
+('IncubationCabinet', 'qr_00008_I.svg', '2023-07-22T12:45:59.324310806Z', 'Captain Contain', 'Prepared', 'Containment Creations', '2022-08-02T12:45:59.324310806Z', 'ScienceStash',67000,'2026-07-22T12:45:59.324310806Z', 'Secure Storage, Area 3', 'A true captain of containment.'),
+('Flask', 'qr_00009_F.svg', '2023-09-09T12:45:59.324310806Z', 'Dr. Flaskenstein', 'InUse', 'Mad Flask Labs', '2023-05-19T12:45:59.324310806Z', 'LabGear Galore',52069,'2025-09-09T12:45:59.324310806Z', 'Experiment Zone, Bay 2', 'Brings experiments to life!'),
+('Vessel', 'qr_00010_V.svg', '2024-04-15T12:45:59.324310806Z', 'Vesselocity', 'Sterilized', 'Vessel Velocity Inc.', '2023-07-01T12:45:59.324310806Z', 'SupplySidekick',84500,'2026-04-15T12:45:59.324310806Z', 'High-Speed Lab, Corner 9', 'Speedy and sleek, always on the go!'),
+('Flask', 'qr_00011_F.svg', '2024-01-18T12:45:59.324310806Z', 'Flask-in-a-Box', 'InUse', 'Boxed Labs', '2022-12-15T12:45:59.324310806Z', 'ScienceStash',54000,'2027-01-18T12:45:59.324310806Z', 'Storage Unit 12, Shelf 4', 'Comes with a twist!'),
+('IncubationCabinet', 'qr_00012_I.svg', '2023-10-25T12:45:59.324310806Z', 'Spore Spa', 'Prepared', 'WonderCabinets', '2022-03-11T12:45:59.324310806Z', 'LabGear Galore',91010,'2024-10-25T12:45:59.324310806Z', 'Mystery Lab, Area 7',E'Welcome to the "Spore Spa"—where fungi come to relax, rejuvenate, and sporulate! 🧖‍♂️🍄\nBrought to you by WonderCabinets, this state-of-the-art incubation cabinet is the pinnacle of fungal luxury.\nOur team of intrepid scientists and researchers are on a mission to mold a better future by discovering sustainable solutions that are good for the planet.\n\nSo sit back, relax, and let the spores do the work—because saving the world shouldn\'t be a mushroom for error!');
 
 CREATE TABLE equipment_notes (
 	id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -131,7 +131,7 @@ INSERT INTO equipment_notes (equipment, person, notes, media1, media2, media3, m
 (11, 4, E'The equipment seems to be communicating in Morse code via blinking lights.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (11, 5, E'Discovered the source of the beeping—it was just hungry.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (11, 1, E'Polished to a shine; can now see your reflection. Need a shave!', '/upload_media/F-11/2f043c7a-4a14-46ab-a67e-8a880e5f0fd0.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(12, 2, E'Machine believes it\'s a toaster.\nIt is not a toaster.', '/upload_media/I-12/1bc6a36e-28a3-4ff4-bb33-0d737d25db45.jpg', '/upload_media/I-12/4bbbc6b2-885e-49c3-8798-4bdcb74872bf.jpg','/upload_media/I-12/5b535f02-5a38-4699-b8ca-ac5e60a33954.jpg','/upload_media/I-12/2300f244-8669-4919-8463-713f9f8cf696.jpg','/upload_media/I-12/22682d31-d0f0-4421-9866-0b25168a1a6f.jpg','/upload_media/I-12/f100c4fc-3453-4ed9-9f15-8328219a4ae8.jpg','/upload_media/I-12/ec5651fe-50b8-490d-8b66-9873c9cc3da3.jpg','/upload_media/I-12/ae704b84-45e9-49e6-a5dc-dbb3ff19fedc.jpg','/upload_media/I-12/a58d860f-3bb5-4239-b014-69ad03cdefc7.jpg','/upload_media/I-12/183029e4-811d-41b7-93e4-4d5f9d85fe69.jpg'),
+(12, 2, E'Machine believes it\'s a toaster.\nIt is not a toaster.', '/upload_media/I-12/1bc6a36e-28a3-4ff4-bb33-0d737d25db45.jpg', '/upload_media/I-12/4bbbc6b2-885e-49c3-8798-4bdcb74872bf.jpg', '/upload_media/I-12/5b535f02-5a38-4699-b8ca-ac5e60a33954.jpg', '/upload_media/I-12/2300f244-8669-4919-8463-713f9f8cf696.jpg', '/upload_media/I-12/22682d31-d0f0-4421-9866-0b25168a1a6f.jpg', '/upload_media/I-12/f100c4fc-3453-4ed9-9f15-8328219a4ae8.jpg', '/upload_media/I-12/ec5651fe-50b8-490d-8b66-9873c9cc3da3.jpg', '/upload_media/I-12/ae704b84-45e9-49e6-a5dc-dbb3ff19fedc.jpg', '/upload_media/I-12/a58d860f-3bb5-4239-b014-69ad03cdefc7.jpg', '/upload_media/I-12/183029e4-811d-41b7-93e4-4d5f9d85fe69.jpg'),
 (12, 3, E'Do not attempt to fix the machine with a hammer.\n\nAgain.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (12, 4, E'Removed traces of glitter bomb.\nThe prank war continues.', '/upload_media/I-12/b48c139d-6fe4-4d45-bcc1-42a69ac340c3.MOV', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (12, 5, E'If found speaking to the equipment, please consult HR. Again', '/upload_media/I-12/027eea60-4544-408f-81d2-9dcb8c721c3f.jpg', '/upload_media/I-12/28090d96-0610-455e-8203-468cdcb76858.jpg', '/upload_media/I-12/8897c75f-2cdb-4dcf-9570-59e2f14fedf9.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
@@ -161,31 +161,31 @@ CREATE TABLE equipment_log (
 );
 CREATE INDEX equipment_log_equipment ON equipment_log (equipment);
 CREATE INDEX equipment_log_person ON equipment_log (person);
-INSERT INTO equipment_log (log_type, equipment, person, notes, field, old_value, new_value) VALUES
-('cleaning', 1, 3, E'Found a tiny civilization of dust bunnies; negotiations are ongoing.', NULL, NULL, NULL),
-('edit', 1, 5, E'Status changed to "Sentient"; it passed the Turing test.', 'status', 'working', 'broken'),
-('edit', 2, 8, E'Moved to the "Noisy Equipment" section; it wouldnt stop humming.', 'location', 'Under desk', 'Shelve 12, Cell 12, Row E'),
-('edit', 2, 2, E'Updated manual to include "Do not feed after midnight."', 'notes', NULL, 'No heat for this one'),
-('sterilization', 3, 6, E'Sterilized after it started growing it\'s own cultures.', NULL, NULL, NULL),
-('cleaning', 3, 9, E'Removed mysterious sticky substance; taste test inconclusive.', NULL, NULL, NULL),
-('edit', 4, 1, E'Status changed to "Possessed"; it started making eerie sounds.', 'status', 'Dirty', 'OutOfComission'),
-('edit', 4, 14, E'Edited settings to disable the "Self-Destruct" feature.', 'notes', 'TODO', NULL),
-('preparation', 5, 7, E'Prepared for the annual "Equipment Talent Show".', NULL, NULL, NULL),
-('sterilization', 5, 12, E'Sterilized after it didnt want to join the bacteria union.', NULL, NULL, NULL),
-('edit', 6, 4, E'Moved to storage; it needs some "alone time".', 'location', 'Shelf Top Floor', 'Basement'),
-('cleaning', 7, 11, E'Cleaned the "Error 404: Cleanliness Not Found".', NULL, NULL, NULL),
-('edit', 7, 2, E'Status changed to "Mysteriously Wet"; source of moisture unknown.', 'status', 'Dirty', 'InUse'),
-('edit', 7, 13, E'Updated firmware to version 1.21 Flask.', 'notes', 'Reminder: to clean this', NULL),
-('preparation', 8, 5, E'Prepared for interdimensional travel; safety not guaranteed.', NULL, NULL, NULL),
-('sterilization', 9, 10, E'Sterilized after an incident with a radioactive burrito.', NULL, NULL, NULL),
-('edit', 9, 3, E'Adjusted settings to "Do Not Disturb"; it\'s meditating.', 'status', 'InUse', 'Dirty'),
-('edit', 10, 6, E'Relocated to Lab 42; because it\'s the answer to everything.', 'location', 'Shelf 41', 'Shelf 42'),
-('edit', 11, 8, E'Status changed to "Invisible"; cant find it anywhere.', 'location', 'nowhere', 'Shelf 7'),
-('cleaning', 11, 1, E'Attempted to clean; ended up in a philosophical debate.', NULL, NULL, NULL),
-('edit', 12, 14, E'Edited user manual to include "Beware of the Leopard".', 'notes', 'Contains Leopard', 'Contains Leptospira'),
-('preparation', 12, 7, E'Prepared for upgrade; hoping it doesnt gain self-awareness.', NULL, NULL, NULL),
-('cleaning', 12, 9, E'Cleaned glitter residue; who had a party without inviting me?', NULL, NULL, NULL),
-('sterilization', 12, 2, E'Flask sterilized, so clean that even the microbes are afraid to enter!', NULL, NULL, NULL);
+INSERT INTO equipment_log (log_type, equipment, person, notes, field, old_value, new_value, media1, media2, media3, media4, media5, media6, media7, media8, media9, media10) VALUES
+('cleaning', 1, 3, E'Found a tiny civilization of dust bunnies; negotiations are ongoing.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('edit', 1, 5, E'Status changed to "Sentient"; it passed the Turing test.', 'status', 'working', 'broken', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('edit', 2, 8, E'Moved to the "Noisy Equipment" section; it wouldnt stop humming.', 'location', 'Under desk', 'Shelve 12, Cell 12, Row E', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('edit', 2, 2, E'Updated manual to include "Do not feed after midnight."', 'notes', NULL, 'No heat for this one', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('sterilization', 3, 6, E'Sterilized after it started growing it\'s own cultures.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('cleaning', 3, 9, E'Removed mysterious sticky substance; taste test inconclusive.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('edit', 4, 1, E'Status changed to "Possessed"; it started making eerie sounds.', 'status', 'Dirty', 'OutOfComission', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('edit', 4, 14, E'Edited settings to disable the "Self-Destruct" feature.', 'notes', 'TODO', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('preparation', 5, 7, E'Prepared for the annual "Equipment Talent Show".', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('sterilization', 5, 12, E'Sterilized after it didnt want to join the bacteria union.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('edit', 6, 4, E'Moved to storage; it needs some "alone time".', 'location', 'Shelf Top Floor', 'Basement', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('cleaning', 7, 11, E'Cleaned the "Error 404: Cleanliness Not Found".', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('edit', 7, 2, E'Status changed to "Mysteriously Wet"; source of moisture unknown.', 'status', 'Dirty', 'InUse', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('edit', 7, 13, E'Updated firmware to version 1.21 Flask.', 'notes', 'Reminder: to clean this', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('preparation', 8, 5, E'Prepared for interdimensional travel; safety not guaranteed.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('sterilization', 9, 10, E'Sterilized after an incident with a radioactive burrito.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('edit', 9, 3, E'Adjusted settings to "Do Not Disturb"; it\'s meditating.', 'status', 'InUse', 'Dirty', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('edit', 10, 6, E'Relocated to Lab 42; because it\'s the answer to everything.', 'location', 'Shelf 41', 'Shelf 42', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('edit', 11, 8, E'Status changed to "Invisible"; cant find it anywhere.', 'location', 'nowhere', 'Shelf 7', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('cleaning', 11, 1, E'Attempted to clean; ended up in a philosophical debate.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('edit', 12, 14, E'Edited user manual to include "Beware of the Leopard".', 'notes', 'Contains Leopard', 'Contains Leptospira', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('preparation', 12, 7, E'Prepared for upgrade; hoping it doesnt gain self-awareness.', NULL, NULL, NULL, '/upload_media/I-12/027eea60-4544-408f-81d2-9dcb8c721c3f.jpg', '/upload_media/I-12/28090d96-0610-455e-8203-468cdcb76858.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('cleaning', 12, 9, E'Cleaned glitter residue; who had a party without inviting me?', NULL, NULL, NULL, '/upload_media/I-12/1bc6a36e-28a3-4ff4-bb33-0d737d25db45.jpg', '/upload_media/I-12/4bbbc6b2-885e-49c3-8798-4bdcb74872bf.jpg', '/upload_media/I-12/5b535f02-5a38-4699-b8ca-ac5e60a33954.jpg', '/upload_media/I-12/b48c139d-6fe4-4d45-bcc1-42a69ac340c3.MOV', '/upload_media/I-12/22682d31-d0f0-4421-9866-0b25168a1a6f.jpg', '/upload_media/I-12/f100c4fc-3453-4ed9-9f15-8328219a4ae8.jpg', '/upload_media/I-12/ec5651fe-50b8-490d-8b66-9873c9cc3da3.jpg', '/upload_media/I-12/ae704b84-45e9-49e6-a5dc-dbb3ff19fedc.jpg', '/upload_media/I-12/a58d860f-3bb5-4239-b014-69ad03cdefc7.jpg', '/upload_media/I-12/183029e4-811d-41b7-93e4-4d5f9d85fe69.jpg'),
+('sterilization', 12, 2, E'Flask sterilized, so clean that even the microbes are afraid to enter!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 
 

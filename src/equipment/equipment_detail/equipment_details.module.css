@@ -24,7 +24,7 @@
 .list dt {
 	display: grid;
 	align-items: center;
-	background: #ffffff05;
+	background: var(--bg-alt);
 }
 
 @media (min-width: 42rem) {
@@ -58,7 +58,7 @@
 
 	.list dd:nth-child(4n),
 	.list dt:nth-child(4n - 1) {
-		background: #ffffff05;
+		background: var(--bg-alt);
 	}
 }
 

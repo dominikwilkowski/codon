@@ -9,6 +9,7 @@ pub mod components {
 	pub mod datepicker;
 	pub mod file_input;
 	pub mod file_upload;
+	pub mod img_attachment;
 	pub mod input;
 	pub mod multiline;
 	pub mod pagination;

@@ -1,5 +1,5 @@
 use crate::{
-	components::{avatar::Avatar, multiline::MultiLine, pagination::Pagination},
+	components::{avatar::Avatar, img_attachment::ImgAttachment, multiline::MultiLine, pagination::Pagination},
 	equipment::LogPerson,
 	error_template::ErrorTemplate,
 };
@@ -60,6 +60,18 @@ pub fn Log(
 															Old Value: {log.log.old_value}<br />New Value:
 															{log.log.new_value}<br />
 														</span>
+														<div class="codon_img_attachment">
+															<ImgAttachment file_path=log.log.media1 />
+															<ImgAttachment file_path=log.log.media2 />
+															<ImgAttachment file_path=log.log.media3 />
+															<ImgAttachment file_path=log.log.media4 />
+															<ImgAttachment file_path=log.log.media5 />
+															<ImgAttachment file_path=log.log.media6 />
+															<ImgAttachment file_path=log.log.media7 />
+															<ImgAttachment file_path=log.log.media8 />
+															<ImgAttachment file_path=log.log.media9 />
+															<ImgAttachment file_path=log.log.media10 />
+														</div>
 													}
 												})
 												.collect_view()}

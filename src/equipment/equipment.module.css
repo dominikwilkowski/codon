@@ -7,7 +7,7 @@
 }
 
 .table tr:nth-child(even) {
-	background: #ffffff05;
+	background: var(--bg-alt);
 }
 
 .table td {

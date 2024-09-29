@@ -2,6 +2,7 @@
 	--fg: #eaeff0; /* rgb(234, 239, 240) */
 	--fg-highlight: #fff; /* rgb(255, 255, 255) */
 	--bg: #101415; /* rgb(16, 20, 21) */
+	--bg-alt: #ffffff05; /* rgb(255, 255, 255, 5) */
 	--content-bg: #15181c; /* rgb(21, 24, 28) */
 	--action: #ff0093; /* rgb(255, 0, 147) */
 	--focus: #ff0093; /* rgb(255, 0, 147) */
