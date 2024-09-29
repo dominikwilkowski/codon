@@ -175,10 +175,7 @@ impl EquipmentData {
 			(String::from("purchase_date"), String::from("Purchased")),
 			(String::from("vendor"), String::from("Vendor")),
 			(String::from("cost_in_cent"), String::from("Cost")),
-			(
-				String::from("warranty_expiration_date"),
-				String::from("Warranty Expiration Date"),
-			),
+			(String::from("warranty_expiration_date"), String::from("Warranty Expiration Date")),
 			(String::from("location"), String::from("Location")),
 			(String::from("notes"), String::from("Notes")),
 		]

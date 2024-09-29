@@ -17,10 +17,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 	let navigate = use_navigate();
 
 	let notes_query_page = create_rw_signal({
-		let page = query
-			.with(|p| p.get("notes_page").cloned().unwrap_or(String::from("1")))
-			.parse::<u16>()
-			.unwrap_or(1);
+		let page = query.with(|p| p.get("notes_page").cloned().unwrap_or(String::from("1"))).parse::<u16>().unwrap_or(1);
 		if page > 0 {
 			page
 		} else {
@@ -29,12 +26,8 @@ pub fn EquipmentDetail() -> impl IntoView {
 	});
 
 	let notes_query_ipp = create_rw_signal({
-		let ipp = query
-			.with(|p| {
-				p.get("notes_items_per_page").cloned().unwrap_or(String::from("25"))
-			})
-			.parse::<u8>()
-			.unwrap_or(25);
+		let ipp =
+			query.with(|p| p.get("notes_items_per_page").cloned().unwrap_or(String::from("25"))).parse::<u8>().unwrap_or(25);
 		if ipp > 0 {
 			ipp
 		} else {
@@ -43,10 +36,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 	});
 
 	let log_query_page = create_rw_signal({
-		let page = query
-			.with(|p| p.get("log_page").cloned().unwrap_or(String::from("1")))
-			.parse::<u16>()
-			.unwrap_or(1);
+		let page = query.with(|p| p.get("log_page").cloned().unwrap_or(String::from("1"))).parse::<u16>().unwrap_or(1);
 		if page > 0 {
 			page
 		} else {
@@ -55,12 +45,8 @@ pub fn EquipmentDetail() -> impl IntoView {
 	});
 
 	let log_query_ipp = create_rw_signal({
-		let ipp = query
-			.with(|p| {
-				p.get("log_items_per_page").cloned().unwrap_or(String::from("25"))
-			})
-			.parse::<u8>()
-			.unwrap_or(25);
+		let ipp =
+			query.with(|p| p.get("log_items_per_page").cloned().unwrap_or(String::from("25"))).parse::<u8>().unwrap_or(25);
 		if ipp > 0 {
 			ipp
 		} else {
@@ -68,9 +54,16 @@ pub fn EquipmentDetail() -> impl IntoView {
 		}
 	});
 
+	let tab_query = create_rw_signal({
+		query.with(|p| match p.get("tab").cloned().unwrap_or(String::from("notes")).as_str() {
+			"notes" => String::from("notes"),
+			"log" => String::from("log"),
+			_ => String::from("notes"),
+		})
+	});
+
 	let go_to_listing = create_rw_signal(false);
-	let id =
-		create_rw_signal(params.with(|p| p.get("id").cloned().unwrap_or_default()));
+	let id = create_rw_signal(params.with(|p| p.get("id").cloned().unwrap_or_default()));
 
 	create_effect(move |_| {
 		if id.get().is_empty() || go_to_listing.get() {
@@ -79,8 +72,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 	});
 
 	#[expect(clippy::redundant_closure)]
-	let equipment_data =
-		create_resource(move || id.get(), move |id| get_equipment_data_by_id(id));
+	let equipment_data = create_resource(move || id.get(), move |id| get_equipment_data_by_id(id));
 
 	view! {
 		<Transition fallback=move || view! { <p>Loading equipment...</p> }>
@@ -94,14 +86,10 @@ pub fn EquipmentDetail() -> impl IntoView {
 								match equipment_data.get().unwrap() {
 									Err(error) => {
 										go_to_listing.set(true);
-										view! {
-											<pre class="error">Server Error: {error.to_string()}</pre>
-										}
-											.into_view()
+										view! { <pre class="error">Server Error: {error.to_string()}</pre> }.into_view()
 									}
 									Ok(equipment) => {
-										let is_archived = equipment.status.clone()
-											== EquipmentStatus::Archived;
+										let is_archived = equipment.status.clone() == EquipmentStatus::Archived;
 										view! {
 											<div class=css::details>
 												<h1 class=css::heading>
@@ -198,23 +186,64 @@ pub fn EquipmentDetail() -> impl IntoView {
 							}
 						}
 					};
+					let id_clone = id;
+					let notes_query_page_clone = notes_query_page;
+					let notes_query_ipp_clone = notes_query_ipp;
+					let log_query_page_clone = log_query_page;
+					let log_query_ipp_clone = log_query_ipp;
+					let tab_query_clone = tab_query;
 					view! {
 						<div>
-							{equipment}
-							<Notes
-								id=id
-								notes_query_page=notes_query_page
-								notes_query_ipp=notes_query_ipp
-								log_query_page=notes_query_page
-								log_query_ipp=notes_query_ipp
-							/>
-							<Log
-								id=id
-								notes_query_page=notes_query_page
-								notes_query_ipp=notes_query_ipp
-								log_query_page=log_query_page
-								log_query_ipp=log_query_ipp
-							/>
+							{equipment} <div id="equipment_tab" class=css::tab>
+								<form
+									class=if tab_query.get() == *"notes" { "is-selected" } else { "" }
+									action=format!("/equipment/{}#equipment_tab", id.get())
+									method="GET"
+								>
+									<input type="hidden" name="notes_page" value=notes_query_page_clone />
+									<input type="hidden" name="notes_items_per_page" value=notes_query_ipp_clone />
+									<input type="hidden" name="log_page" value=log_query_page_clone />
+									<input type="hidden" name="log_items_per_page" value=log_query_ipp_clone />
+									<input type="hidden" name="tab" value="notes" />
+									<button class=css::btn>Notes</button>
+								</form>
+								<form
+									class=if tab_query.get() == *"log" { "is-selected" } else { "" }
+									action=format!("/equipment/{}#equipment_tab", id.get())
+									method="GET"
+								>
+									<input type="hidden" name="notes_page" value=notes_query_page_clone />
+									<input type="hidden" name="notes_items_per_page" value=notes_query_ipp_clone />
+									<input type="hidden" name="log_page" value=log_query_page_clone />
+									<input type="hidden" name="log_items_per_page" value=log_query_ipp_clone />
+									<input type="hidden" name="tab" value="log" />
+									<button class=css::btn>Log</button>
+								</form>
+							</div>
+							<Show
+								when=move || tab_query.get().as_str() == "log"
+								fallback=move || {
+									view! {
+										<Notes
+											id=id_clone
+											notes_query_page=notes_query_page_clone
+											notes_query_ipp=notes_query_ipp_clone
+											log_query_page=log_query_page_clone
+											log_query_ipp=log_query_ipp_clone
+											tab_query=tab_query_clone
+										/>
+									}
+								}
+							>
+								<Log
+									id=id
+									notes_query_page=notes_query_page
+									notes_query_ipp=notes_query_ipp
+									log_query_page=log_query_page
+									log_query_ipp=log_query_ipp
+									tab_query=tab_query
+								/>
+							</Show>
 						</div>
 					}
 				}}
@@ -224,9 +253,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 }
 
 #[server]
-pub async fn get_equipment_data_by_id(
-	id: String,
-) -> Result<EquipmentData, ServerFnError> {
+pub async fn get_equipment_data_by_id(id: String) -> Result<EquipmentData, ServerFnError> {
 	use crate::{db::ssr::get_db, equipment::EquipmentSQLData};
 
 	let id = match id.parse::<i32>() {
@@ -234,15 +261,11 @@ pub async fn get_equipment_data_by_id(
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
 	};
 
-	let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLData>(
-		"SELECT * FROM equipment WHERE id = $1",
-	)
-	.bind(id)
-	.fetch_one(get_db())
-	.await
-	.map_err::<ServerFnError, _>(|error| {
-		ServerFnError::ServerError(error.to_string())
-	})?;
+	let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLData>("SELECT * FROM equipment WHERE id = $1")
+		.bind(id)
+		.fetch_one(get_db())
+		.await
+		.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	Ok(equipment_sql_data.into())
 }

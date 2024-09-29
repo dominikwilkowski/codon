@@ -19,17 +19,10 @@ pub fn Equipment() -> impl IntoView {
 	let delete_equipment = create_server_action::<DeleteEquipment>();
 
 	let query = use_query_map();
-	let query_field = create_rw_signal(
-		query.with(|p| p.get("field").cloned().unwrap_or(String::from("id"))),
-	);
-	let query_order = create_rw_signal(
-		query.with(|p| p.get("order").cloned().unwrap_or(String::from("asc"))),
-	);
+	let query_field = create_rw_signal(query.with(|p| p.get("field").cloned().unwrap_or(String::from("id"))));
+	let query_order = create_rw_signal(query.with(|p| p.get("order").cloned().unwrap_or(String::from("asc"))));
 	let query_page = create_rw_signal({
-		let page = query
-			.with(|p| p.get("page").cloned().unwrap_or(String::from("1")))
-			.parse::<u16>()
-			.unwrap_or(1);
+		let page = query.with(|p| p.get("page").cloned().unwrap_or(String::from("1"))).parse::<u16>().unwrap_or(1);
 		if page > 0 {
 			page
 		} else {
@@ -37,10 +30,8 @@ pub fn Equipment() -> impl IntoView {
 		}
 	});
 	let query_ipp = create_rw_signal({
-		let ipp = query
-			.with(|p| p.get("items_per_page").cloned().unwrap_or(String::from("25")))
-			.parse::<u8>()
-			.unwrap_or(25);
+		let ipp =
+			query.with(|p| p.get("items_per_page").cloned().unwrap_or(String::from("25"))).parse::<u8>().unwrap_or(25);
 		if ipp > 0 {
 			ipp
 		} else {
@@ -48,10 +39,7 @@ pub fn Equipment() -> impl IntoView {
 		}
 	});
 	let query_archived = create_rw_signal({
-		query
-			.with(|p| p.get("archive").cloned().unwrap_or(String::from("false")))
-			.parse::<bool>()
-			.unwrap_or(false)
+		query.with(|p| p.get("archive").cloned().unwrap_or(String::from("false"))).parse::<bool>().unwrap_or(false)
 	});
 
 	let field_filter = create_rw_signal(vec![
@@ -66,13 +54,7 @@ pub fn Equipment() -> impl IntoView {
 	let equipment_data = create_resource(
 		move || (delete_equipment.version().get()),
 		move |_| {
-			get_equipment_data(
-				query_field.get(),
-				query_order.get(),
-				query_page.get(),
-				query_ipp.get(),
-				query_archived.get(),
-			)
+			get_equipment_data(query_field.get(), query_order.get(), query_page.get(), query_ipp.get(), query_archived.get())
 		},
 	);
 
@@ -91,12 +73,7 @@ pub fn Equipment() -> impl IntoView {
 						{equipment_data
 							.get()
 							.map(move |data| match data {
-								Err(e) => {
-									view! {
-										<pre class="error">Server Error: {e.to_string()}</pre>
-									}
-										.into_view()
-								}
+								Err(e) => view! { <pre class="error">Server Error: {e.to_string()}</pre> }.into_view(),
 								Ok((equipment, row_count)) => {
 									let hidden_fields = vec![
 										(String::from("field"), query_field.get()),
@@ -137,20 +114,11 @@ pub fn Equipment() -> impl IntoView {
 												}
 											>
 												All
-											</Button>
-											<form
-												action="/equipment"
-												method="get"
-												class=css::filter_switch
-											>
+											</Button> <form action="/equipment" method="get" class=css::filter_switch>
 												<input type="hidden" name="field" value=query_field.get() />
 												<input type="hidden" name="order" value=query_order.get() />
 												<input type="hidden" name="page" value=query_page.get() />
-												<input
-													type="hidden"
-													name="items_per_page"
-													value=query_ipp.get()
-												/>
+												<input type="hidden" name="items_per_page" value=query_ipp.get() />
 												<input
 													type="hidden"
 													name="archive"
@@ -271,27 +239,20 @@ pub async fn get_equipment_data(
 		"WHERE status IS DISTINCT FROM 'Archived'"
 	};
 
-	let query = format!(
-		"SELECT * FROM equipment {status_where} ORDER BY {field_sanitized} {order_sanitized} LIMIT $1 OFFSET $2",
-	);
+	let query =
+		format!("SELECT * FROM equipment {status_where} ORDER BY {field_sanitized} {order_sanitized} LIMIT $1 OFFSET $2",);
 
 	let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLData>(&query)
 		.bind(limit)
 		.bind(offset)
 		.fetch_all(get_db())
 		.await
-		.map_err::<ServerFnError, _>(|error| {
-			ServerFnError::ServerError(error.to_string())
-		})?;
+		.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
-	let equipment_data: Vec<EquipmentData> =
-		equipment_sql_data.into_iter().map(Into::into).collect();
+	let equipment_data: Vec<EquipmentData> = equipment_sql_data.into_iter().map(Into::into).collect();
 
-	let row_count: i64 = sqlx::query_scalar(&format!(
-		"SELECT COUNT(*) FROM equipment {status_where}"
-	))
-	.fetch_one(get_db())
-	.await?;
+	let row_count: i64 =
+		sqlx::query_scalar(&format!("SELECT COUNT(*) FROM equipment {status_where}")).fetch_one(get_db()).await?;
 
 	Ok((equipment_data, row_count))
 }
@@ -305,27 +266,13 @@ pub async fn delete_equipment(id: i32) -> Result<(), ServerFnError> {
 	use std::path::PathBuf;
 
 	let qrcode_path: String =
-		sqlx::query_scalar("SELECT qrcode FROM equipment WHERE id = $1")
-			.bind(id)
-			.fetch_one(get_db())
-			.await?;
+		sqlx::query_scalar("SELECT qrcode FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
 
-	let file_path = PathBuf::from(format!(
-		"{}/public/qrcodes/{}",
-		env!("CARGO_MANIFEST_DIR"),
-		qrcode_path
-	));
+	let file_path = PathBuf::from(format!("{}/public/qrcodes/{}", env!("CARGO_MANIFEST_DIR"), qrcode_path));
 
 	if file_path.exists() {
-		fs::remove_file(&file_path).map_err(|error| {
-			ServerFnError::<NoCustomError>::ServerError(error.to_string())
-		})?;
+		fs::remove_file(&file_path).map_err(|error| ServerFnError::<NoCustomError>::ServerError(error.to_string()))?;
 	}
 
-	Ok(
-		sqlx::query!("DELETE FROM equipment WHERE id = $1", id)
-			.execute(get_db())
-			.await
-			.map(|_| ())?,
-	)
+	Ok(sqlx::query!("DELETE FROM equipment WHERE id = $1", id).execute(get_db()).await.map(|_| ())?)
 }

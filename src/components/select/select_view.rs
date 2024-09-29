@@ -23,12 +23,5 @@ pub fn MultiSelect(
 	options: RwSignal<Vec<MultiSelectOption<String>>>,
 	#[prop(optional)] clearable: RwSignal<bool>,
 ) -> impl IntoView {
-	view! {
-		<ThawMultiSelect
-			class="input_shadow codon_multiselect"
-			value
-			options
-			clearable=clearable
-		/>
-	}
+	view! { <ThawMultiSelect class="input_shadow codon_multiselect" value options clearable=clearable /> }
 }

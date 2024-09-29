@@ -16,18 +16,12 @@ pub fn Footer() -> impl IntoView {
 				</span>
 				<ul class=css::footer_list>
 					<li>
-						<a
-							href="https://github.com/dominikwilkowski/codon"
-							target="_blank"
-						>
+						<a href="https://github.com/dominikwilkowski/codon" target="_blank">
 							Open source
 						</a>
 					</li>
 					<li>
-						<a
-							href="https://github.com/dominikwilkowski/codon/issues"
-							target="_blank"
-						>
+						<a href="https://github.com/dominikwilkowski/codon/issues" target="_blank">
 							Submit issues
 						</a>
 					</li>

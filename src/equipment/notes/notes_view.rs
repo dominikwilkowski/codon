@@ -17,19 +17,13 @@ pub fn Notes(
 	notes_query_ipp: RwSignal<u8>,
 	log_query_page: RwSignal<u16>,
 	log_query_ipp: RwSignal<u8>,
+	tab_query: RwSignal<String>,
 ) -> impl IntoView {
-	let notes_upload_action =
-		create_action(|data: &FormData| save_notes(data.clone().into()));
+	let notes_upload_action = create_action(|data: &FormData| save_notes(data.clone().into()));
 
 	let notes_data = create_resource(
 		move || (notes_upload_action.version().get(), id.get()),
-		move |_| {
-			get_notes_for_equipment(
-				id.get(),
-				notes_query_page.get(),
-				notes_query_ipp.get(),
-			)
-		},
+		move |_| get_notes_for_equipment(id.get(), notes_query_page.get(), notes_query_ipp.get()),
 	);
 
 	view! {
@@ -41,39 +35,25 @@ pub fn Notes(
 					if notes_data.get().is_some() {
 						match notes_data.get().unwrap() {
 							Err(error) => {
-								view! {
-									<pre class="error">
-										Notes Server Error: {error.to_string()}
-									</pre>
-								}
-									.into_view()
+								view! { <pre class="error">Notes Server Error: {error.to_string()}</pre> }.into_view()
 							}
 							Ok((notes, count)) => {
 								let hidden_fields = vec![
-									(
-										String::from("log_page"),
-										log_query_page.get().to_string(),
-									),
-									(
-										String::from("log_items_per_page"),
-										log_query_ipp.get().to_string(),
-									),
+									(String::from("log_page"), log_query_page.get().to_string()),
+									(String::from("log_items_per_page"), log_query_ipp.get().to_string()),
+									(String::from("tab"), tab_query.get()),
 								];
 								view! {
-									<div class=css::notes_list>
-										<h2>Notes</h2>
+									<div class=css::notes_list id="equipment_notes">
+										<NotesForm id=id.get() notes_upload_action=notes_upload_action />
 										<Pagination
-											action=format!("/equipment/{}", id.get())
+											action=format!("/equipment/{}#equipment_notes", id.get())
 											page_key="notes_page"
 											ipp_key="notes_items_per_page"
 											query_page=notes_query_page
 											query_ipp=notes_query_ipp
 											row_count=count
 											hidden_fields
-										/>
-										<NotesForm
-											id=id.get()
-											notes_upload_action=notes_upload_action
 										/>
 										{notes
 											.into_iter()
@@ -101,13 +81,7 @@ pub fn NotesItem(note: NotesPerson) -> impl IntoView {
 		<div class=css::notes_item>
 			<Avatar data=note.person />
 			<div>
-				<small>
-					{note
-						.note
-						.create_date
-						.format("%d %b %Y %I:%M:%S %P")
-						.to_string()}
-				</small>
+				<small>{note.note.create_date.format("%d %b %Y %I:%M:%S %P").to_string()}</small>
 				<MultiLine text=note.note.notes />
 				<div class=css::imgs>
 					<NotesImg file_path=note.note.media1 />
@@ -130,8 +104,7 @@ pub fn NotesItem(note: NotesPerson) -> impl IntoView {
 pub fn NotesImg(file_path: Option<String>) -> impl IntoView {
 	let is_open = create_rw_signal(false);
 
-	let is_body_scrollable = use_context::<ScrollableBody>()
-		.expect("No ScrollableBody context provider");
+	let is_body_scrollable = use_context::<ScrollableBody>().expect("No ScrollableBody context provider");
 
 	view! {
 		{if file_path.is_some() {
@@ -140,11 +113,7 @@ pub fn NotesImg(file_path: Option<String>) -> impl IntoView {
 				view! {
 					<form
 						class=move || {
-							if is_open.get() {
-								format!("{} form-isopen", css::form)
-							} else {
-								css::form.to_string()
-							}
+							if is_open.get() { format!("{} form-isopen", css::form) } else { css::form.to_string() }
 						}
 						action=file_path.clone()
 						method="GET"
@@ -262,19 +231,14 @@ pub async fn get_notes_for_equipment(
 	.bind(offset)
 	.fetch_all(get_db())
 	.await
-	.map_err::<ServerFnError, _>(|error| {
-		ServerFnError::ServerError(error.to_string())
-	})?;
+	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
-	let notes_data: Vec<NotesPerson> =
-		notes_sql_data.into_iter().map(Into::into).collect();
+	let notes_data: Vec<NotesPerson> = notes_sql_data.into_iter().map(Into::into).collect();
 
-	let row_count: i64 = sqlx::query_scalar(
-		"SELECT COUNT(*) FROM equipment_notes WHERE equipment = $1",
-	)
-	.bind(id)
-	.fetch_one(get_db())
-	.await?;
+	let row_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM equipment_notes WHERE equipment = $1")
+		.bind(id)
+		.fetch_one(get_db())
+		.await?;
 
 	Ok((notes_data, row_count))
 }

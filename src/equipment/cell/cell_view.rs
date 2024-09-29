@@ -81,13 +81,7 @@ impl EquipmentCellView for String {
 
 impl EquipmentCellView for QRCode {
 	fn view(self, _: bool) -> impl IntoView {
-		view! {
-			<img
-				src=format!("/qrcodes/equipment/{self}")
-				alt="The QR code"
-				class=css::qrcode
-			/>
-		}
+		view! { <img src=format!("/qrcodes/equipment/{self}") alt="The QR code" class=css::qrcode /> }
 	}
 }
 
@@ -115,11 +109,7 @@ impl EquipmentCellView for Option<Notes> {
 			Some(value) => {
 				let mut text = value.to_string();
 				if table_view && text.chars().count() > 100 {
-					text = text
-						.chars()
-						.take(100)
-						.chain(std::iter::once('…'))
-						.collect::<String>()
+					text = text.chars().take(100).chain(std::iter::once('…')).collect::<String>()
 				}
 				view! {
 					<div>
@@ -159,9 +149,6 @@ fn DateCell(item: DateTime<Utc>) -> impl IntoView {
 }
 
 #[component]
-pub fn EquipmentCell<T: EquipmentCellView + 'static>(
-	cell: T,
-	#[prop(optional)] table_view: bool,
-) -> impl IntoView {
+pub fn EquipmentCell<T: EquipmentCellView + 'static>(cell: T, #[prop(optional)] table_view: bool) -> impl IntoView {
 	cell.view(table_view).into_view()
 }

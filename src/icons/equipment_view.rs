@@ -5,12 +5,7 @@ stylance::import_style!(css, "icons.module.css");
 #[component]
 pub fn EquipmentLogo() -> impl IntoView {
 	view! {
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			fill="none"
-			viewBox="0 0 870 870"
-			class=css::logo
-		>
+		<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 870 870" class=css::logo>
 			<path
 				stroke="currentColor"
 				stroke-linecap="round"
@@ -24,12 +19,7 @@ pub fn EquipmentLogo() -> impl IntoView {
 #[component]
 pub fn Equipment() -> impl IntoView {
 	view! {
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			fill="none"
-			viewBox="0 0 300 300"
-			class=css::icon
-		>
+		<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 300 300" class=css::icon>
 			<path
 				stroke="currentColor"
 				stroke-linecap="round"

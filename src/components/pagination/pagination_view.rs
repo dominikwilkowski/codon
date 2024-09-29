@@ -4,12 +4,7 @@ stylance::import_style!(css, "pagination.module.css");
 
 #[component]
 pub fn FieldBuilder(hidden_fields: Vec<(String, String)>) -> impl IntoView {
-	hidden_fields
-		.into_iter()
-		.map(
-			|(name, value)| view! { <input type="hidden" name=name value=value /> },
-		)
-		.collect_view()
+	hidden_fields.into_iter().map(|(name, value)| view! { <input type="hidden" name=name value=value /> }).collect_view()
 }
 
 #[component]
@@ -24,21 +19,9 @@ pub fn PaginationPrev(
 	view! {
 		<form action=action method="get">
 			<FieldBuilder hidden_fields />
-			<input
-				type="hidden"
-				name=page_key
-				value=if query_page.get() == 1 {
-					1
-				} else {
-					query_page.get() - 1
-				}
-			/>
+			<input type="hidden" name=page_key value=if query_page.get() == 1 { 1 } else { query_page.get() - 1 } />
 			<input type="hidden" name=ipp_key value=move || query_ipp.get() />
-			<button
-				type="submit"
-				disabled=move || query_page.get() == 1
-				class=css::btn
-			>
+			<button type="submit" disabled=move || query_page.get() == 1 class=css::btn>
 				Previous
 			</button>
 		</form>
@@ -64,13 +47,7 @@ pub fn PaginationNext(
 			<input
 				type="hidden"
 				name=page_key
-				value=move || {
-					if !is_last_page {
-						query_page.get() + 1
-					} else {
-						query_page.get()
-					}
-				}
+				value=move || { if !is_last_page { query_page.get() + 1 } else { query_page.get() } }
 			/>
 			<input type="hidden" name=ipp_key value=move || query_ipp.get() />
 			<button type="submit" disabled=move || is_last_page class=css::btn>
@@ -114,9 +91,7 @@ pub fn ItemsPerPage(
 			<button type="submit" class=css::btn>
 				Save
 			</button>
-			<span class=css::ipp_stats>
-				{from}" - "{to}" of "{row_count}" items"
-			</span>
+			<span class=css::ipp_stats>{from}" - "{to}" of "{row_count}" items"</span>
 		</form>
 	}
 }
@@ -142,23 +117,12 @@ pub fn Pages(
 						<form
 							action=action.clone()
 							method="get"
-							class=if page == query_page.get() as i64 {
-								"is_current"
-							} else {
-								""
-							}
+							class=if page == query_page.get() as i64 { "is_current" } else { "" }
 						>
 							<FieldBuilder hidden_fields=hidden_fields.clone() />
-							<input
-								type="hidden"
-								name=ipp_key
-								value=move || query_ipp.get()
-							/>
+							<input type="hidden" name=ipp_key value=move || query_ipp.get() />
 							<input type="hidden" name=page_key value=page />
-							<button
-								type="submit"
-								class=format!("{} input_shadow", css::btn)
-							>
+							<button type="submit" class=format!("{} input_shadow", css::btn)>
 								{page}
 							</button>
 						</form>
@@ -169,10 +133,7 @@ pub fn Pages(
 	}
 }
 
-fn get_page_range(
-	total_pages: i64,
-	current_page: i64,
-) -> std::ops::RangeInclusive<i64> {
+fn get_page_range(total_pages: i64, current_page: i64) -> std::ops::RangeInclusive<i64> {
 	let range_size = 9;
 	let half_range = range_size / 2;
 
@@ -247,15 +208,7 @@ pub fn Pagination(
 					row_count
 					hidden_fields=hidden_fields.clone()
 				/>
-				<PaginationNext
-					action
-					page_key
-					ipp_key
-					query_page
-					query_ipp
-					row_count
-					hidden_fields
-				/>
+				<PaginationNext action page_key ipp_key query_page query_ipp row_count hidden_fields />
 			</div>
 		</div>
 	}

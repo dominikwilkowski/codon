@@ -16,9 +16,7 @@ fn to_optimized_svg_string<T, U: Into<i32> + From<u16>>(
 	let dimension: u32 = size as u32 + (border as u32 * 2);
 
 	let mut result = String::new();
-	result += &format!(
-		"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {dimension} {dimension}\">",
-	);
+	result += &format!("<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {dimension} {dimension}\">",);
 	result += "<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>";
 	result += "<path d=\"";
 
@@ -43,11 +41,7 @@ fn to_optimized_svg_string<T, U: Into<i32> + From<u16>>(
 				// On new rows we move the cursor to the next black box with "M[x] [y]"
 				if new_row {
 					new_row = false;
-					result += &format!(
-						"M{x} {y}h1v1{horizontal}z",
-						x = x + border,
-						y = y + border
-					);
+					result += &format!("M{x} {y}h1v1{horizontal}z", x = x + border, y = y + border);
 				// On a box that's within the same row we move the cursor
 				// by [x] - last_cursor_position with "m[delta] 0" because that's shorter
 				// Example:
@@ -55,10 +49,7 @@ fn to_optimized_svg_string<T, U: Into<i32> + From<u16>>(
 				// vs
 				// m1 0, m2 0 .. m9 0, m10 0, m11 0 .. m99 0, m100 0, m101 0
 				} else {
-					result += &format!(
-						"m{x} 0h1v1{horizontal}z",
-						x = x + border - last_cursor_position
-					);
+					result += &format!("m{x} 0h1v1{horizontal}z", x = x + border - last_cursor_position);
 				}
 				last_cursor_position = x + border;
 			}
@@ -182,9 +173,7 @@ mod test {
 
 	#[test]
 	fn svg_with_dot_center() {
-		let qr = FakeQr {
-			blocks: vec!["2,2"],
-		};
+		let qr = FakeQr { blocks: vec!["2,2"] };
 		assert_eq!(
 			to_optimized_svg_string(5, 0, FakeQr::get_module, &qr),
 			String::from(
@@ -200,9 +189,7 @@ mod test {
 
 	#[test]
 	fn svg_with_border() {
-		let qr = FakeQr {
-			blocks: vec!["2,2"],
-		};
+		let qr = FakeQr { blocks: vec!["2,2"] };
 		assert_eq!(
 			to_optimized_svg_string(5, 5, FakeQr::get_module, &qr),
 			String::from(
@@ -218,9 +205,7 @@ mod test {
 
 	#[test]
 	fn svg_with_large_numbers() {
-		let qr = FakeQr {
-			blocks: vec!["12,12"],
-		};
+		let qr = FakeQr { blocks: vec!["12,12"] };
 		assert_eq!(
 			to_optimized_svg_string(24, 0, FakeQr::get_module, &qr),
 			String::from(

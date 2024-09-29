@@ -14,10 +14,7 @@ pub fn Avatar(data: PeopleData) -> impl IntoView {
 		)>
 			<div>
 				<img
-					src=format!(
-						"/avatars/{}",
-						data.picture.unwrap_or(String::from("default.png")),
-					)
+					src=format!("/avatars/{}", data.picture.unwrap_or(String::from("default.png")))
 					alt=format!("Picture of {}", data.preferred_name)
 				/>
 			</div>

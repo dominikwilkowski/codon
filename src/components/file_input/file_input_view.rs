@@ -17,10 +17,7 @@ pub fn FileInput(value: RwSignal<String>, name: &'static str) -> impl IntoView {
 				name=name
 				on:change=move |_| {
 					let input = input_ref.get().unwrap();
-					if let Some(file) = input
-						.files()
-						.and_then(|files| files.item(0))
-					{
+					if let Some(file) = input.files().and_then(|files| files.item(0)) {
 						value.set(file.name());
 					} else {
 						value.set(String::new());
@@ -28,13 +25,7 @@ pub fn FileInput(value: RwSignal<String>, name: &'static str) -> impl IntoView {
 				}
 			/>
 			<span>
-				{move || {
-					if value.get().is_empty() {
-						String::from("Add Photo/Video")
-					} else {
-						value.get()
-					}
-				}}
+				{move || { if value.get().is_empty() { String::from("Add Photo/Video") } else { value.get() } }}
 			</span>
 		</label>
 	}

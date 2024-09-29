@@ -39,8 +39,7 @@ pub fn App() -> impl IntoView {
 
 	theme.input.background_color = String::from("var(--input-bg)");
 	theme.date_picker.panel_background_color = String::from("var(--input-bg)");
-	theme.date_picker.panel_date_item_background_color_hover =
-		String::from("var(--action)");
+	theme.date_picker.panel_date_item_background_color_hover = String::from("var(--action)");
 	theme.date_picker.panel_other_month_font_color = String::from("var(--text)");
 	theme.button.color_text_disabled = String::from("var(--disabled-fg)");
 	theme.button.color_background_disabled = String::from("var(--disabled-bg)");
@@ -55,24 +54,10 @@ pub fn App() -> impl IntoView {
 	provide_context::<ScrollableBody>(is_body_scrollable);
 
 	view! {
-		<Body class=move || {
-			if is_body_scrollable.get() { "" } else { "not_scrollable" }
-		} />
+		<Body class=move || { if is_body_scrollable.get() { "" } else { "not_scrollable" } } />
 		<Stylesheet id="leptos" href="/pkg/codon.css" />
-		<Link
-			rel="preload"
-			as_="font"
-			type_="font/woff2"
-			href="/noto_sans_mono_latin.woff2"
-			crossorigin=""
-		/>
-		<Link
-			rel="preload"
-			as_="font"
-			type_="font/woff2"
-			href="/noto_sans_mono_latin_ext.woff2"
-			crossorigin=""
-		/>
+		<Link rel="preload" as_="font" type_="font/woff2" href="/noto_sans_mono_latin.woff2" crossorigin="" />
+		<Link rel="preload" as_="font" type_="font/woff2" href="/noto_sans_mono_latin_ext.woff2" crossorigin="" />
 		<Title text="Welcome to Codon" />
 
 		<ThemeProvider theme>

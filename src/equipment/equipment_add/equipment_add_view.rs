@@ -43,76 +43,32 @@ pub fn EquipmentAdd() -> impl IntoView {
 		</h2>
 		<ActionForm action=add_equipment_action>
 			<input type="hidden" name="id" prop:value=id_value />
-			<select
-				name="equipment_type"
-				prop:value=equipment_type_value
-				required
-			>
+			<select name="equipment_type" prop:value=equipment_type_value required>
 				{EquipmentType::get_fields()
 					.iter()
 					.map(|name| view! { <option value=name>{name}</option> })
 					.collect_view()}
 			</select>
-			<input
-				type="text"
-				name="name"
-				prop:value=name_value
-				placeholder="Name"
-				required
-			/>
+			<input type="text" name="name" prop:value=name_value placeholder="Name" required />
 			<select name="status" prop:value=status_value required>
 				{EquipmentStatus::get_fields()
 					.iter()
 					.map(|name| view! { <option value=name>{name}</option> })
 					.collect_view()}
 			</select>
-			<input
-				type="text"
-				name="manufacturer"
-				prop:value=manufacturer_value
-				placeholder="Manufacturer"
-			/>
-			<input
-				type="text"
-				name="purchase_date"
-				prop:value=purchase_date_value
-				placeholder="Purchase Date"
-			/>
-			<input
-				type="text"
-				name="vendor"
-				prop:value=vendor_value
-				placeholder="Vendor"
-			/>
-			<input
-				type="number"
-				step="0.01"
-				name="cost_in_cent"
-				prop:value=cost_in_cent_value
-				placeholder="Cost"
-			/>
+			<input type="text" name="manufacturer" prop:value=manufacturer_value placeholder="Manufacturer" />
+			<input type="text" name="purchase_date" prop:value=purchase_date_value placeholder="Purchase Date" />
+			<input type="text" name="vendor" prop:value=vendor_value placeholder="Vendor" />
+			<input type="number" step="0.01" name="cost_in_cent" prop:value=cost_in_cent_value placeholder="Cost" />
 			<input
 				type="text"
 				name="warranty_expiration_date"
 				prop:value=warranty_expiration_date_value
 				placeholder="Warranty Expiration Date"
 			/>
-			<input
-				type="text"
-				name="location"
-				prop:value=location_value
-				placeholder="Location"
-			/>
-			<textarea
-				type="text"
-				name="notes"
-				prop:value=notes_value
-				placeholder="Notes"
-			/>
-			<button
-				type="submit"
-				prop:disabled=move || add_equipment_action.pending().get()
-			>
+			<input type="text" name="location" prop:value=location_value placeholder="Location" />
+			<textarea type="text" name="notes" prop:value=notes_value placeholder="Notes" />
+			<button type="submit" prop:disabled=move || add_equipment_action.pending().get()>
 				"Add"
 			</button>
 		</ActionForm>
@@ -141,22 +97,18 @@ pub async fn add_equipment(
 	use chrono::prelude::*;
 	use std::{fs, path::PathBuf};
 
-	let purchase_date: Option<DateTime<Utc>> =
-		match purchase_date.parse::<DateTime<Utc>>() {
-			Ok(date) => Some(date),
-			Err(_) => None,
-		};
+	let purchase_date: Option<DateTime<Utc>> = match purchase_date.parse::<DateTime<Utc>>() {
+		Ok(date) => Some(date),
+		Err(_) => None,
+	};
 
-	let warranty_expiration_date: Option<DateTime<Utc>> =
-		match warranty_expiration_date.parse::<DateTime<Utc>>() {
-			Ok(date) => Some(date),
-			Err(_) => None,
-		};
+	let warranty_expiration_date: Option<DateTime<Utc>> = match warranty_expiration_date.parse::<DateTime<Utc>>() {
+		Ok(date) => Some(date),
+		Err(_) => None,
+	};
 
-	let cost_in_cent: Option<i32> = cost_in_cent
-		.parse::<f64>()
-		.ok()
-		.map(|cost_in_cent_f64| (cost_in_cent_f64 * 100.0) as i32);
+	let cost_in_cent: Option<i32> =
+		cost_in_cent.parse::<f64>().ok().map(|cost_in_cent_f64| (cost_in_cent_f64 * 100.0) as i32);
 
 	let row = sqlx::query!(
 		"INSERT INTO equipment\
@@ -183,36 +135,24 @@ pub async fn add_equipment(
 	})?;
 
 	let qr_svg = generate_qr(&format!("https://codon.com/equipment/{}", row.id))
-		.map_err::<ServerFnError, _>(|_| {
-			ServerFnError::ServerError("Failed to generate QR code".into())
-		})?;
+		.map_err::<ServerFnError, _>(|_| ServerFnError::ServerError("Failed to generate QR code".into()))?;
 
 	let equipment_type_short = match EquipmentType::parse(equipment_type) {
 		EquipmentType::Flask => "F",
 		EquipmentType::Vessel => "V",
 		EquipmentType::IncubationCabinet => "I",
 	};
-	let qrcode_path =
-		format!("equipment/qr_{:06}_{}.svg", row.id, equipment_type_short);
-	let file_path = PathBuf::from(format!(
-		"{}/public/qrcodes/{}",
-		env!("CARGO_MANIFEST_DIR"),
-		qrcode_path
-	));
+	let qrcode_path = format!("equipment/qr_{:06}_{}.svg", row.id, equipment_type_short);
+	let file_path = PathBuf::from(format!("{}/public/qrcodes/{}", env!("CARGO_MANIFEST_DIR"), qrcode_path));
 
-	fs::write(&file_path, qr_svg).map_err::<ServerFnError, _>(|_| {
-		ServerFnError::ServerError("Failed to save QR code to file".into())
-	})?;
+	fs::write(&file_path, qr_svg)
+		.map_err::<ServerFnError, _>(|_| ServerFnError::ServerError("Failed to save QR code to file".into()))?;
 
 	Ok(
-		sqlx::query!(
-			"UPDATE equipment SET qrcode = $1 WHERE id = $2",
-			qrcode_path,
-			row.id
-		)
-		.execute(get_db())
-		.await
-		.map(|_| ())?,
+		sqlx::query!("UPDATE equipment SET qrcode = $1 WHERE id = $2", qrcode_path, row.id)
+			.execute(get_db())
+			.await
+			.map(|_| ())?,
 	)
 }
 
@@ -239,22 +179,18 @@ pub async fn edit_equipment(
 
 	let id: i32 = id.parse::<i32>()?;
 
-	let purchase_date: Option<DateTime<Utc>> =
-		match purchase_date.parse::<DateTime<Utc>>() {
-			Ok(date) => Some(date),
-			Err(_) => None,
-		};
+	let purchase_date: Option<DateTime<Utc>> = match purchase_date.parse::<DateTime<Utc>>() {
+		Ok(date) => Some(date),
+		Err(_) => None,
+	};
 
-	let warranty_expiration_date: Option<DateTime<Utc>> =
-		match warranty_expiration_date.parse::<DateTime<Utc>>() {
-			Ok(date) => Some(date),
-			Err(_) => None,
-		};
+	let warranty_expiration_date: Option<DateTime<Utc>> = match warranty_expiration_date.parse::<DateTime<Utc>>() {
+		Ok(date) => Some(date),
+		Err(_) => None,
+	};
 
-	let cost_in_cent: Option<i32> = cost_in_cent
-		.parse::<f64>()
-		.ok()
-		.map(|cost_in_cent_f64| (cost_in_cent_f64 * 100.0) as i32);
+	let cost_in_cent: Option<i32> =
+		cost_in_cent.parse::<f64>().ok().map(|cost_in_cent_f64| (cost_in_cent_f64 * 100.0) as i32);
 
 	Ok(
 		sqlx::query!(

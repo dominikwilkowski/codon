@@ -1,4 +1,4 @@
-max_width = 80
+max_width = 120
 tab_spaces = 4
 indentation_style = "Tabs"
 newline_style = "Unix"

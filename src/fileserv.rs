@@ -28,10 +28,7 @@ pub async fn file_and_error_handler(
 	}
 }
 
-async fn get_static_file(
-	uri: Uri,
-	root: &str,
-) -> Result<Response<Body>, (StatusCode, String)> {
+async fn get_static_file(uri: Uri, root: &str) -> Result<Response<Body>, (StatusCode, String)> {
 	let path = format!("{}{}", root, uri.path());
 	let path = Path::new(&path);
 
@@ -44,22 +41,11 @@ async fn get_static_file(
 					Some(ext) if ext.eq_ignore_ascii_case("mp4") => "video/mp4",
 					Some(ext) if ext.eq_ignore_ascii_case("webm") => "video/webm",
 					Some(ext) if ext.eq_ignore_ascii_case("png") => "image/png",
-					Some(ext)
-						if ext.eq_ignore_ascii_case("jpg")
-							| ext.eq_ignore_ascii_case("jpeg") =>
-					{
-						"image/jpeg"
-					},
+					Some(ext) if ext.eq_ignore_ascii_case("jpg") | ext.eq_ignore_ascii_case("jpeg") => "image/jpeg",
 					Some(ext) if ext.eq_ignore_ascii_case("gif") => "image/gif",
-					Some(ext) if ext.eq_ignore_ascii_case("html") => {
-						"text/html; charset=utf-8"
-					},
-					Some(ext) if ext.eq_ignore_ascii_case("css") => {
-						"text/css; charset=utf-8"
-					},
-					Some(ext) if ext.eq_ignore_ascii_case("js") => {
-						"application/javascript"
-					},
+					Some(ext) if ext.eq_ignore_ascii_case("html") => "text/html; charset=utf-8",
+					Some(ext) if ext.eq_ignore_ascii_case("css") => "text/css; charset=utf-8",
+					Some(ext) if ext.eq_ignore_ascii_case("js") => "application/javascript",
 					Some(ext) if ext.eq_ignore_ascii_case("json") => "application/json",
 					Some(ext) if ext.eq_ignore_ascii_case("svg") => "image/svg+xml",
 					Some(ext) if ext.eq_ignore_ascii_case("woff") => "font/woff",
@@ -75,22 +61,15 @@ async fn get_static_file(
 
 				Ok(response)
 			},
-			Err(err) => Err((
-				StatusCode::INTERNAL_SERVER_ERROR,
-				format!("Error reading file: {}", err),
-			)),
+			Err(err) => Err((StatusCode::INTERNAL_SERVER_ERROR, format!("Error reading file: {}", err))),
 		},
 		_ => {
 			// File not found or it's not a file
-			let req =
-				Request::builder().uri(uri.clone()).body(Body::empty()).unwrap();
+			let req = Request::builder().uri(uri.clone()).body(Body::empty()).unwrap();
 
 			match ServeDir::new(root).oneshot(req).await {
 				Ok(res) => Ok(res.into_response()),
-				Err(err) => Err((
-					StatusCode::INTERNAL_SERVER_ERROR,
-					format!("Something went wrong: {}", err),
-				)),
+				Err(err) => Err((StatusCode::INTERNAL_SERVER_ERROR, format!("Something went wrong: {}", err))),
 			}
 		},
 	}

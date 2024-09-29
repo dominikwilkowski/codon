@@ -19,11 +19,7 @@ pub fn MoneyInput(
 	#[prop(optional)] disabled: RwSignal<bool>,
 	#[prop(optional)] required: bool,
 ) -> impl IntoView {
-	let dis_class = if disabled.get() {
-		css::money_input_disabled
-	} else {
-		""
-	};
+	let dis_class = if disabled.get() { css::money_input_disabled } else { "" };
 
 	view! {
 		<div class=format!("{} {} {dis_class}", css::input, css::money_input)>
@@ -32,9 +28,7 @@ pub fn MoneyInput(
 				type="number"
 				class=format!("{} codon-input-field", css::input_field)
 				prop:value=value
-				on:input=move |event| {
-					value.set_untracked(event_target_value(&event))
-				}
+				on:input=move |event| { value.set_untracked(event_target_value(&event)) }
 				disabled=move || disabled.get()
 				step="0.01"
 				required=required
@@ -50,12 +44,7 @@ pub fn MoneyInput(
 					}
 					class=css::money_btn
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 24 24"
-						fill="currentColor"
-						fill-opacity="0.5"
-					>
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.5">
 						<path d="M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2zm2-10h4V7h2v4h4v2h-4v4h-2v-4H7v-2z" />
 					</svg>
 				</button>
@@ -69,12 +58,7 @@ pub fn MoneyInput(
 					}
 					class=css::money_btn
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 24 24"
-						fill="currentColor"
-						fill-opacity="0.5"
-					>
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.5">
 						<path d="M5 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5zm12 10H7v-2h10v2z" />
 					</svg>
 				</button>

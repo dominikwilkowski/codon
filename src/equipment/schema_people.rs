@@ -34,11 +34,7 @@ impl std::fmt::Display for PeopleStatus {
 
 impl PeopleStatus {
 	pub fn get_fields() -> Vec<String> {
-		vec![
-			String::from("Active"),
-			String::from("OnLeave"),
-			String::from("Left"),
-		]
+		vec![String::from("Active"), String::from("OnLeave"), String::from("Left")]
 	}
 }
 

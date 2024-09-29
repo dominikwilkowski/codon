@@ -1,9 +1,8 @@
 use crate::{
 	error_template::ErrorTemplate,
 	icons::{
-		Culture, CultureLogo, Equipment, EquipmentLogo, Experiment, ExperimentLogo,
-		Flask, FlaskLogo, IncubationCabinet, IncubationCabinetLogo, People,
-		PeopleLogo, Vessel, VesselLogo,
+		Culture, CultureLogo, Equipment, EquipmentLogo, Experiment, ExperimentLogo, Flask, FlaskLogo, IncubationCabinet,
+		IncubationCabinetLogo, People, PeopleLogo, Vessel, VesselLogo,
 	},
 };
 
@@ -33,13 +32,7 @@ pub fn Samples() -> impl IntoView {
 	let edit_sample = create_server_multi_action::<EditSample>();
 	let add_sample = create_server_action::<AddSample>();
 	let samples = create_resource(
-		move || {
-			(
-				add_sample.version().get(),
-				edit_sample.version().get(),
-				delete_sample.version().get(),
-			)
-		},
+		move || (add_sample.version().get(), edit_sample.version().get(), delete_sample.version().get()),
 		move |_| get_samples(),
 	);
 
@@ -65,22 +58,9 @@ pub fn Samples() -> impl IntoView {
 		<div class=css::wrapper>
 			<h1>Samples</h1>
 			<ActionForm action=add_sample class=css::add_form>
-				<input
-					type="text"
-					name="sample_type"
-					placeholder="type"
-					prop:value=sample_type_value
-				/>
-				<input
-					type="text"
-					name="analyst"
-					placeholder="analyst"
-					prop:value=analyst_value
-				/>
-				<button
-					type="submit"
-					prop:disabled=move || add_sample.pending().get()
-				>
+				<input type="text" name="sample_type" placeholder="type" prop:value=sample_type_value />
+				<input type="text" name="analyst" placeholder="analyst" prop:value=analyst_value />
+				<button type="submit" prop:disabled=move || add_sample.pending().get()>
 					Add
 				</button>
 			</ActionForm>
@@ -104,19 +84,14 @@ pub fn Samples() -> impl IntoView {
 					prop:checked=move || scan_signal.get()
 					ref=checkbox_ref
 					on:change=move |_e| {
-						let checked = checkbox_ref
-							.get()
-							.expect("<input> to exist")
-							.checked();
+						let checked = checkbox_ref.get().expect("<input> to exist").checked();
 						scan_set.set(checked);
 					}
 				/>
 			</label>
 			<p>Scan result: {result_signal}</p>
 			<hr />
-			<DatePicker value=create_rw_signal(
-				Some(Local::now().date_naive()),
-			) />
+			<DatePicker value=create_rw_signal(Some(Local::now().date_naive())) />
 			<hr />
 			<h2>Logos</h2>
 			<div class=css::logos>
@@ -150,9 +125,7 @@ pub fn Samples() -> impl IntoView {
 									.get()
 									.map(move |todos| match todos {
 										Err(e) => {
-											view! {
-												<pre class="error">"Server Error: " {e.to_string()}</pre>
-											}
+											view! { <pre class="error">"Server Error: " {e.to_string()}</pre> }
 												.into_view()
 										}
 										Ok(samples) => {
@@ -215,12 +188,7 @@ pub fn SampleItem(
 						}
 					>
 						<input type="hidden" name="id" value=id />
-						<input
-							type="text"
-							name="sample_type"
-							value=sample_type_edit
-							node_ref=input_ref
-						/>
+						<input type="text" name="sample_type" value=sample_type_edit node_ref=input_ref />
 						<input type="text" name="analyst" value=analyst_edit />
 						<button type="submit">Save</button>
 						<button on:click=move |_| {
@@ -296,27 +264,17 @@ pub fn FileUpload() -> impl IntoView {
 	view! {
 		<form on:submit=move |ev: SubmitEvent| {
 			ev.prevent_default();
-			let target = ev
-				.target()
-				.unwrap()
-				.unchecked_into::<HtmlFormElement>();
+			let target = ev.target().unwrap().unchecked_into::<HtmlFormElement>();
 			let form_data = FormData::new_with_form(&target).unwrap();
 			upload_action.dispatch(form_data);
 		}>
 			<h3>File Upload</h3>
-			<input
-				type="file"
-				name="file_to_upload"
-				accept="image/*"
-				capture="environment"
-			/>
+			<input type="file" name="file_to_upload" accept="image/*" capture="environment" />
 			<button type="submit">Upload</button>
 		</form>
 		<p>
 			{move || {
-				if upload_action.input().get().is_none()
-					&& upload_action.value().get().is_none()
-				{
+				if upload_action.input().get().is_none() && upload_action.value().get().is_none() {
 					"Upload a file.".to_string()
 				} else if upload_action.pending().get() {
 					"Uploading...".to_string()
@@ -337,9 +295,7 @@ pub async fn get_samples() -> Result<Vec<SampleData>, ServerFnError> {
 	sqlx::query!("SELECT * FROM samples ORDER BY id")
 		.map(|data| SampleData {
 			id: data.id,
-			sample_type: data
-				.sample_type
-				.expect("No `sample_type` found in `samples` table"),
+			sample_type: data.sample_type.expect("No `sample_type` found in `samples` table"),
 			analyst: data.analyst.expect("No `analyst` found in `samples` table"),
 		})
 		.fetch_all(get_db())
@@ -348,45 +304,29 @@ pub async fn get_samples() -> Result<Vec<SampleData>, ServerFnError> {
 }
 
 #[server]
-pub async fn add_sample(
-	sample_type: String,
-	analyst: String,
-) -> Result<(), ServerFnError> {
+pub async fn add_sample(sample_type: String, analyst: String) -> Result<(), ServerFnError> {
 	use crate::db::ssr::get_db;
 
 	// fake API delay
 	std::thread::sleep(std::time::Duration::from_millis(1250));
 
 	Ok(
-		sqlx::query!(
-			"INSERT INTO samples (sample_type, analyst) VALUES ($1, $2)",
-			sample_type,
-			analyst
-		)
-		.execute(get_db())
-		.await
-		.map(|_| ())?,
+		sqlx::query!("INSERT INTO samples (sample_type, analyst) VALUES ($1, $2)", sample_type, analyst)
+			.execute(get_db())
+			.await
+			.map(|_| ())?,
 	)
 }
 
 #[server]
-pub async fn edit_sample(
-	id: i32,
-	sample_type: String,
-	analyst: String,
-) -> Result<(), ServerFnError> {
+pub async fn edit_sample(id: i32, sample_type: String, analyst: String) -> Result<(), ServerFnError> {
 	use crate::db::ssr::get_db;
 
 	Ok(
-		sqlx::query!(
-			"UPDATE samples SET sample_type = $1,analyst = $2 WHERE id = $3",
-			sample_type,
-			analyst,
-			id
-		)
-		.execute(get_db())
-		.await
-		.map(|_| ())?,
+		sqlx::query!("UPDATE samples SET sample_type = $1,analyst = $2 WHERE id = $3", sample_type, analyst, id)
+			.execute(get_db())
+			.await
+			.map(|_| ())?,
 	)
 }
 
@@ -394,10 +334,5 @@ pub async fn edit_sample(
 pub async fn delete_sample(id: i32) -> Result<(), ServerFnError> {
 	use crate::db::ssr::get_db;
 
-	Ok(
-		sqlx::query!("DELETE FROM samples WHERE id = $1", id)
-			.execute(get_db())
-			.await
-			.map(|_| ())?,
-	)
+	Ok(sqlx::query!("DELETE FROM samples WHERE id = $1", id).execute(get_db()).await.map(|_| ())?)
 }

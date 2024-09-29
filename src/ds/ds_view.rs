@@ -7,15 +7,12 @@ use crate::{
 		input::{Input, MoneyInput, TextArea},
 		pagination::Pagination,
 		radio::{Radio, RadioGroup, RadioItem},
-		select::{
-			MultiSelect, MultiSelectOption, Select, SelectOption, TagVariant,
-		},
+		select::{MultiSelect, MultiSelectOption, Select, SelectOption, TagVariant},
 		switch::Switch,
 	},
 	icons::{
-		Culture, CultureLogo, Equipment, EquipmentLogo, Experiment, ExperimentLogo,
-		Flask, FlaskLogo, IncubationCabinet, IncubationCabinetLogo, People,
-		PeopleLogo, Vessel, VesselLogo,
+		Culture, CultureLogo, Equipment, EquipmentLogo, Experiment, ExperimentLogo, Flask, FlaskLogo, IncubationCabinet,
+		IncubationCabinetLogo, People, PeopleLogo, Vessel, VesselLogo,
 	},
 };
 
@@ -75,20 +72,14 @@ pub fn Ds() -> impl IntoView {
 		<section class=css::section>
 			<h2>Text Inputs</h2>
 			<div class=css::stack_inline>
-				<Input
-					placeholder="Text input"
-					value=create_rw_signal(String::from(""))
-				/>
+				<Input placeholder="Text input" value=create_rw_signal(String::from("")) />
 				<Input value=create_rw_signal(String::from("Text input")) />
 				<Input
 					placeholder="Text input"
 					value=create_rw_signal(String::from(""))
 					disabled=create_rw_signal(true)
 				/>
-				<Input
-					value=create_rw_signal(String::from("Text input"))
-					disabled=create_rw_signal(true)
-				/>
+				<Input value=create_rw_signal(String::from("Text input")) disabled=create_rw_signal(true) />
 			</div>
 		</section>
 
@@ -97,28 +88,16 @@ pub fn Ds() -> impl IntoView {
 			<div class=css::stack_inline>
 				<MoneyInput value=create_rw_signal(String::from("")) />
 				<MoneyInput value=create_rw_signal(String::from("1234.56")) />
-				<MoneyInput
-					value=create_rw_signal(String::from(""))
-					disabled=create_rw_signal(true)
-				/>
-				<MoneyInput
-					value=create_rw_signal(String::from("1234.56"))
-					disabled=create_rw_signal(true)
-				/>
+				<MoneyInput value=create_rw_signal(String::from("")) disabled=create_rw_signal(true) />
+				<MoneyInput value=create_rw_signal(String::from("1234.56")) disabled=create_rw_signal(true) />
 			</div>
 		</section>
 
 		<section class=css::section>
 			<h2>Multiline Inputs</h2>
 			<div class=css::stack_inline>
-				<TextArea
-					value=create_rw_signal(String::from(""))
-					placeholder="Textarea"
-				/>
-				<TextArea
-					value=create_rw_signal(String::from("Multiline Input"))
-					placeholder="Textarea"
-				/>
+				<TextArea value=create_rw_signal(String::from("")) placeholder="Textarea" />
+				<TextArea value=create_rw_signal(String::from("Multiline Input")) placeholder="Textarea" />
 				<TextArea
 					value=create_rw_signal(String::from(""))
 					placeholder="Textarea"
@@ -211,10 +190,7 @@ pub fn Ds() -> impl IntoView {
 		<section class=css::section>
 			<h2>FileInput</h2>
 			<div class=css::stack_inline>
-				<FileInput
-					name="media1"
-					value=create_rw_signal(String::new())
-				/>
+				<FileInput name="media1" value=create_rw_signal(String::new()) />
 			</div>
 		</section>
 
@@ -245,12 +221,9 @@ pub fn Ds() -> impl IntoView {
 					options=create_rw_signal(
 						vec![
 							MultiSelectOption::new("A", String::from("a")),
-							MultiSelectOption::new("B", String::from("b"))
-								.with_variant(TagVariant::Success),
-							MultiSelectOption::new("C", String::from("c"))
-								.with_variant(TagVariant::Warning),
-							MultiSelectOption::new("D", String::from("d"))
-								.with_variant(TagVariant::Error),
+							MultiSelectOption::new("B", String::from("b")).with_variant(TagVariant::Success),
+							MultiSelectOption::new("C", String::from("c")).with_variant(TagVariant::Warning),
+							MultiSelectOption::new("D", String::from("d")).with_variant(TagVariant::Error),
 						],
 					)
 				/>
@@ -260,9 +233,7 @@ pub fn Ds() -> impl IntoView {
 		<section class=css::section>
 			<h2>Datepicker</h2>
 			<div class=css::stack_inline>
-				<DatePicker value=create_rw_signal(
-					Some(Local::now().date_naive()),
-				) />
+				<DatePicker value=create_rw_signal(Some(Local::now().date_naive())) />
 			</div>
 		</section>
 
@@ -277,9 +248,7 @@ pub fn Ds() -> impl IntoView {
 			<h2>Checkbox</h2>
 			<div class=css::stack_inline>
 				<CheckboxGroup value=create_rw_signal(
-					vec![String::from("b")]
-						.into_iter()
-						.collect::<std::collections::HashSet<String>>(),
+					vec![String::from("b")].into_iter().collect::<std::collections::HashSet<String>>(),
 				)>
 					<CheckboxItem label="Option A" key=String::from("a") />
 					<CheckboxItem label="Option B" key=String::from("b") />

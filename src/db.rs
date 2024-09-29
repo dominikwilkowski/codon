@@ -8,8 +8,7 @@ pub mod ssr {
 	async fn create_pool() -> PgPool {
 		dotenv().ok();
 
-		let database_url = std::env::var("DATABASE_URL")
-			.expect("No database url found in environment");
+		let database_url = std::env::var("DATABASE_URL").expect("No database url found in environment");
 		let pool = PgPoolOptions::new()
 			.max_connections(5)
 			.connect(database_url.as_str())

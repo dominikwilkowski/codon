@@ -1,17 +1,5 @@
 .notes_list {
-	border-top: 3px dashed #ffffff10;
-	border-bottom: 3px dashed #ffffff10;
-	padding: 1rem 0.5rem;
-	margin-top: 4rem;
-}
-
-@media (min-width: 42rem) {
-	.notes_list {
-		padding: 1rem;
-		border-right: 3px dashed #ffffff10;
-		border-left: 3px dashed #ffffff10;
-		border-radius: var(--border-radius-lg);
-	}
+	margin-top: 1rem;
 }
 
 .notes_item {

@@ -19,8 +19,7 @@ async fn move_temp_files(
 		let (temp_path, file_name) = temp_files.pop().unwrap();
 		let new_path = Path::new(base_path).join(file_name.clone());
 		rename(temp_path, new_path.clone()).await?;
-		uploaded_files
-			.push(format!("{}", new_path.to_string_lossy().replace("public/", "/")));
+		uploaded_files.push(format!("{}", new_path.to_string_lossy().replace("public/", "/")));
 	}
 	Ok(())
 }
@@ -43,10 +42,7 @@ pub struct FileUploadResult {
 }
 
 #[cfg(feature = "ssr")]
-pub async fn file_upload<F, Fut>(
-	data: MultipartData,
-	get_folder: F,
-) -> Result<FileUploadResult, ServerFnError>
+pub async fn file_upload<F, Fut>(data: MultipartData, get_folder: F) -> Result<FileUploadResult, ServerFnError>
 where
 	F: for<'a> Fn(i32) -> Fut + Send + Sync + 'static,
 	Fut: Future<Output = Result<String, ServerFnError>> + Send,
@@ -69,63 +65,37 @@ where
 					let id = field.text().await?;
 					let id = match id.parse::<i32>() {
 						Ok(value) => value,
-						Err(_) => {
-							return Err(ServerFnError::Request(String::from("Invalid ID")))
-						},
+						Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
 					};
 					equipment_id = Some(id);
 					folder_name = Some(get_folder(id).await?);
 
-					tokio::fs::create_dir_all(format!(
-						"public/upload_media/{}",
-						folder_name.clone().unwrap()
-					))
-					.await?;
+					tokio::fs::create_dir_all(format!("public/upload_media/{}", folder_name.clone().unwrap())).await?;
 
-					move_temp_files(
-						&mut temp_files,
-						&mut uploaded_files,
-						&folder_name.clone().unwrap(),
-					)
-					.await?;
+					move_temp_files(&mut temp_files, &mut uploaded_files, &folder_name.clone().unwrap()).await?;
 				},
-				"media1" | "media2" | "media3" | "media4" | "media5" | "media6"
-				| "media7" | "media8" | "media9" | "media10" => {
+				"media1" | "media2" | "media3" | "media4" | "media5" | "media6" | "media7" | "media8" | "media9"
+				| "media10" => {
 					let first_chunk = field.chunk().await?;
 					if let Some(chunk) = first_chunk {
 						if !chunk.is_empty() {
 							files_to_upload += 1;
-							let og_file_name =
-								field.file_name().unwrap_or_default().to_string();
-							let extension = Path::new(&og_file_name)
-								.extension()
-								.and_then(|ext| ext.to_str())
-								.unwrap_or_default();
+							let og_file_name = field.file_name().unwrap_or_default().to_string();
+							let extension = Path::new(&og_file_name).extension().and_then(|ext| ext.to_str()).unwrap_or_default();
 							let name = format!("{}.{extension}", &Uuid::new_v4().to_string());
 
 							let file_path = if let Some(ref folder_name) = folder_name {
-								move_temp_files(
-									&mut temp_files,
-									&mut uploaded_files,
-									&folder_name,
-								)
-								.await?;
+								move_temp_files(&mut temp_files, &mut uploaded_files, &folder_name).await?;
 
-								let final_path = PathBuf::from("public/upload_media/")
-									.join(&folder_name)
-									.join(&name);
+								let final_path = PathBuf::from("public/upload_media/").join(&folder_name).join(&name);
 								uploaded_files.push(format!(
 									"{}",
-									PathBuf::from("/upload_media/")
-										.join(&folder_name)
-										.join(&name)
-										.to_string_lossy()
+									PathBuf::from("/upload_media/").join(&folder_name).join(&name).to_string_lossy()
 								));
 								final_path
 							} else {
 								// ID has not been processed yet so we store the files in a temp folder until it is
-								let temp_path =
-									PathBuf::from("public/upload_media/temp/").join(&name);
+								let temp_path = PathBuf::from("public/upload_media/temp/").join(&name);
 								temp_files.push((temp_path.clone(), name));
 								temp_path
 							};
@@ -158,9 +128,7 @@ where
 	}
 
 	if folder_name.is_none() || equipment_id.is_none() {
-		return Err(ServerFnError::ServerError(String::from(
-			"Equipment ID not provided",
-		)));
+		return Err(ServerFnError::ServerError(String::from("Equipment ID not provided")));
 	} else if uploaded_files.len() != files_to_upload {
 		Err(ServerFnError::ServerError(String::from("Failed to save file")))
 	} else {

@@ -3,12 +3,7 @@ use leptos::*;
 #[component]
 pub fn Logo() -> impl IntoView {
 	view! {
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			fill="none"
-			viewBox="0 0 870 870"
-			class="logo-codon"
-		>
+		<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 870 870" class="logo-codon">
 			<path
 				class="logo-codon-p1"
 				fill="currentColor"

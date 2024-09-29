@@ -1,6 +1,4 @@
-use crate::components::{
-	button::Button, file_input::FileInput, input::TextArea,
-};
+use crate::components::{button::Button, file_input::FileInput, input::TextArea};
 
 use leptos::*;
 use server_fn::codec::{MultipartData, MultipartFormData};
@@ -9,10 +7,7 @@ use web_sys::{FormData, SubmitEvent};
 stylance::import_style!(css, "notes_form.module.css");
 
 #[component]
-pub fn NotesForm(
-	id: String,
-	notes_upload_action: Action<FormData, Result<String, ServerFnError>>,
-) -> impl IntoView {
+pub fn NotesForm(id: String, notes_upload_action: Action<FormData, Result<String, ServerFnError>>) -> impl IntoView {
 	let form_ref = create_node_ref::<html::Form>();
 
 	let media1 = create_rw_signal(String::new());
@@ -48,62 +43,39 @@ pub fn NotesForm(
 				notes_upload_action.dispatch(form_data);
 			}
 		>
-			<h3>New Note</h3>
+			<h3>Add a Note</h3>
 			<input type="hidden" name="id" value=id />
 			<input type="hidden" name="person" value=12 />
-			<TextArea
-				name="notes"
-				value=create_rw_signal(String::from(""))
-				placeholder="Your note"
-				required=true
-			/>
+			<TextArea name="notes" value=create_rw_signal(String::from("")) placeholder="Your note" required=true />
 			<div class=css::file_inputs>
 				<span>
 					<FileInput name="media1" value=media1 />
 				</span>
-				<span class=move || {
-					if media1.get().is_empty() { "is_hidden" } else { "" }
-				}>
+				<span class=move || { if media1.get().is_empty() { "is_hidden" } else { "" } }>
 					<FileInput name="media2" value=media2 />
 				</span>
-				<span class=move || {
-					if media2.get().is_empty() { "is_hidden" } else { "" }
-				}>
+				<span class=move || { if media2.get().is_empty() { "is_hidden" } else { "" } }>
 					<FileInput name="media3" value=media3 />
 				</span>
-				<span class=move || {
-					if media3.get().is_empty() { "is_hidden" } else { "" }
-				}>
+				<span class=move || { if media3.get().is_empty() { "is_hidden" } else { "" } }>
 					<FileInput name="media4" value=media4 />
 				</span>
-				<span class=move || {
-					if media4.get().is_empty() { "is_hidden" } else { "" }
-				}>
+				<span class=move || { if media4.get().is_empty() { "is_hidden" } else { "" } }>
 					<FileInput name="media5" value=media5 />
 				</span>
-				<span class=move || {
-					if media5.get().is_empty() { "is_hidden" } else { "" }
-				}>
+				<span class=move || { if media5.get().is_empty() { "is_hidden" } else { "" } }>
 					<FileInput name="media6" value=media6 />
 				</span>
-				<span class=move || {
-					if media6.get().is_empty() { "is_hidden" } else { "" }
-				}>
+				<span class=move || { if media6.get().is_empty() { "is_hidden" } else { "" } }>
 					<FileInput name="media7" value=media7 />
 				</span>
-				<span class=move || {
-					if media7.get().is_empty() { "is_hidden" } else { "" }
-				}>
+				<span class=move || { if media7.get().is_empty() { "is_hidden" } else { "" } }>
 					<FileInput name="media8" value=media8 />
 				</span>
-				<span class=move || {
-					if media8.get().is_empty() { "is_hidden" } else { "" }
-				}>
+				<span class=move || { if media8.get().is_empty() { "is_hidden" } else { "" } }>
 					<FileInput name="media9" value=media9 />
 				</span>
-				<span class=move || {
-					if media9.get().is_empty() { "is_hidden" } else { "" }
-				}>
+				<span class=move || { if media9.get().is_empty() { "is_hidden" } else { "" } }>
 					<FileInput name="media10" value=media10 />
 				</span>
 			</div>
@@ -111,17 +83,12 @@ pub fn NotesForm(
 				<Button loading>Upload</Button>
 				<span>
 					{move || {
-						if notes_upload_action.input().get().is_none()
-							&& notes_upload_action.value().get().is_none()
-						{
+						if notes_upload_action.input().get().is_none() && notes_upload_action.value().get().is_none() {
 							String::from("")
 						} else if notes_upload_action.pending().get() {
 							loading.set(true);
 							String::from("")
-						} else if let Some(Ok(files)) = notes_upload_action
-							.value()
-							.get()
-						{
+						} else if let Some(Ok(files)) = notes_upload_action.value().get() {
 							loading.set(false);
 							format!("Finished uploading: {:?}", files)
 						} else {
@@ -137,10 +104,7 @@ pub fn NotesForm(
 
 #[server(input = MultipartFormData)]
 pub async fn save_notes(data: MultipartData) -> Result<String, ServerFnError> {
-	use crate::{
-		components::file_upload::file_upload, db::ssr::get_db,
-		equipment::EquipmentType,
-	};
+	use crate::{components::file_upload::file_upload, db::ssr::get_db, equipment::EquipmentType};
 
 	use serde::{Deserialize, Serialize};
 	use sqlx::FromRow;
@@ -152,18 +116,14 @@ pub async fn save_notes(data: MultipartData) -> Result<String, ServerFnError> {
 			equipment_type: String,
 		}
 
-		let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLIDType>(
-			"SELECT id, equipment_type FROM equipment WHERE id = $1",
-		)
-		.bind(id)
-		.fetch_one(get_db())
-		.await
-		.map_err::<ServerFnError, _>(|error| {
-			ServerFnError::ServerError(error.to_string())
-		})?;
+		let equipment_sql_data =
+			sqlx::query_as::<_, EquipmentSQLIDType>("SELECT id, equipment_type FROM equipment WHERE id = $1")
+				.bind(id)
+				.fetch_one(get_db())
+				.await
+				.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
-		let category = match EquipmentType::parse(equipment_sql_data.equipment_type)
-		{
+		let category = match EquipmentType::parse(equipment_sql_data.equipment_type) {
 			EquipmentType::Flask => "F",
 			EquipmentType::Vessel => "V",
 			EquipmentType::IncubationCabinet => "I",
@@ -182,11 +142,7 @@ pub async fn save_notes(data: MultipartData) -> Result<String, ServerFnError> {
 				person = {
 					let value = match value.parse::<i32>() {
 						Ok(value) => value,
-						Err(_) => {
-							return Err(ServerFnError::Request(String::from(
-								"Invalid person ID",
-							)))
-						},
+						Err(_) => return Err(ServerFnError::Request(String::from("Invalid person ID"))),
 					};
 					Some(value)
 				}
@@ -217,9 +173,7 @@ pub async fn save_notes(data: MultipartData) -> Result<String, ServerFnError> {
 	)
 	.execute(get_db())
 	.await
-	.map_err::<ServerFnError, _>(|error| {
-		ServerFnError::ServerError(error.to_string())
-	})?;
+	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	Ok(format!("{result:?}"))
 }

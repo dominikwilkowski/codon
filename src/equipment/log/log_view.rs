@@ -15,13 +15,10 @@ pub fn Log(
 	notes_query_ipp: RwSignal<u8>,
 	log_query_page: RwSignal<u16>,
 	log_query_ipp: RwSignal<u8>,
+	tab_query: RwSignal<String>,
 ) -> impl IntoView {
-	let log_data = create_resource(
-		move || id.get(),
-		move |id| {
-			get_log_for_equipment(id, log_query_page.get(), log_query_ipp.get())
-		},
-	);
+	let log_data =
+		create_resource(move || id.get(), move |id| get_log_for_equipment(id, log_query_page.get(), log_query_ipp.get()));
 
 	view! {
 		<Transition fallback=move || view! { <p>Loading notes...</p> }>
@@ -32,29 +29,18 @@ pub fn Log(
 					if log_data.get().is_some() {
 						match log_data.get().unwrap() {
 							Err(error) => {
-								view! {
-									<pre class="error">
-										Log Server Error: {error.to_string()}
-									</pre>
-								}
-									.into_view()
+								view! { <pre class="error">Log Server Error: {error.to_string()}</pre> }.into_view()
 							}
 							Ok((log, count)) => {
 								let hidden_fields = vec![
-									(
-										String::from("notes_page"),
-										notes_query_page.get().to_string(),
-									),
-									(
-										String::from("notes_items_per_page"),
-										notes_query_ipp.get().to_string(),
-									),
+									(String::from("notes_page"), notes_query_page.get().to_string()),
+									(String::from("notes_items_per_page"), notes_query_ipp.get().to_string()),
+									(String::from("tab"), tab_query.get()),
 								];
 								view! {
-									<div class=css::log_list>
-										<h2>Log:</h2>
+									<div class=css::log_list id="equipment_log">
 										<Pagination
-											action=format!("/equipment/{}", id.get())
+											action=format!("/equipment/{}#equipment_log", id.get())
 											page_key="log_page"
 											ipp_key="log_items_per_page"
 											query_page=log_query_page
@@ -69,8 +55,10 @@ pub fn Log(
 													view! {
 														<Avatar data=log.person />
 														<span>
-															-{format!("{}", log.log.log_type)}-
-															<MultiLine text=log.log.notes.unwrap_or_default() />
+															Type: {format!("{}", log.log.log_type)}<br />Note:
+															<MultiLine text=log.log.notes.unwrap_or_default() /><br />
+															Old Value: {log.log.old_value}<br />New Value:
+															{log.log.new_value}<br />
 														</span>
 													}
 												})
@@ -158,19 +146,12 @@ pub async fn get_log_for_equipment(
 	.bind(offset)
 	.fetch_all(get_db())
 	.await
-	.map_err::<ServerFnError, _>(|error| {
-		ServerFnError::ServerError(error.to_string())
-	})?;
+	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
-	let notes_data: Vec<LogPerson> =
-		notes_sql_data.into_iter().map(Into::into).collect();
+	let notes_data: Vec<LogPerson> = notes_sql_data.into_iter().map(Into::into).collect();
 
-	let row_count: i64 = sqlx::query_scalar(
-		"SELECT COUNT(*) FROM equipment_log WHERE equipment = $1",
-	)
-	.bind(id)
-	.fetch_one(get_db())
-	.await?;
+	let row_count: i64 =
+		sqlx::query_scalar("SELECT COUNT(*) FROM equipment_log WHERE equipment = $1").bind(id).fetch_one(get_db()).await?;
 
 	Ok((notes_data, row_count))
 }

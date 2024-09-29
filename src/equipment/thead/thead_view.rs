@@ -15,13 +15,7 @@ pub fn THead(
 		{items
 			.into_iter()
 			.map(move |(id, name)| {
-				let order = if query_field.get() == *id
-					&& query_order.get() == "asc"
-				{
-					"desc"
-				} else {
-					"asc"
-				};
+				let order = if query_field.get() == *id && query_order.get() == "asc" { "desc" } else { "asc" };
 				let svg_path = if query_field.get() == *id {
 					match order {
 						"desc" => {
@@ -41,17 +35,12 @@ pub fn THead(
 					<Show when=move || field_filter.get().contains(&id)>
 						<th class=format!("{} {}", id_value.clone(), css::th)>
 							<div class=css::thead>
-								{name.clone()}
-								<form action=action method="get" class=css::sort_form>
+								{name.clone()} <form action=action method="get" class=css::sort_form>
 									<input type="hidden" name="field" value=id_value.clone() />
 									<input type="hidden" name="order" value=order />
 									{children()}
 									<button type="submit" class=css::sort_btn>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 24 24"
-											fill="currentColor"
-										>
+										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
 											<path d=svg_path />
 										</svg>
 									</button>

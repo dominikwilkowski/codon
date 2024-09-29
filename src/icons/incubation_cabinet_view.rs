@@ -5,17 +5,8 @@ stylance::import_style!(css, "icons.module.css");
 #[component]
 pub fn IncubationCabinetLogo() -> impl IntoView {
 	view! {
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			fill="none"
-			viewBox="0 0 870 870"
-			class=css::logo
-		>
-			<path
-				stroke="currentColor"
-				stroke-width="15"
-				d="M278 619h4v4h-4v-4Zm49 0h4v4h-4v-4Z"
-			/>
+		<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 870 870" class=css::logo>
+			<path stroke="currentColor" stroke-width="15" d="M278 619h4v4h-4v-4Zm49 0h4v4h-4v-4Z" />
 			<path
 				stroke="currentColor"
 				stroke-linecap="round"
@@ -29,12 +20,7 @@ pub fn IncubationCabinetLogo() -> impl IntoView {
 #[component]
 pub fn IncubationCabinet() -> impl IntoView {
 	view! {
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			fill="none"
-			viewBox="0 0 300 300"
-			class=css::icon
-		>
+		<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 300 300" class=css::icon>
 			<path
 				stroke="currentColor"
 				stroke-linecap="round"
