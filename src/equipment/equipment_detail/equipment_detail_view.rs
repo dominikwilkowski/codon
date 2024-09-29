@@ -140,7 +140,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 													<dd>
 														<EquipmentCell cell=equipment.status.clone() />
 
-														<Button>
+														<Button outlined=true>
 															"Mark as \""
 															{EquipmentStatus::get_next_status(
 																	equipment.status.clone(),
@@ -149,7 +149,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 																.to_string()}"\""
 														</Button>
 														<Show when=move || !is_archived>
-															<Button>"Archive"</Button>
+															<Button outlined=true>"Archive"</Button>
 														</Show>
 													</dd>
 
