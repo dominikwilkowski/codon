@@ -72,10 +72,16 @@ body:global(.not_scrollable) {
 }
 
 .main:global(.frame) {
-	padding: 2rem;
+	padding: 0.5rem;
 	max-width: 100rem;
 	margin: 2rem auto;
 	border-radius: 0;
+}
+
+@media (min-width: 42rem) {
+	.main:global(.frame) {
+		padding: 2rem;
+	}
 }
 
 @media (min-width: 104rem) {

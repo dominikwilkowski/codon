@@ -12,7 +12,7 @@ pub fn FileInput(value: RwSignal<String>, name: &'static str) -> impl IntoView {
 				ref=input_ref
 				class=css::file_input
 				type="file"
-				accept="image/*;video/*;capture=camera"
+				accept="image/*,video/*"
 				capture="environment"
 				name=name
 				on:change=move |_| {

@@ -110,16 +110,16 @@ pub fn NotesItem(note: NotesPerson) -> impl IntoView {
 				</small>
 				<MultiLine text=note.note.notes />
 				<div class=css::imgs>
-					<NotesImg img=note.note.media1 />
-					<NotesImg img=note.note.media2 />
-					<NotesImg img=note.note.media3 />
-					<NotesImg img=note.note.media4 />
-					<NotesImg img=note.note.media5 />
-					<NotesImg img=note.note.media6 />
-					<NotesImg img=note.note.media7 />
-					<NotesImg img=note.note.media8 />
-					<NotesImg img=note.note.media9 />
-					<NotesImg img=note.note.media10 />
+					<NotesImg file_path=note.note.media1 />
+					<NotesImg file_path=note.note.media2 />
+					<NotesImg file_path=note.note.media3 />
+					<NotesImg file_path=note.note.media4 />
+					<NotesImg file_path=note.note.media5 />
+					<NotesImg file_path=note.note.media6 />
+					<NotesImg file_path=note.note.media7 />
+					<NotesImg file_path=note.note.media8 />
+					<NotesImg file_path=note.note.media9 />
+					<NotesImg file_path=note.note.media10 />
 				</div>
 			</div>
 		</div>
@@ -127,16 +127,16 @@ pub fn NotesItem(note: NotesPerson) -> impl IntoView {
 }
 
 #[component]
-pub fn NotesImg(img: Option<String>) -> impl IntoView {
+pub fn NotesImg(file_path: Option<String>) -> impl IntoView {
 	let is_open = create_rw_signal(false);
 
 	let is_body_scrollable = use_context::<ScrollableBody>()
 		.expect("No ScrollableBody context provider");
 
 	view! {
-		{if img.is_some() {
-			let img = img.unwrap();
-			if !img.is_empty() {
+		{if file_path.is_some() {
+			let file_path = file_path.unwrap();
+			if !file_path.is_empty() {
 				view! {
 					<form
 						class=move || {
@@ -146,7 +146,7 @@ pub fn NotesImg(img: Option<String>) -> impl IntoView {
 								css::form.to_string()
 							}
 						}
-						action=img.clone()
+						action=file_path.clone()
 						method="GET"
 						on:submit=move |event| {
 							event.prevent_default();
@@ -155,7 +155,36 @@ pub fn NotesImg(img: Option<String>) -> impl IntoView {
 						}
 					>
 						<button type="submit" class=css::btn>
-							<img class=css::img src=img />
+							{if file_path.to_lowercase().ends_with(".mov") {
+								view! {
+									<Show
+										when=move || is_open.get()
+										fallback=|| {
+											view! {
+												<svg
+													class=css::placeholder
+													xmlns="http://www.w3.org/2000/svg"
+													viewBox="0 0 24 24"
+													fill="currentColor"
+												>
+													<path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z" />
+													<path d="m9 17 8-5-8-5z" />
+												</svg>
+											}
+										}
+									>
+										<div>
+											<video class=css::video controls>
+												<source src=file_path.clone() type="video/quicktime" />
+												"Your browser doen't support the videos it seems."
+											</video>
+										</div>
+									</Show>
+								}
+									.into_view()
+							} else {
+								view! { <img class=css::img src=file_path /> }.into_view()
+							}}
 						</button>
 					</form>
 				}

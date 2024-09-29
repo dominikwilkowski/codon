@@ -1,8 +1,17 @@
 .notes_list {
-	border: 3px dashed #ffffff10;
-	border-radius: var(--border-radius-lg);
-	padding: 1rem;
+	border-top: 3px dashed #ffffff10;
+	border-bottom: 3px dashed #ffffff10;
+	padding: 1rem 0.5rem;
 	margin-top: 4rem;
+}
+
+@media (min-width: 42rem) {
+	.notes_list {
+		padding: 1rem;
+		border-right: 3px dashed #ffffff10;
+		border-left: 3px dashed #ffffff10;
+		border-radius: var(--border-radius-lg);
+	}
 }
 
 .notes_item {
@@ -22,13 +31,14 @@
 .notes_item .imgs {
 	display: flex;
 	gap: 0.25rem;
+	flex-wrap: wrap;
 	margin: 0.5rem 0;
 }
 
-.notes_item .img {
-	max-height: 2rem;
-	border: 1px solid var(--text);
-	transition: max-height 0.3s ease;
+@media (min-width: 42rem) {
+	.notes_item .imgs {
+		height: calc(2rem + 2px);
+	}
 }
 
 .notes_item .btn {
@@ -38,6 +48,26 @@
 	box-shadow: none;
 	padding: 0;
 	margin: 0;
+	color: var(--text);
+	height: calc(2rem + 2px);
+}
+
+.notes_item .video {
+	height: calc(95vh - 2px);
+}
+
+.notes_item .placeholder {
+	height: 2rem;
+}
+
+.notes_item .img {
+	max-height: 2rem;
+	border: 1px solid var(--text);
+	transition: max-height 0.3s ease, max-width 0.3s ease;
+}
+
+.notes_item .form {
+	height: calc(2rem + 2px);
 }
 
 .notes_item .form:global(.form-isopen) {
@@ -48,6 +78,7 @@
 	bottom: 0;
 	overflow: auto;
 	z-index: 100;
+	height: auto;
 }
 
 .notes_item .form:global(.form-isopen) .btn {
@@ -61,4 +92,5 @@
 
 .notes_item .form:global(.form-isopen) .img {
 	max-height: calc(95vh - 2px);
+	max-width: calc(95vw - 2px);
 }
