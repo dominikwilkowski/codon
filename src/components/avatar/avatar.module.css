@@ -1,8 +1,9 @@
 .avatar {
 	display: inline-grid;
-	margin: 0;
-	justify-items: center;
 	gap: 0.25rem;
+	justify-items: center;
+	align-self: start;
+	margin: 0;
 }
 
 .avatar div {

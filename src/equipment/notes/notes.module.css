@@ -28,3 +28,55 @@
 	height: 1.5rem;
 	cursor: pointer;
 }
+
+.dropdown_form {
+	display: flex;
+	align-items: center;
+	padding: 6px 5px;
+	border-radius: 2px;
+	cursor: pointer;
+}
+
+.dropdown_form:hover {
+	background: #ffffff17;
+}
+
+.text_btn {
+	appearance: none;
+	border: none;
+	box-shadow: none;
+	background: transparent;
+	color: var(--text);
+	padding: 0;
+	margin: 0;
+}
+
+.edit_form {
+	display: grid;
+	gap: 0.5rem;
+}
+
+.edit_form .btns {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.edit_form .file_inputs > span {
+	display: inline-block;
+	margin-top: 3px;
+}
+
+.edit_form .file_inputs {
+	display: flex;
+	gap: 0.25rem;
+	flex-flow: wrap;
+}
+
+.edit_form span:global(.is_hidden) {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	top: -10px;
+	left: -10px;
+	overflow: hidden;
+}

@@ -76,13 +76,8 @@ pub fn TextArea(
 	#[prop(optional)] required: bool,
 ) -> impl IntoView {
 	view! {
-		<textarea
-			class=css::textarea
-			value=value
-			prop:name=name
-			placeholder=placeholder
-			disabled=disabled
-			required=required
-		/>
+		<textarea class=css::textarea prop:name=name placeholder=placeholder disabled=disabled required=required>
+			{value.get()}
+		</textarea>
 	}
 }
