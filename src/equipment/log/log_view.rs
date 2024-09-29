@@ -1,29 +1,25 @@
 use crate::{
 	components::{avatar::Avatar, multiline::MultiLine, pagination::Pagination},
-	equipment::ActionsPerson,
+	equipment::LogPerson,
 	error_template::ErrorTemplate,
 };
 
 use leptos::*;
 
-stylance::import_style!(css, "actions.module.css");
+stylance::import_style!(css, "log.module.css");
 
 #[component]
-pub fn Actions(
+pub fn Log(
 	id: RwSignal<String>,
 	notes_query_page: RwSignal<u16>,
 	notes_query_ipp: RwSignal<u8>,
-	actions_query_page: RwSignal<u16>,
-	actions_query_ipp: RwSignal<u8>,
+	log_query_page: RwSignal<u16>,
+	log_query_ipp: RwSignal<u8>,
 ) -> impl IntoView {
-	let actions_data = create_resource(
+	let log_data = create_resource(
 		move || id.get(),
 		move |id| {
-			get_actions_for_equipment(
-				id,
-				actions_query_page.get(),
-				actions_query_ipp.get(),
-			)
+			get_log_for_equipment(id, log_query_page.get(), log_query_ipp.get())
 		},
 	);
 
@@ -33,17 +29,17 @@ pub fn Actions(
 				view! { <ErrorTemplate errors=errors /> }
 			}>
 				{move || {
-					if actions_data.get().is_some() {
-						match actions_data.get().unwrap() {
+					if log_data.get().is_some() {
+						match log_data.get().unwrap() {
 							Err(error) => {
 								view! {
 									<pre class="error">
-										Actions Server Error: {error.to_string()}
+										Log Server Error: {error.to_string()}
 									</pre>
 								}
 									.into_view()
 							}
-							Ok((actions, count)) => {
+							Ok((log, count)) => {
 								let hidden_fields = vec![
 									(
 										String::from("notes_page"),
@@ -55,26 +51,26 @@ pub fn Actions(
 									),
 								];
 								view! {
-									<div class=css::action_list>
+									<div class=css::log_list>
 										<h2>Log:</h2>
 										<Pagination
 											action=format!("/equipment/{}", id.get())
-											page_key="actions_page"
-											ipp_key="actions_items_per_page"
-											query_page=actions_query_page
-											query_ipp=actions_query_ipp
+											page_key="log_page"
+											ipp_key="log_items_per_page"
+											query_page=log_query_page
+											query_ipp=log_query_ipp
 											row_count=count
 											hidden_fields
 										/>
 										<div>
-											{actions
+											{log
 												.into_iter()
-												.map(|action| {
+												.map(|log| {
 													view! {
-														<Avatar data=action.person />
+														<Avatar data=log.person />
 														<span>
-															-{format!("{}", action.action.action_type)}-
-															<MultiLine text=action.action.notes.unwrap_or_default() />
+															-{format!("{}", log.log.log_type)}-
+															<MultiLine text=log.log.notes.unwrap_or_default() />
 														</span>
 													}
 												})
@@ -86,7 +82,7 @@ pub fn Actions(
 							}
 						}
 					} else {
-						view! { <div>No Actions found</div> }.into_view()
+						view! { <div>No logs found</div> }.into_view()
 					}
 				}}
 			</ErrorBoundary>
@@ -95,12 +91,12 @@ pub fn Actions(
 }
 
 #[server]
-pub async fn get_actions_for_equipment(
+pub async fn get_log_for_equipment(
 	id: String,
 	page: u16,
 	items_per_page: u8,
-) -> Result<(Vec<ActionsPerson>, i64), ServerFnError> {
-	use crate::{db::ssr::get_db, equipment::ActionsPersonSQL};
+) -> Result<(Vec<LogPerson>, i64), ServerFnError> {
+	use crate::{db::ssr::get_db, equipment::LogPersonSQL};
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
@@ -110,17 +106,27 @@ pub async fn get_actions_for_equipment(
 	let limit = items_per_page as i64;
 	let offset = (page as i64 - 1) * items_per_page as i64;
 
-	let notes_sql_data = sqlx::query_as::<_, ActionsPersonSQL>(
+	let notes_sql_data = sqlx::query_as::<_, LogPersonSQL>(
 		r#"SELECT
-			equipment_actions.id AS action_id,
-			equipment_actions.action_type AS action_action_type,
-			equipment_actions.equipment AS action_equipment,
-			equipment_actions.create_date AS action_create_date,
-			equipment_actions.person AS action_person,
-			equipment_actions.notes AS action_notes,
-			equipment_actions.field AS action_field,
-			equipment_actions.old_value AS action_old_value,
-			equipment_actions.new_value AS action_new_value,
+			equipment_log.id AS log_id,
+			equipment_log.log_type AS log_log_type,
+			equipment_log.equipment AS log_equipment,
+			equipment_log.create_date AS log_create_date,
+			equipment_log.person AS log_person,
+			equipment_log.notes AS log_notes,
+			equipment_log.field AS log_field,
+			equipment_log.old_value AS log_old_value,
+			equipment_log.new_value AS log_new_value,
+			equipment_log.media1 AS log_media1,
+			equipment_log.media2 AS log_media2,
+			equipment_log.media3 AS log_media3,
+			equipment_log.media4 AS log_media4,
+			equipment_log.media5 AS log_media5,
+			equipment_log.media6 AS log_media6,
+			equipment_log.media7 AS log_media7,
+			equipment_log.media8 AS log_media8,
+			equipment_log.media9 AS log_media9,
+			equipment_log.media10 AS log_media10,
 
 			people.id AS person_id,
 			people.employee_id AS person_employee_id,
@@ -140,11 +146,11 @@ pub async fn get_actions_for_equipment(
 			people.bio AS person_bio,
 			people.create_date AS person_create_date
 		FROM
-			equipment_actions
-		JOIN people ON equipment_actions.person = people.id
+			equipment_log
+			JOIN people ON equipment_log.person = people.id
 		WHERE
-			equipment_actions.equipment = $1
-		ORDER BY equipment_actions.id DESC
+			equipment_log.equipment = $1
+			ORDER BY equipment_log.id DESC
 		LIMIT $2 OFFSET $3"#,
 	)
 	.bind(id)
@@ -156,11 +162,11 @@ pub async fn get_actions_for_equipment(
 		ServerFnError::ServerError(error.to_string())
 	})?;
 
-	let notes_data: Vec<ActionsPerson> =
+	let notes_data: Vec<LogPerson> =
 		notes_sql_data.into_iter().map(Into::into).collect();
 
 	let row_count: i64 = sqlx::query_scalar(
-		"SELECT COUNT(*) FROM equipment_actions WHERE equipment = $1",
+		"SELECT COUNT(*) FROM equipment_log WHERE equipment = $1",
 	)
 	.bind(id)
 	.fetch_one(get_db())

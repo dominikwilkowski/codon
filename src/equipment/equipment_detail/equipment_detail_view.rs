@@ -1,6 +1,6 @@
 use crate::{
 	components::button::Button,
-	equipment::{Actions, EquipmentCell, EquipmentData, EquipmentStatus, Notes},
+	equipment::{EquipmentCell, EquipmentData, EquipmentStatus, Log, Notes},
 	error_template::ErrorTemplate,
 	icons::EquipmentLogo,
 };
@@ -42,9 +42,9 @@ pub fn EquipmentDetail() -> impl IntoView {
 		}
 	});
 
-	let actions_query_page = create_rw_signal({
+	let log_query_page = create_rw_signal({
 		let page = query
-			.with(|p| p.get("actions_page").cloned().unwrap_or(String::from("1")))
+			.with(|p| p.get("log_page").cloned().unwrap_or(String::from("1")))
 			.parse::<u16>()
 			.unwrap_or(1);
 		if page > 0 {
@@ -54,10 +54,10 @@ pub fn EquipmentDetail() -> impl IntoView {
 		}
 	});
 
-	let actions_query_ipp = create_rw_signal({
+	let log_query_ipp = create_rw_signal({
 		let ipp = query
 			.with(|p| {
-				p.get("actions_items_per_page").cloned().unwrap_or(String::from("25"))
+				p.get("log_items_per_page").cloned().unwrap_or(String::from("25"))
 			})
 			.parse::<u8>()
 			.unwrap_or(25);
@@ -205,15 +205,15 @@ pub fn EquipmentDetail() -> impl IntoView {
 								id=id
 								notes_query_page=notes_query_page
 								notes_query_ipp=notes_query_ipp
-								actions_query_page=actions_query_page
-								actions_query_ipp=actions_query_ipp
+								log_query_page=notes_query_page
+								log_query_ipp=notes_query_ipp
 							/>
-							<Actions
+							<Log
 								id=id
 								notes_query_page=notes_query_page
 								notes_query_ipp=notes_query_ipp
-								actions_query_page=actions_query_page
-								actions_query_ipp=actions_query_ipp
+								log_query_page=log_query_page
+								log_query_ipp=log_query_ipp
 							/>
 						</div>
 					}

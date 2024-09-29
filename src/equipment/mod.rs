@@ -16,10 +16,10 @@ pub mod notes_form {
 }
 pub use notes_form::notes_form_view::*;
 
-pub mod actions {
-	pub mod actions_view;
+pub mod log {
+	pub mod log_view;
 }
-pub use actions::actions_view::*;
+pub use log::log_view::*;
 
 pub mod notes {
 	pub mod notes_view;
@@ -39,8 +39,8 @@ pub use row::row_view::*;
 pub mod schema;
 pub use schema::*;
 
-pub mod schema_actions;
-pub use schema_actions::*;
+pub mod schema_log;
+pub use schema_log::*;
 
 pub mod schema_notes;
 pub use schema_notes::*;

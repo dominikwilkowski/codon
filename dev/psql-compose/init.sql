@@ -137,21 +137,31 @@ INSERT INTO equipment_notes (equipment, person, notes, media1, media2, media3, m
 (12, 5, E'If found speaking to the equipment, please consult HR. Again', '/upload_media/I-12/027eea60-4544-408f-81d2-9dcb8c721c3f.jpg', '/upload_media/I-12/28090d96-0610-455e-8203-468cdcb76858.jpg', '/upload_media/I-12/8897c75f-2cdb-4dcf-9570-59e2f14fedf9.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (12, 5, E'Do not mention obsolescence; it\'s a sensitive topic.', '/upload_media/I-12/93df09f5-9167-445d-b29a-462afa4984fd.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
--- action_type = 'cleaning', 'sterilization', 'preparation', 'edit'
-CREATE TABLE equipment_actions (
+-- log_type = 'cleaning', 'sterilization', 'preparation', 'edit'
+CREATE TABLE equipment_log (
 	id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-	action_type TEXT NOT NULL,
+	log_type TEXT NOT NULL,
 	equipment INT NOT NULL REFERENCES equipment(id) ON DELETE CASCADE,
 	create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	person INT NOT NULL REFERENCES people(id),
 	notes TEXT,
 	field TEXT,
 	old_value TEXT,
-	new_value TEXT
+	new_value TEXT,
+	media1 TEXT,
+	media2 TEXT,
+	media3 TEXT,
+	media4 TEXT,
+	media5 TEXT,
+	media6 TEXT,
+	media7 TEXT,
+	media8 TEXT,
+	media9 TEXT,
+	media10 TEXT
 );
-CREATE INDEX equipment_actions_equipment ON equipment_actions (equipment);
-CREATE INDEX equipment_actions_person ON equipment_actions (person);
-INSERT INTO equipment_actions (action_type, equipment, person, notes, field, old_value, new_value) VALUES
+CREATE INDEX equipment_log_equipment ON equipment_log (equipment);
+CREATE INDEX equipment_log_person ON equipment_log (person);
+INSERT INTO equipment_log (log_type, equipment, person, notes, field, old_value, new_value) VALUES
 ('cleaning', 1, 3, E'Found a tiny civilization of dust bunnies; negotiations are ongoing.', NULL, NULL, NULL),
 ('edit', 1, 5, E'Status changed to "Sentient"; it passed the Turing test.', 'status', 'working', 'broken'),
 ('edit', 2, 8, E'Moved to the "Noisy Equipment" section; it wouldnt stop humming.', 'location', 'Under desk', 'Shelve 12, Cell 12, Row E'),

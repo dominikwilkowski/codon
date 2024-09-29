@@ -15,8 +15,8 @@ pub fn Notes(
 	id: RwSignal<String>,
 	notes_query_page: RwSignal<u16>,
 	notes_query_ipp: RwSignal<u8>,
-	actions_query_page: RwSignal<u16>,
-	actions_query_ipp: RwSignal<u8>,
+	log_query_page: RwSignal<u16>,
+	log_query_ipp: RwSignal<u8>,
 ) -> impl IntoView {
 	let notes_upload_action =
 		create_action(|data: &FormData| save_notes(data.clone().into()));
@@ -51,12 +51,12 @@ pub fn Notes(
 							Ok((notes, count)) => {
 								let hidden_fields = vec![
 									(
-										String::from("actions_page"),
-										actions_query_page.get().to_string(),
+										String::from("log_page"),
+										log_query_page.get().to_string(),
 									),
 									(
-										String::from("actions_items_per_page"),
-										actions_query_ipp.get().to_string(),
+										String::from("log_items_per_page"),
+										log_query_ipp.get().to_string(),
 									),
 								];
 								view! {
