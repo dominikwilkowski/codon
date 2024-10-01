@@ -152,15 +152,18 @@ pub fn Note(
 					</svg>
 				</DropdownTrigger>
 				<DropdownItem key="edit" label="Edit" />
-				<button class=css::text_btn on:click=move |_| {
-					if web_sys::window()
-						.unwrap()
-						.confirm_with_message("Are you sure you want to delete this Note?")
-						.unwrap_or(false)
-					{
-						delete_note_action.dispatch(DeleteNote { id: note.note.id });
+				<button
+					class=css::text_btn
+					on:click=move |_| {
+						if web_sys::window()
+							.unwrap()
+							.confirm_with_message("Are you sure you want to delete this Note?")
+							.unwrap_or(false)
+						{
+							delete_note_action.dispatch(DeleteNote { id: note.note.id });
+						}
 					}
-				}>
+				>
 					Delete
 				</button>
 			</Dropdown>
@@ -234,6 +237,7 @@ pub fn NoteEdit(
 				edit_note_action.dispatch(form_data);
 			}
 		>
+			<input type="hidden" name="id" value=note.note.equipment />
 			<TextArea value=create_rw_signal(note.note.notes) name="notes" placeholder="Your note" />
 			<div class="codon_img_attachment">
 				<MediaRemoveToggle media=note.note.media1 name="remove_media1" empty_fields=empty_fields />
@@ -365,10 +369,22 @@ pub async fn edit_note(data: MultipartData) -> Result<String, ServerFnError> {
 
 	let mut person = None;
 	let mut notes = None;
-	// TODO: check remove_media1..=10 and remove files before updating
 
 	for (name, value) in &result.additional_fields {
 		match name.as_str() {
+			f @ "remove_media1"
+			| f @ "remove_media2"
+			| f @ "remove_media3"
+			| f @ "remove_media4"
+			| f @ "remove_media5"
+			| f @ "remove_media6"
+			| f @ "remove_media7"
+			| f @ "remove_media8"
+			| f @ "remove_media9"
+			| f @ "remove_media10" => {
+				// TODO: check remove_media1..=10 and remove files before updating
+				println!("{f} - {value}");
+			},
 			"person" => {
 				person = {
 					let value = match value.parse::<i32>() {

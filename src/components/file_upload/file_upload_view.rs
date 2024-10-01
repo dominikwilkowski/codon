@@ -125,7 +125,7 @@ where
 	}
 
 	if folder_name.is_none() || equipment_id.is_none() {
-		Err(ServerFnError::ServerError(String::from("Equipment ID not provided")))
+		Err(ServerFnError::ServerError(String::from("ID not provided")))
 	} else if uploaded_files.len() != files_to_upload {
 		Err(ServerFnError::ServerError(String::from("Failed to save file")))
 	} else {
