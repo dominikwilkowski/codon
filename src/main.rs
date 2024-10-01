@@ -33,6 +33,7 @@ pub mod samples;
 #[cfg(feature = "ssr")]
 pub mod fileserv;
 
+#[allow(clippy::needless_return)]
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {

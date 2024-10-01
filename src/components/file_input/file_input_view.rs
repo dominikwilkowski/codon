@@ -13,7 +13,6 @@ pub fn FileInput(value: RwSignal<String>, name: &'static str) -> impl IntoView {
 				class=css::file_input
 				type="file"
 				accept="image/*,video/*"
-				capture="environment"
 				name=name
 				on:change=move |_| {
 					let input = input_ref.get().unwrap();

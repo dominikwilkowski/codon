@@ -233,6 +233,7 @@ pub fn FileUpload() -> impl IntoView {
 		use tokio::{fs::File, io::AsyncWriteExt};
 		let mut data = data.into_inner().unwrap();
 
+		#[allow(clippy::never_loop)]
 		while let Ok(Some(mut field)) = data.next_field().await {
 			let original_name = field.file_name().unwrap_or("unknown").to_string();
 			let new_name = format!("new_{}", original_name);

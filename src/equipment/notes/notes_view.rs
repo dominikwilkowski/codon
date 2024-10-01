@@ -103,7 +103,7 @@ pub fn Notes(
 #[component]
 pub fn NotesItem(
 	note: NotesPerson,
-	edit_note_action: Action<FormData, Result<(), ServerFnError>>,
+	edit_note_action: Action<FormData, Result<String, ServerFnError>>,
 	delete_note_action: Action<DeleteNote, Result<(), ServerFnError>>,
 ) -> impl IntoView {
 	let is_editing = create_rw_signal(false);
@@ -141,8 +141,10 @@ pub fn Note(
 			{note.note.create_date.format("%d %b %Y %I:%M:%S %P").to_string()}
 			<Dropdown
 				placement=DropdownPlacement::BottomEnd
-				on_select=move |link: String| if link.as_str() == "edit" {
-					is_editing.set(true);
+				on_select=move |link: String| {
+					if link.as_str() == "edit" {
+						is_editing.set(true);
+					}
 				}
 			>
 				<DropdownTrigger slot>
@@ -179,21 +181,33 @@ pub fn Note(
 pub fn NoteEdit(
 	note: NotesPerson,
 	is_editing: RwSignal<bool>,
-	edit_note_action: Action<FormData, Result<(), ServerFnError>>,
+	edit_note_action: Action<FormData, Result<String, ServerFnError>>,
 ) -> impl IntoView {
 	let form_ref = create_node_ref::<html::Form>();
 
-	let media1 = create_rw_signal(note.note.media1.unwrap_or_default());
-	let media2 = create_rw_signal(note.note.media2.unwrap_or_default());
-	let media3 = create_rw_signal(note.note.media3.unwrap_or_default());
-	let media4 = create_rw_signal(note.note.media4.unwrap_or_default());
-	let media5 = create_rw_signal(note.note.media5.unwrap_or_default());
-	let media6 = create_rw_signal(note.note.media6.unwrap_or_default());
-	let media7 = create_rw_signal(note.note.media7.unwrap_or_default());
-	let media8 = create_rw_signal(note.note.media8.unwrap_or_default());
-	let media9 = create_rw_signal(note.note.media9.unwrap_or_default());
-	let media10 = create_rw_signal(note.note.media10.unwrap_or_default());
+	let media1 = create_rw_signal(String::from(""));
+	let media2 = create_rw_signal(String::from(""));
+	let media3 = create_rw_signal(String::from(""));
+	let media4 = create_rw_signal(String::from(""));
+	let media5 = create_rw_signal(String::from(""));
+	let media6 = create_rw_signal(String::from(""));
+	let media7 = create_rw_signal(String::from(""));
+	let media8 = create_rw_signal(String::from(""));
+	let media9 = create_rw_signal(String::from(""));
+	let media10 = create_rw_signal(String::from(""));
 	let loading = create_rw_signal(false);
+	let empty_fields = create_rw_signal(
+		(note.note.media1.is_none() as usize)
+			+ (note.note.media2.is_none() as usize)
+			+ (note.note.media3.is_none() as usize)
+			+ (note.note.media4.is_none() as usize)
+			+ (note.note.media5.is_none() as usize)
+			+ (note.note.media6.is_none() as usize)
+			+ (note.note.media7.is_none() as usize)
+			+ (note.note.media8.is_none() as usize)
+			+ (note.note.media9.is_none() as usize)
+			+ (note.note.media10.is_none() as usize),
+	);
 
 	view! {
 		<form
@@ -217,37 +231,70 @@ pub fn NoteEdit(
 			}
 		>
 			<TextArea value=create_rw_signal(note.note.notes) name="notes" placeholder="Your note" />
+			<div class="codon_img_attachment">
+				<MediaRemoveToggle media=note.note.media1 name="remove_media1" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.note.media2 name="remove_media2" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.note.media3 name="remove_media3" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.note.media4 name="remove_media4" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.note.media5 name="remove_media5" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.note.media6 name="remove_media6" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.note.media7 name="remove_media7" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.note.media8 name="remove_media8" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.note.media9 name="remove_media9" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.note.media10 name="remove_media10" empty_fields=empty_fields />
+			</div>
 			<div class=css::file_inputs>
-				<span>
+				<span class=move || { if empty_fields.get() < 1 { "is_hidden" } else { "" } }>
 					<FileInput name="media1" value=media1 />
 				</span>
-				<span class=move || { if media1.get().is_empty() { "is_hidden" } else { "" } }>
+				<span class=move || {
+					if media1.get().is_empty() || empty_fields.get() < 2 { "is_hidden" } else { "" }
+				}>
 					<FileInput name="media2" value=media2 />
 				</span>
-				<span class=move || { if media2.get().is_empty() { "is_hidden" } else { "" } }>
+				<span class=move || {
+					if media2.get().is_empty() || empty_fields.get() < 3 { "is_hidden" } else { "" }
+				}>
 					<FileInput name="media3" value=media3 />
 				</span>
-				<span class=move || { if media3.get().is_empty() { "is_hidden" } else { "" } }>
+				<span class=move || {
+					if media3.get().is_empty() || empty_fields.get() < 4 { "is_hidden" } else { "" }
+				}>
 					<FileInput name="media4" value=media4 />
 				</span>
-				<span class=move || { if media4.get().is_empty() { "is_hidden" } else { "" } }>
+				<span class=move || {
+					if media4.get().is_empty() || empty_fields.get() < 5 { "is_hidden" } else { "" }
+				}>
 					<FileInput name="media5" value=media5 />
 				</span>
-				<span class=move || { if media5.get().is_empty() { "is_hidden" } else { "" } }>
+				<span class=move || {
+					if media5.get().is_empty() || empty_fields.get() < 6 { "is_hidden" } else { "" }
+				}>
 					<FileInput name="media6" value=media6 />
 				</span>
-				<span class=move || { if media6.get().is_empty() { "is_hidden" } else { "" } }>
+				<span class=move || {
+					if media6.get().is_empty() || empty_fields.get() < 7 { "is_hidden" } else { "" }
+				}>
 					<FileInput name="media7" value=media7 />
 				</span>
-				<span class=move || { if media7.get().is_empty() { "is_hidden" } else { "" } }>
+				<span class=move || {
+					if media7.get().is_empty() || empty_fields.get() < 8 { "is_hidden" } else { "" }
+				}>
 					<FileInput name="media8" value=media8 />
 				</span>
-				<span class=move || { if media8.get().is_empty() { "is_hidden" } else { "" } }>
+				<span class=move || {
+					if media8.get().is_empty() || empty_fields.get() < 9 { "is_hidden" } else { "" }
+				}>
 					<FileInput name="media9" value=media9 />
 				</span>
-				<span class=move || { if media9.get().is_empty() { "is_hidden" } else { "" } }>
+				<span class=move || {
+					if media9.get().is_empty() || empty_fields.get() < 10 { "is_hidden" } else { "" }
+				}>
 					<FileInput name="media10" value=media10 />
 				</span>
+				<Show when=move || empty_fields.get() == 0>
+					<em>Notes can have a maximum of 10 attachments. Remove other attachments to upload more.</em>
+				</Show>
 			</div>
 			<div class=css::btns>
 				<Button loading>Save</Button>
@@ -260,9 +307,11 @@ pub fn NoteEdit(
 							loading.set(false);
 							is_editing.set(false);
 							String::from("")
-						} else {
+						} else if edit_note_action.value().get().is_some() {
 							loading.set(false);
 							format!("Error: {:?}", edit_note_action.value().get())
+						} else {
+							String::from("")
 						}
 					}}
 				</span>
@@ -271,10 +320,99 @@ pub fn NoteEdit(
 	}
 }
 
+#[component]
+pub fn MediaRemoveToggle(media: Option<String>, name: &'static str, empty_fields: RwSignal<usize>) -> impl IntoView {
+	let is_checked = create_rw_signal(false);
+	let input_ref = create_node_ref::<html::Input>();
+
+	if media.is_some() && !media.clone().unwrap().is_empty() {
+		view! {
+			<label class=css::media_toggle title="Toggle to remove this attachment">
+				<input
+					ref=input_ref
+					type="checkbox"
+					name=name
+					checked=is_checked
+					on:change=move |_| {
+						let input = input_ref.get_untracked().unwrap();
+						is_checked.set(input.checked());
+						empty_fields.update(move |i| { if is_checked.get() { *i += 1 } else { *i -= 1 } })
+					}
+				/>
+				<img src=media.unwrap() />
+				<div>
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+						<path d="m16.192 6.344-4.243 4.242-4.242-4.242-1.414 1.414L10.535 12l-4.242 4.242 1.414 1.414 4.242-4.242 4.243 4.242 1.414-1.414L13.364 12l4.242-4.242z" />
+					</svg>
+				</div>
+			</label>
+		}
+		.into_view()
+	} else {
+		view! {}.into_view()
+	}
+}
+
 #[server(input = MultipartFormData)]
-pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
-	println!("submitted: {:?}", data);
-	Ok(())
+pub async fn edit_note(data: MultipartData) -> Result<String, ServerFnError> {
+	use crate::{components::file_upload::file_upload, db::ssr::get_db, equipment::get_folder};
+
+	let result = file_upload(data, get_folder).await?;
+
+	let mut person = None;
+	let mut notes = None;
+	// TODO: check remove_media1..=10 and remove files before updating
+
+	for (name, value) in &result.additional_fields {
+		match name.as_str() {
+			"person" => {
+				person = {
+					let value = match value.parse::<i32>() {
+						Ok(value) => value,
+						Err(_) => return Err(ServerFnError::Request(String::from("Invalid person ID"))),
+					};
+					Some(value)
+				}
+			},
+			"notes" => notes = Some(value),
+			_ => {},
+		}
+	}
+
+	sqlx::query!(
+		r#"UPDATE equipment_notes SET
+			person = $2,
+			notes = $3,
+			media1 = $4,
+			media2 = $5,
+			media3 = $6,
+			media4 = $7,
+			media5 = $8,
+			media6 = $9,
+			media7 = $10,
+			media8 = $11,
+			media9 = $12,
+			media10 = $13
+		WHERE id = $1"#,
+		result.id,
+		person,
+		notes,
+		result.media1,
+		result.media2,
+		result.media3,
+		result.media4,
+		result.media5,
+		result.media6,
+		result.media7,
+		result.media8,
+		result.media9,
+		result.media10,
+	)
+	.execute(get_db())
+	.await
+	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+
+	Ok(format!("{result:?}"))
 }
 
 #[server]

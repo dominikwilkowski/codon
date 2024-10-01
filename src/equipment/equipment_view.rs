@@ -215,19 +215,19 @@ pub async fn get_equipment_data(
 	};
 
 	let field_sanitized = match field.to_lowercase().as_str() {
-		ref f @ "id"
-		| ref f @ "equipment_type"
-		| ref f @ "qrcode"
-		| ref f @ "create_date"
-		| ref f @ "name"
-		| ref f @ "status"
-		| ref f @ "manufacturer"
-		| ref f @ "purchase_date"
-		| ref f @ "vendor"
-		| ref f @ "cost_in_cent"
-		| ref f @ "warranty_expiration_date"
-		| ref f @ "location"
-		| ref f @ "notes" => String::from(*f),
+		f @ "id"
+		| f @ "equipment_type"
+		| f @ "qrcode"
+		| f @ "create_date"
+		| f @ "name"
+		| f @ "status"
+		| f @ "manufacturer"
+		| f @ "purchase_date"
+		| f @ "vendor"
+		| f @ "cost_in_cent"
+		| f @ "warranty_expiration_date"
+		| f @ "location"
+		| f @ "notes" => String::from(f),
 		_ => String::from("id"),
 	};
 

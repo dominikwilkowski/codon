@@ -15,11 +15,10 @@ async fn move_temp_files(
 	uploaded_files: &mut Vec<String>,
 	base_path: &String,
 ) -> Result<(), ServerFnError> {
-	while temp_files.len() > 0 {
-		let (temp_path, file_name) = temp_files.pop().unwrap();
+	while let Some((temp_path, file_name)) = temp_files.pop() {
 		let new_path = Path::new(base_path).join(file_name.clone());
 		rename(temp_path, new_path.clone()).await?;
-		uploaded_files.push(format!("{}", new_path.to_string_lossy().replace("public/", "/")));
+		uploaded_files.push(new_path.to_string_lossy().replace("public/", "/"));
 	}
 	Ok(())
 }
@@ -85,13 +84,11 @@ where
 							let name = format!("{}.{extension}", &Uuid::new_v4().to_string());
 
 							let file_path = if let Some(ref folder_name) = folder_name {
-								move_temp_files(&mut temp_files, &mut uploaded_files, &folder_name).await?;
+								move_temp_files(&mut temp_files, &mut uploaded_files, folder_name).await?;
 
-								let final_path = PathBuf::from("public/upload_media/").join(&folder_name).join(&name);
-								uploaded_files.push(format!(
-									"{}",
-									PathBuf::from("/upload_media/").join(&folder_name).join(&name).to_string_lossy()
-								));
+								let final_path = PathBuf::from("public/upload_media/").join(folder_name).join(&name);
+								uploaded_files
+									.push(format!("{}", PathBuf::from("/upload_media/").join(folder_name).join(&name).to_string_lossy()));
 								final_path
 							} else {
 								// ID has not been processed yet so we store the files in a temp folder until it is
@@ -119,7 +116,7 @@ where
 					}
 				},
 				other => {
-					let name = format!("{other}");
+					let name = String::from(other);
 					let value = field.text().await?;
 					additional_fields.push((name, value));
 				},
@@ -128,13 +125,13 @@ where
 	}
 
 	if folder_name.is_none() || equipment_id.is_none() {
-		return Err(ServerFnError::ServerError(String::from("Equipment ID not provided")));
+		Err(ServerFnError::ServerError(String::from("Equipment ID not provided")))
 	} else if uploaded_files.len() != files_to_upload {
 		Err(ServerFnError::ServerError(String::from("Failed to save file")))
 	} else {
 		let mut iter = uploaded_files.into_iter();
 
-		return Ok(FileUploadResult {
+		Ok(FileUploadResult {
 			id: equipment_id.unwrap(),
 			media1: iter.next().unwrap_or_default(),
 			media2: iter.next().unwrap_or_default(),
@@ -147,6 +144,6 @@ where
 			media9: iter.next().unwrap_or_default(),
 			media10: iter.next().unwrap_or_default(),
 			additional_fields,
-		});
+		})
 	}
 }

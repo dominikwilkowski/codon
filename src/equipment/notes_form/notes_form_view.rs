@@ -1,7 +1,13 @@
 use crate::components::{button::Button, file_input::FileInput, input::TextArea};
+#[cfg(feature = "ssr")]
+use crate::{db::ssr::get_db, equipment::EquipmentType};
 
 use leptos::*;
+#[cfg(feature = "ssr")]
+use serde::{Deserialize, Serialize};
 use server_fn::codec::{MultipartData, MultipartFormData};
+#[cfg(feature = "ssr")]
+use sqlx::FromRow;
 use web_sys::{FormData, SubmitEvent};
 
 stylance::import_style!(css, "notes_form.module.css");
@@ -102,36 +108,40 @@ pub fn NotesForm(id: String, notes_upload_action: Action<FormData, Result<String
 	}
 }
 
+#[cfg(feature = "ssr")]
+pub async fn get_folder(id: i32) -> Result<String, ServerFnError> {
+	#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+	struct EquipmentSQLIDType {
+		id: i32,
+		equipment_type: String,
+	}
+
+	let equipment_sql_data =
+		sqlx::query_as::<_, EquipmentSQLIDType>("SELECT id, equipment_type FROM equipment WHERE id = $1")
+			.bind(id)
+			.fetch_one(get_db())
+			.await
+			.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+
+	Ok(create_folder_name(EquipmentType::parse(equipment_sql_data.equipment_type), equipment_sql_data.id))
+}
+
+#[cfg(feature = "ssr")]
+pub fn create_folder_name(equipment_type: EquipmentType, id: i32) -> String {
+	let category = match equipment_type {
+		EquipmentType::Flask => "F",
+		EquipmentType::Vessel => "V",
+		EquipmentType::IncubationCabinet => "I",
+	};
+
+	format!("{category}-{}/", id)
+}
+
 #[server(input = MultipartFormData)]
 pub async fn save_notes(data: MultipartData) -> Result<String, ServerFnError> {
-	use crate::{components::file_upload::file_upload, db::ssr::get_db, equipment::EquipmentType};
+	use crate::{components::file_upload::file_upload, db::ssr::get_db};
 
-	use serde::{Deserialize, Serialize};
-	use sqlx::FromRow;
-
-	let result = file_upload(data, |id| async move {
-		#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
-		struct EquipmentSQLIDType {
-			id: i32,
-			equipment_type: String,
-		}
-
-		let equipment_sql_data =
-			sqlx::query_as::<_, EquipmentSQLIDType>("SELECT id, equipment_type FROM equipment WHERE id = $1")
-				.bind(id)
-				.fetch_one(get_db())
-				.await
-				.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
-
-		let category = match EquipmentType::parse(equipment_sql_data.equipment_type) {
-			EquipmentType::Flask => "F",
-			EquipmentType::Vessel => "V",
-			EquipmentType::IncubationCabinet => "I",
-		};
-
-		Ok(format!("{category}-{}/", equipment_sql_data.id))
-	})
-	.await?;
+	let result = file_upload(data, get_folder).await?;
 
 	let mut person = None;
 	let mut notes = None;

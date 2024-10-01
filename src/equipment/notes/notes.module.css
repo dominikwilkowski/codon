@@ -56,11 +56,6 @@
 	gap: 0.5rem;
 }
 
-.edit_form .btns {
-	display: flex;
-	gap: 0.5rem;
-}
-
 .edit_form .file_inputs > span {
 	display: inline-block;
 	margin-top: 3px;
@@ -79,4 +74,63 @@
 	top: -10px;
 	left: -10px;
 	overflow: hidden;
+}
+
+.edit_form .file_inputs em {
+	display: flex;
+	align-items: center;
+	min-height: 1.85rem;
+	margin: 0 0 0.75rem 0;
+}
+
+.edit_form .btns {
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+.media_toggle {
+	position: relative;
+	display: inline-block;
+	overflow: hidden;
+	height: 2rem;
+	cursor: pointer;
+}
+
+.media_toggle input {
+	position: absolute;
+	left: -10rem;
+	top: -10rem;
+}
+
+.media_toggle img {
+	max-height: 2rem;
+	border: 1px solid var(--text);
+	border-radius: var(--border-radius-sm);
+}
+
+.media_toggle div {
+	display: grid;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	align-items: center;
+	justify-items: center;
+	border-radius: var(--border-radius-sm);
+}
+
+.media_toggle svg {
+	height: 2rem;
+	color: var(--action);
+}
+
+.media_toggle input:checked + img + div {
+	background: var(--action);
+	opacity: 0.7;
+}
+
+.media_toggle input:checked + img + div svg {
+	color: var(--text);
 }
