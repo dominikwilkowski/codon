@@ -267,6 +267,7 @@ pub async fn delete_equipment(id: i32) -> Result<(), ServerFnError> {
 
 	let qrcode_path: String =
 		sqlx::query_scalar("SELECT qrcode FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
+	// TODO: delete all logs and notes as well
 
 	let file_path = PathBuf::from(format!("{}/public/qrcodes/{}", env!("CARGO_MANIFEST_DIR"), qrcode_path));
 

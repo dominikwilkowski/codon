@@ -14,7 +14,6 @@ use crate::{
 };
 
 use leptos::*;
-use leptos_router::*;
 use server_fn::codec::{MultipartData, MultipartFormData};
 use web_sys::{FormData, SubmitEvent};
 
@@ -153,12 +152,17 @@ pub fn Note(
 					</svg>
 				</DropdownTrigger>
 				<DropdownItem key="edit" label="Edit" />
-				<ActionForm class=css::dropdown_form action=delete_note_action>
-					<input type="hidden" name="id" value=note.note.id />
-					<button class=css::text_btn type="submit">
-						Delete
-					</button>
-				</ActionForm>
+				<button class=css::text_btn on:click=move |_| {
+					if web_sys::window()
+						.unwrap()
+						.confirm_with_message("Are you sure you want to delete this Note?")
+						.unwrap_or(false)
+					{
+						delete_note_action.dispatch(DeleteNote { id: note.note.id });
+					}
+				}>
+					Delete
+				</button>
 			</Dropdown>
 		</small>
 		<MultiLine text=note.note.notes />
@@ -417,7 +421,7 @@ pub async fn edit_note(data: MultipartData) -> Result<String, ServerFnError> {
 
 #[server]
 pub async fn delete_note(id: i32) -> Result<(), ServerFnError> {
-	println!("submitted: {id}");
+	println!("TODO: delete: {id}");
 	Ok(())
 }
 
