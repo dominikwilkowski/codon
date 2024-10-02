@@ -102,7 +102,7 @@ pub fn Notes(
 #[component]
 pub fn NotesItem(
 	note: NotesPerson,
-	edit_note_action: Action<FormData, Result<String, ServerFnError>>,
+	edit_note_action: Action<FormData, Result<(), ServerFnError>>,
 	delete_note_action: Action<DeleteNote, Result<(), ServerFnError>>,
 ) -> impl IntoView {
 	let is_editing = create_rw_signal(false);
@@ -188,7 +188,7 @@ pub fn Note(
 pub fn NoteEdit(
 	note: NotesPerson,
 	is_editing: RwSignal<bool>,
-	edit_note_action: Action<FormData, Result<String, ServerFnError>>,
+	edit_note_action: Action<FormData, Result<(), ServerFnError>>,
 ) -> impl IntoView {
 	let form_ref = create_node_ref::<html::Form>();
 
@@ -238,6 +238,7 @@ pub fn NoteEdit(
 			}
 		>
 			<input type="hidden" name="id" value=note.note.equipment />
+			<input type="hidden" name="note_id" value=note.note.id />
 			<TextArea value=create_rw_signal(note.note.notes) name="notes" placeholder="Your note" />
 			<div class="codon_img_attachment">
 				<MediaRemoveToggle media=note.note.media1 name="remove_media1" empty_fields=empty_fields />
@@ -362,13 +363,17 @@ pub fn MediaRemoveToggle(media: Option<String>, name: &'static str, empty_fields
 }
 
 #[server(input = MultipartFormData)]
-pub async fn edit_note(data: MultipartData) -> Result<String, ServerFnError> {
+pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 	use crate::{components::file_upload::file_upload, db::ssr::get_db, equipment::get_folder};
+
+	use sqlx::FromRow;
+	use std::{fs, path::PathBuf};
 
 	let result = file_upload(data, get_folder).await?;
 
-	let mut person = None;
+	let mut note_id = None;
 	let mut notes = None;
+	let mut media_removal = Vec::new();
 
 	for (name, value) in &result.additional_fields {
 		match name.as_str() {
@@ -382,41 +387,80 @@ pub async fn edit_note(data: MultipartData) -> Result<String, ServerFnError> {
 			| f @ "remove_media8"
 			| f @ "remove_media9"
 			| f @ "remove_media10" => {
-				// TODO: check remove_media1..=10 and remove files before updating
-				println!("{f} - {value}");
+				media_removal.push(f.replace("remove_", ""));
 			},
-			"person" => {
-				person = {
+			"notes" => notes = Some(value),
+			"note_id" => {
+				note_id = {
 					let value = match value.parse::<i32>() {
 						Ok(value) => value,
-						Err(_) => return Err(ServerFnError::Request(String::from("Invalid person ID"))),
+						Err(_) => return Err(ServerFnError::Request(String::from("Invalid note ID"))),
 					};
 					Some(value)
 				}
 			},
-			"notes" => notes = Some(value),
 			_ => {},
 		}
 	}
 
-	sqlx::query!(
-		r#"UPDATE equipment_notes SET
-			person = $2,
-			notes = $3,
-			media1 = $4,
-			media2 = $5,
-			media3 = $6,
-			media4 = $7,
-			media5 = $8,
-			media6 = $9,
-			media7 = $10,
-			media8 = $11,
-			media9 = $12,
-			media10 = $13
-		WHERE id = $1"#,
-		result.id,
-		person,
-		notes,
+	if note_id.is_none() {
+		return Err(ServerFnError::Request(String::from("No note ID was passed")));
+	}
+	let note_id = note_id.unwrap();
+
+	#[derive(Debug, FromRow)]
+	struct Medias {
+		media1: Option<String>,
+		media2: Option<String>,
+		media3: Option<String>,
+		media4: Option<String>,
+		media5: Option<String>,
+		media6: Option<String>,
+		media7: Option<String>,
+		media8: Option<String>,
+		media9: Option<String>,
+		media10: Option<String>,
+	}
+
+	let medias = sqlx::query_as::<_, Medias>("SELECT media1, media2, media3, media4, media5, media6, media7, media8, media9, media10 FROM equipment_notes WHERE id = $1")
+		.bind(note_id)
+		.fetch_one(get_db())
+		.await
+		.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+
+	// Adding files to our que not marked for removal
+	let mut new_medias = Vec::new();
+	let media_fields = [
+		("media1", medias.media1),
+		("media2", medias.media2),
+		("media3", medias.media3),
+		("media4", medias.media4),
+		("media5", medias.media5),
+		("media6", medias.media6),
+		("media7", medias.media7),
+		("media8", medias.media8),
+		("media9", medias.media9),
+		("media10", medias.media10),
+	];
+	for (name, media_option) in media_fields {
+		if let Some(media) = media_option {
+			if !media_removal.contains(&name.to_string()) {
+				new_medias.push(media);
+			} else {
+				// Removing files marked for removal
+				let file_path = PathBuf::from(format!("{}/public/{}", env!("CARGO_MANIFEST_DIR"), media));
+				if file_path.exists() {
+					match fs::remove_file(&file_path) {
+						Ok(_) => {},
+						Err(_) => return Err(ServerFnError::Request(format!("Could not delete {file_path:?}"))),
+					}
+				}
+			}
+		}
+	}
+
+	// Adding new files to the que
+	let media_fields = [
 		result.media1,
 		result.media2,
 		result.media3,
@@ -427,12 +471,58 @@ pub async fn edit_note(data: MultipartData) -> Result<String, ServerFnError> {
 		result.media8,
 		result.media9,
 		result.media10,
+	];
+	for media in media_fields {
+		if !media.is_empty() {
+			new_medias.push(media);
+		}
+	}
+
+	println!("{new_medias:?}");
+
+	let new_media1 = new_medias.pop();
+	let new_media2 = new_medias.pop();
+	let new_media3 = new_medias.pop();
+	let new_media4 = new_medias.pop();
+	let new_media5 = new_medias.pop();
+	let new_media6 = new_medias.pop();
+	let new_media7 = new_medias.pop();
+	let new_media8 = new_medias.pop();
+	let new_media9 = new_medias.pop();
+	let new_media10 = new_medias.pop();
+
+	sqlx::query!(
+		r#"UPDATE equipment_notes SET
+			notes = $2,
+			media1 = $3,
+			media2 = $4,
+			media3 = $5,
+			media4 = $6,
+			media5 = $7,
+			media6 = $8,
+			media7 = $9,
+			media8 = $10,
+			media9 = $11,
+			media10 = $12
+		WHERE id = $1"#,
+		note_id,
+		notes,
+		new_media1,
+		new_media2,
+		new_media3,
+		new_media4,
+		new_media5,
+		new_media6,
+		new_media7,
+		new_media8,
+		new_media9,
+		new_media10,
 	)
 	.execute(get_db())
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
-	Ok(format!("{result:?}"))
+	Ok(())
 }
 
 #[server]

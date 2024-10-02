@@ -162,6 +162,14 @@ pub async fn save_notes(data: MultipartData) -> Result<String, ServerFnError> {
 		}
 	}
 
+	fn string_to_option(s: String) -> Option<String> {
+		if s.is_empty() {
+			None
+		} else {
+			Some(s)
+		}
+	}
+
 	sqlx::query!(
 		r#"INSERT INTO equipment_notes
 		(equipment, person, notes, media1, media2, media3, media4, media5, media6, media7, media8, media9, media10)
@@ -170,16 +178,16 @@ pub async fn save_notes(data: MultipartData) -> Result<String, ServerFnError> {
 		result.id,
 		person,
 		notes,
-		result.media1,
-		result.media2,
-		result.media3,
-		result.media4,
-		result.media5,
-		result.media6,
-		result.media7,
-		result.media8,
-		result.media9,
-		result.media10,
+		string_to_option(result.media1.clone()),
+		string_to_option(result.media2.clone()),
+		string_to_option(result.media3.clone()),
+		string_to_option(result.media4.clone()),
+		string_to_option(result.media5.clone()),
+		string_to_option(result.media6.clone()),
+		string_to_option(result.media7.clone()),
+		string_to_option(result.media8.clone()),
+		string_to_option(result.media9.clone()),
+		string_to_option(result.media10.clone()),
 	)
 	.execute(get_db())
 	.await

@@ -262,8 +262,7 @@ pub async fn delete_equipment(id: i32) -> Result<(), ServerFnError> {
 	use crate::db::ssr::get_db;
 
 	use server_fn::error::NoCustomError;
-	use std::fs;
-	use std::path::PathBuf;
+	use std::{fs, path::PathBuf};
 
 	let qrcode_path: String =
 		sqlx::query_scalar("SELECT qrcode FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
