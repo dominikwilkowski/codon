@@ -1,6 +1,6 @@
 use crate::{
 	components::{avatar::Avatar, img_attachment::ImgAttachment, multiline::MultiLine, pagination::Pagination},
-	equipment::LogPerson,
+	equipment::{EquipmentLogType, LogPerson},
 	error_template::ErrorTemplate,
 };
 
@@ -48,31 +48,11 @@ pub fn Log(
 											row_count=count
 											hidden_fields
 										/>
-										<div>
+										<div class=css::log_wrapper>
 											{log
 												.into_iter()
 												.map(|log| {
-													view! {
-														<Avatar data=log.person />
-														<span>
-															Type: {format!("{}", log.log.log_type)}<br />Note:
-															<MultiLine text=log.log.notes.unwrap_or_default() /><br />
-															Old Value: {log.log.old_value}<br />New Value:
-															{log.log.new_value}<br />
-														</span>
-														<div class="codon_img_attachment">
-															<ImgAttachment file_path=log.log.media1 />
-															<ImgAttachment file_path=log.log.media2 />
-															<ImgAttachment file_path=log.log.media3 />
-															<ImgAttachment file_path=log.log.media4 />
-															<ImgAttachment file_path=log.log.media5 />
-															<ImgAttachment file_path=log.log.media6 />
-															<ImgAttachment file_path=log.log.media7 />
-															<ImgAttachment file_path=log.log.media8 />
-															<ImgAttachment file_path=log.log.media9 />
-															<ImgAttachment file_path=log.log.media10 />
-														</div>
-													}
+													view! { <LogItem log=log /> }
 												})
 												.collect_view()}
 										</div>
@@ -87,6 +67,48 @@ pub fn Log(
 				}}
 			</ErrorBoundary>
 		</Transition>
+	}
+}
+
+#[component]
+pub fn LogItem(log: LogPerson) -> impl IntoView {
+	view! {
+		<div class=css::log>
+			<Avatar data=log.person />
+			<div class=css::log_content>
+				<small>
+					{log.log.create_date.format("%d %b %Y %I:%M:%S %P").to_string()} {" "}
+					<span class=css::log_type>{format!("{}", log.log.log_type)}</span>
+				</small>
+				<MultiLine text=log.log.notes.unwrap_or_default() />
+				<br />
+				{if log.log.log_type == EquipmentLogType::Edit {
+					view! {
+						<span class=css::log_edit>
+							<h2>Old value</h2>
+							<p class=css::old>{log.log.old_value}</p>
+							<h2>New value</h2>
+							<p class=css::new>{log.log.new_value}</p>
+						</span>
+					}
+						.into_view()
+				} else {
+					view! {}.into_view()
+				}}
+				<div class="codon_img_attachment">
+					<ImgAttachment file_path=log.log.media1 />
+					<ImgAttachment file_path=log.log.media2 />
+					<ImgAttachment file_path=log.log.media3 />
+					<ImgAttachment file_path=log.log.media4 />
+					<ImgAttachment file_path=log.log.media5 />
+					<ImgAttachment file_path=log.log.media6 />
+					<ImgAttachment file_path=log.log.media7 />
+					<ImgAttachment file_path=log.log.media8 />
+					<ImgAttachment file_path=log.log.media9 />
+					<ImgAttachment file_path=log.log.media10 />
+				</div>
+			</div>
+		</div>
 	}
 }
 

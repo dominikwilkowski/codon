@@ -1,3 +1,56 @@
-.log_list {
+.log_list,
+.log_wrapper {
 	margin-top: 1rem;
+}
+
+.log_wrapper {
+	display: grid;
+	gap: 1.5rem;
+}
+
+.log {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 1rem;
+}
+
+.log_content {
+	display: grid;
+	gap: 0.5rem;
+}
+
+.log_type {
+	display: inline-block;
+	padding: 0.25rem 0.5rem;
+	border: 1px solid var(--text);
+	border-radius: var(--border-radius-sm);
+}
+
+.log_edit {
+}
+
+.log_edit h2 {
+	position: relative;
+	display: inline-block;
+	bottom: -0.5rem;
+	font-size: 1rem;
+	font-weight: 400;
+	margin: 0 0 0 1rem;
+	padding: 0 0.25rem;
+	background: var(--content-bg);
+	color: var(--text-muted);
+	text-transform: uppercase;
+	font-size: 0.75rem;
+}
+
+.log_edit .old,
+.log_edit .new {
+	padding: 1rem;
+	margin: 0;
+	border: 1px solid #ffffff30;
+	border-radius: var(--border-radius-md);
+}
+
+.log_edit .old {
+	margin-bottom: 1rem;
 }

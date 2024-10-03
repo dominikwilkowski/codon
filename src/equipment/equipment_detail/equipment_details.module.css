@@ -80,7 +80,7 @@
 	border: 2px solid var(--action);
 	border-bottom: none;
 	box-shadow: none;
-	background: var(--bg);
+	background: var(--action);
 	padding: 0.5rem 1rem;
 	margin: 0;
 	color: var(--text);
@@ -90,5 +90,5 @@
 }
 
 .tab :global(.is-selected) .btn {
-	background: var(--action);
+	background: var(--bg);
 }

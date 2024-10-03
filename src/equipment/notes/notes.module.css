@@ -4,7 +4,7 @@
 
 .notes_item {
 	display: grid;
-	gap: 2.5rem 1rem;
+	gap: 1rem;
 	grid-template-columns: auto 1fr;
 	padding: 0.5rem 0.5rem 1rem 0.5rem;
 	margin-bottom: 1rem;
