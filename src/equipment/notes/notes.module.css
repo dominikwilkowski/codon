@@ -50,9 +50,13 @@
 	gap: 0.5rem;
 }
 
+.edit_form :global(.codon_img_attachment) {
+	margin: 0;
+}
+
 .edit_form .file_inputs > span {
 	display: inline-block;
-	margin-top: 3px;
+	line-height: 0;
 }
 
 .edit_form .file_inputs {

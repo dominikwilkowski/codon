@@ -15,6 +15,8 @@ use crate::{
 
 use leptos::*;
 use server_fn::codec::{MultipartData, MultipartFormData};
+#[cfg(feature = "ssr")]
+use sqlx::FromRow;
 use web_sys::{FormData, SubmitEvent};
 
 stylance::import_style!(css, "notes.module.css");
@@ -362,11 +364,25 @@ pub fn MediaRemoveToggle(media: Option<String>, name: &'static str, empty_fields
 	}
 }
 
+#[cfg(feature = "ssr")]
+#[derive(Debug, FromRow)]
+struct MediasSQL {
+	media1: Option<String>,
+	media2: Option<String>,
+	media3: Option<String>,
+	media4: Option<String>,
+	media5: Option<String>,
+	media6: Option<String>,
+	media7: Option<String>,
+	media8: Option<String>,
+	media9: Option<String>,
+	media10: Option<String>,
+}
+
 #[server(input = MultipartFormData)]
 pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 	use crate::{components::file_upload::file_upload, db::ssr::get_db, equipment::get_folder};
 
-	use sqlx::FromRow;
 	use std::{fs, path::PathBuf};
 
 	let result = file_upload(data, get_folder).await?;
@@ -408,21 +424,7 @@ pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 	}
 	let note_id = note_id.unwrap();
 
-	#[derive(Debug, FromRow)]
-	struct Medias {
-		media1: Option<String>,
-		media2: Option<String>,
-		media3: Option<String>,
-		media4: Option<String>,
-		media5: Option<String>,
-		media6: Option<String>,
-		media7: Option<String>,
-		media8: Option<String>,
-		media9: Option<String>,
-		media10: Option<String>,
-	}
-
-	let medias = sqlx::query_as::<_, Medias>("SELECT media1, media2, media3, media4, media5, media6, media7, media8, media9, media10 FROM equipment_notes WHERE id = $1")
+	let medias = sqlx::query_as::<_, MediasSQL>("SELECT media1, media2, media3, media4, media5, media6, media7, media8, media9, media10 FROM equipment_notes WHERE id = $1")
 		.bind(note_id)
 		.fetch_one(get_db())
 		.await
@@ -478,8 +480,6 @@ pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 		}
 	}
 
-	println!("{new_medias:?}");
-
 	let new_media1 = new_medias.pop();
 	let new_media2 = new_medias.pop();
 	let new_media3 = new_medias.pop();
@@ -527,8 +527,39 @@ pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 
 #[server]
 pub async fn delete_note(id: i32) -> Result<(), ServerFnError> {
-	println!("TODO: delete: {id}");
-	Ok(())
+	use crate::db::ssr::get_db;
+
+	use std::{fs, path::PathBuf};
+
+	let medias = sqlx::query_as::<_, MediasSQL>("SELECT media1, media2, media3, media4, media5, media6, media7, media8, media9, media10 FROM equipment_notes WHERE id = $1")
+		.bind(id)
+		.fetch_one(get_db())
+		.await
+		.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+
+	let media_fields = [
+		medias.media1,
+		medias.media2,
+		medias.media3,
+		medias.media4,
+		medias.media5,
+		medias.media6,
+		medias.media7,
+		medias.media8,
+		medias.media9,
+		medias.media10,
+	];
+	for media in media_fields.into_iter().flatten() {
+		let file_path = PathBuf::from(format!("{}/public/{}", env!("CARGO_MANIFEST_DIR"), media));
+		if file_path.exists() {
+			match fs::remove_file(&file_path) {
+				Ok(_) => {},
+				Err(_) => return Err(ServerFnError::Request(format!("Could not delete {file_path:?}"))),
+			}
+		}
+	}
+
+	Ok(sqlx::query!("DELETE FROM equipment_notes WHERE id = $1", id).execute(get_db()).await.map(|_| ())?)
 }
 
 #[server]
