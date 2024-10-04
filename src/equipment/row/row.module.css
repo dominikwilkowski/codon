@@ -1,13 +1,3 @@
-.delete {
-	appearance: none;
-	border: none;
-	background: transparent;
-	padding: 0;
-	box-shadow: none;
-	color: var(--action);
-	text-decoration: underline;
-}
-
 td:global(.equipment_listing_equipment_type),
 td:global(.equipment_listing_status) {
 	text-align: center;

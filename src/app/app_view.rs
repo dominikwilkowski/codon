@@ -41,10 +41,6 @@ pub fn App() -> impl IntoView {
 	theme.date_picker.panel_background_color = String::from("var(--input-bg)");
 	theme.date_picker.panel_date_item_background_color_hover = String::from("var(--action)");
 	theme.date_picker.panel_other_month_font_color = String::from("var(--text)");
-	theme.button.color_text_disabled = String::from("var(--disabled-fg)");
-	theme.button.color_background_disabled = String::from("var(--disabled-bg)");
-	theme.button.color_border_disabled = String::from("var(--disabled-bg)");
-	theme.button.border_color_outlined = String::from("var(--action)");
 	theme.switch.background_color = String::from("var(--input-bg)");
 	theme.select.background_color = String::from("var(--input-bg)");
 	theme.select.menu_background_color = String::from("var(--input-bg)");

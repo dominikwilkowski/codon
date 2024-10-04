@@ -1,4 +1,7 @@
-use crate::equipment::{DeleteEquipment, EquipmentCell, EquipmentData};
+use crate::{
+	components::button::{Button, ButtonVariant},
+	equipment::{DeleteEquipment, EquipmentCell, EquipmentData},
+};
 
 use leptos::*;
 use leptos_router::*;
@@ -85,8 +88,8 @@ pub fn Row(
 						<A href=format!("/equipment/{}", equipment.id)>Details</A>
 					</td>
 					<td class="equipment_listing_delete_link">
-						<button
-							class=css::delete
+						<Button
+							variant=ButtonVariant::Text
 							on:click=move |_| {
 								if web_sys::window()
 									.unwrap()
@@ -101,7 +104,7 @@ pub fn Row(
 							}
 						>
 							Delete
-						</button>
+						</Button>
 					</td>
 				</tr>
 			}
