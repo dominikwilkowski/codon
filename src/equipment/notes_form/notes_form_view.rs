@@ -54,36 +54,34 @@ pub fn NotesForm(id: String, notes_upload_action: Action<FormData, Result<String
 			<input type="hidden" name="person" value=12 />
 			<TextArea name="notes" value=create_rw_signal(String::from("")) placeholder="Your note" required=true />
 			<div class=css::file_inputs>
-				<span>
-					<FileInput name="media1" value=media1 />
-				</span>
-				<span class=move || { if media1.get().is_empty() { "is_hidden" } else { "" } }>
+				<FileInput name="media1" value=media1 />
+				<Show when=move || !media1.get().is_empty()>
 					<FileInput name="media2" value=media2 />
-				</span>
-				<span class=move || { if media2.get().is_empty() { "is_hidden" } else { "" } }>
+				</Show>
+				<Show when=move || !media2.get().is_empty()>
 					<FileInput name="media3" value=media3 />
-				</span>
-				<span class=move || { if media3.get().is_empty() { "is_hidden" } else { "" } }>
+				</Show>
+				<Show when=move || !media3.get().is_empty()>
 					<FileInput name="media4" value=media4 />
-				</span>
-				<span class=move || { if media4.get().is_empty() { "is_hidden" } else { "" } }>
+				</Show>
+				<Show when=move || !media4.get().is_empty()>
 					<FileInput name="media5" value=media5 />
-				</span>
-				<span class=move || { if media5.get().is_empty() { "is_hidden" } else { "" } }>
+				</Show>
+				<Show when=move || !media5.get().is_empty()>
 					<FileInput name="media6" value=media6 />
-				</span>
-				<span class=move || { if media6.get().is_empty() { "is_hidden" } else { "" } }>
+				</Show>
+				<Show when=move || !media6.get().is_empty()>
 					<FileInput name="media7" value=media7 />
-				</span>
-				<span class=move || { if media7.get().is_empty() { "is_hidden" } else { "" } }>
+				</Show>
+				<Show when=move || !media7.get().is_empty()>
 					<FileInput name="media8" value=media8 />
-				</span>
-				<span class=move || { if media8.get().is_empty() { "is_hidden" } else { "" } }>
+				</Show>
+				<Show when=move || !media8.get().is_empty()>
 					<FileInput name="media9" value=media9 />
-				</span>
-				<span class=move || { if media9.get().is_empty() { "is_hidden" } else { "" } }>
+				</Show>
+				<Show when=move || !media9.get().is_empty()>
 					<FileInput name="media10" value=media10 />
-				</span>
+				</Show>
 			</div>
 			<div class=css::btn_line>
 				<Button loading>Upload</Button>

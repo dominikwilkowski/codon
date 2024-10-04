@@ -2,9 +2,10 @@
 	margin: 1rem 0;
 }
 
-.heading a {
-	font-weight: 400;
-	font-size: 1rem;
+.heading {
+	display: flex;
+	gap: 1rem;
+	align-items: end;
 }
 
 .list {
@@ -14,6 +15,29 @@
 
 .list dd {
 	margin: 0 0 2rem 0;
+}
+
+.list dd.edit {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	justify-items: left;
+	align-items: first baseline;
+	gap: 0.5rem;
+}
+
+.list dd.status {
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+.list dd.status button {
+	background: transparent;
+	font-size: 65%;
+}
+
+.list dd.status div {
+	margin-right: 1rem;
 }
 
 .list dd,
@@ -90,5 +114,5 @@
 }
 
 .tab :global(.is-selected) .btn {
-	background: var(--bg);
+	background: var(--content-bg);
 }

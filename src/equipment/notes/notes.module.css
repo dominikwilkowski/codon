@@ -6,7 +6,7 @@
 	display: grid;
 	gap: 1rem;
 	grid-template-columns: auto 1fr;
-	padding: 0.5rem 0.5rem 1rem 0.5rem;
+	padding: 0.5rem;
 	margin-bottom: 1rem;
 	border-radius: var(--border-radius-md);
 }
@@ -27,6 +27,12 @@
 .notes_item .menu {
 	height: 1.5rem;
 	cursor: pointer;
+}
+
+.dropdown_btn {
+	all: unset;
+	border-radius: var(--border-radius-md);
+	line-height: 0;
 }
 
 .text_btn {
@@ -63,15 +69,6 @@
 	display: flex;
 	gap: 0.25rem;
 	flex-flow: wrap;
-}
-
-.edit_form span:global(.is_hidden) {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	top: -10px;
-	left: -10px;
-	overflow: hidden;
 }
 
 .edit_form .file_inputs em {
@@ -131,4 +128,10 @@
 
 .media_toggle input:checked + img + div svg {
 	color: var(--text);
+}
+
+.media_toggle input:focus-visible + img + div {
+	border-radius: var(--border-radius-sm);
+	outline: 1px solid var(--focus);
+	outline-offset: -1px;
 }

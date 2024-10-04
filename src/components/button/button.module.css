@@ -1,4 +1,5 @@
 .btn {
+	display: inline-flex;
 	appearance: none;
 	color: var(--input-fg);
 	box-shadow:
@@ -10,11 +11,12 @@
 	border: none;
 	border-radius: var(--border-radius-sm);
 	padding: 0.5rem 0.75rem;
-	transition: outline 0.3s;
+	transition: outline 0.3s ease;
 	outline: none;
 	background: var(--action);
 	white-space: nowrap;
 	white-space-collapse: discard;
+	gap: 0.5rem;
 }
 
 .outlined {
@@ -26,12 +28,18 @@
 	all: unset;
 	color: var(--action);
 	cursor: pointer;
-	text-decoration: underline;
-	border-radius: var(--border-radius-sm);
+	border-radius: var(--border-radius-md);
+	transition: outline 0.3s ease;
+	outline: none;
 }
 
-.text svg {
-	color: var(--text);
+.btn.text:focus-visible {
+	outline-offset: 6px;
+}
+
+.text span {
+	display: inline-flex;
+	text-decoration: underline;
 }
 
 .loading {

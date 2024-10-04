@@ -138,7 +138,7 @@ button {
 	outline-offset: 1px;
 }
 
-a:focus-visible:not(:global(.increasing_specificity)) {
+a:focus-visible:not(:global(.increasing)):not(:global(.specificity)) {
 	border-radius: var(--border-radius-sm);
 	outline-offset: 6px;
 }
@@ -170,7 +170,7 @@ select {
 		0 0 0 1px hsla(0, 0%, 0%, 0.05),
 		0 0.3px 0.4px hsla(0, 0%, 0%, 0.02),
 		0 0.9px 1.5px hsla(0, 0%, 0%, 0.045),
-		0 0 2px 1px hsla(0, 0%, 0%, 0.35) !important;
+		0 0 2px 1px hsla(0, 0%, 0%, 0.35);
 }
 
 select:disabled {
@@ -182,12 +182,12 @@ select:disabled {
 
 ::placeholder {
 	font-size: 70%;
-	color: var(--disabled-fg) !important;
+	color: var(--disabled-fg);
 }
 
 :global(.thaw-textarea),
 :global(.thaw-textarea):hover,
 :global(.input_shadow),
 :global(.input_shadow):hover {
-	border: none !important;
+	border: none;
 }

@@ -12,6 +12,12 @@
 	display: grid;
 	grid-template-columns: auto 1fr;
 	gap: 1rem;
+	padding: 0.5rem;
+	border-radius: var(--border-radius-md);
+}
+
+.log:nth-child(even) {
+	background-color: var(--bg-alt);
 }
 
 .log_content {

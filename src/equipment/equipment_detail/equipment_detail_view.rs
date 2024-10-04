@@ -105,13 +105,13 @@ pub fn EquipmentDetail() -> impl IntoView {
 													</dd>
 
 													<dt>Name</dt>
-													<dd>
+													<dd class=css::edit>
 														<EquipmentCell cell=equipment.name />
 														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
 
 													<dt>Equipment Type</dt>
-													<dd>
+													<dd class=css::edit>
 														<EquipmentCell cell=equipment.equipment_type.clone() />
 														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
@@ -127,9 +127,8 @@ pub fn EquipmentDetail() -> impl IntoView {
 													</dd>
 
 													<dt>Status</dt>
-													<dd>
+													<dd class=css::status>
 														<EquipmentCell cell=equipment.status.clone() />
-
 														<Button variant=ButtonVariant::Outlined>
 															"Mark as \""
 															{EquipmentStatus::get_next_status(
@@ -144,43 +143,43 @@ pub fn EquipmentDetail() -> impl IntoView {
 													</dd>
 
 													<dt>Manufacturer</dt>
-													<dd>
+													<dd class=css::edit>
 														<EquipmentCell cell=equipment.manufacturer />
 														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
 
 													<dt>Purchase Date</dt>
-													<dd>
+													<dd class=css::edit>
 														<EquipmentCell cell=equipment.purchase_date />
 														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
 
 													<dt>Vendor</dt>
-													<dd>
+													<dd class=css::edit>
 														<EquipmentCell cell=equipment.vendor />
 														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
 
 													<dt>Cost</dt>
-													<dd>
+													<dd class=css::edit>
 														<EquipmentCell cell=equipment.cost_in_cent />
 														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
 
 													<dt>Warranty Expiration Date</dt>
-													<dd>
+													<dd class=css::edit>
 														<EquipmentCell cell=equipment.warranty_expiration_date />
 														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
 
 													<dt>Location</dt>
-													<dd>
+													<dd class=css::edit>
 														<EquipmentCell cell=equipment.location />
 														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
 
 													<dt>Notes</dt>
-													<dd>
+													<dd class=css::edit>
 														<EquipmentCell cell=equipment.notes />
 														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>

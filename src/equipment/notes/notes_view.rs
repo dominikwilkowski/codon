@@ -149,9 +149,11 @@ pub fn Note(
 				}
 			>
 				<DropdownTrigger slot>
-					<svg class=css::menu xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-						<path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-					</svg>
+					<button class=css::dropdown_btn>
+						<svg class=css::menu xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+							<path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+						</svg>
+					</button>
 				</DropdownTrigger>
 				<DropdownItem key="edit" label="Edit" />
 				<button
@@ -255,54 +257,36 @@ pub fn NoteEdit(
 				<MediaRemoveToggle media=note.note.media10 name="remove_media10" empty_fields=empty_fields />
 			</div>
 			<div class=css::file_inputs>
-				<span class=move || { if empty_fields.get() < 1 { "is_hidden" } else { "" } }>
+				<Show when=move || (empty_fields.get() >= 1)>
 					<FileInput name="media1" value=media1 />
-				</span>
-				<span class=move || {
-					if media1.get().is_empty() || empty_fields.get() < 2 { "is_hidden" } else { "" }
-				}>
+				</Show>
+				<Show when=move || (!media1.get().is_empty() && empty_fields.get() >= 2)>
 					<FileInput name="media2" value=media2 />
-				</span>
-				<span class=move || {
-					if media2.get().is_empty() || empty_fields.get() < 3 { "is_hidden" } else { "" }
-				}>
+				</Show>
+				<Show when=move || (!media2.get().is_empty() && empty_fields.get() >= 3)>
 					<FileInput name="media3" value=media3 />
-				</span>
-				<span class=move || {
-					if media3.get().is_empty() || empty_fields.get() < 4 { "is_hidden" } else { "" }
-				}>
+				</Show>
+				<Show when=move || (!media3.get().is_empty() && empty_fields.get() >= 4)>
 					<FileInput name="media4" value=media4 />
-				</span>
-				<span class=move || {
-					if media4.get().is_empty() || empty_fields.get() < 5 { "is_hidden" } else { "" }
-				}>
+				</Show>
+				<Show when=move || (!media4.get().is_empty() && empty_fields.get() >= 5)>
 					<FileInput name="media5" value=media5 />
-				</span>
-				<span class=move || {
-					if media5.get().is_empty() || empty_fields.get() < 6 { "is_hidden" } else { "" }
-				}>
+				</Show>
+				<Show when=move || (!media5.get().is_empty() && empty_fields.get() >= 6)>
 					<FileInput name="media6" value=media6 />
-				</span>
-				<span class=move || {
-					if media6.get().is_empty() || empty_fields.get() < 7 { "is_hidden" } else { "" }
-				}>
+				</Show>
+				<Show when=move || (!media6.get().is_empty() && empty_fields.get() >= 7)>
 					<FileInput name="media7" value=media7 />
-				</span>
-				<span class=move || {
-					if media7.get().is_empty() || empty_fields.get() < 8 { "is_hidden" } else { "" }
-				}>
+				</Show>
+				<Show when=move || (!media7.get().is_empty() && empty_fields.get() >= 8)>
 					<FileInput name="media8" value=media8 />
-				</span>
-				<span class=move || {
-					if media8.get().is_empty() || empty_fields.get() < 9 { "is_hidden" } else { "" }
-				}>
+				</Show>
+				<Show when=move || (!media8.get().is_empty() && empty_fields.get() >= 9)>
 					<FileInput name="media9" value=media9 />
-				</span>
-				<span class=move || {
-					if media9.get().is_empty() || empty_fields.get() < 10 { "is_hidden" } else { "" }
-				}>
+				</Show>
+				<Show when=move || (!media9.get().is_empty() && empty_fields.get() >= 10)>
 					<FileInput name="media10" value=media10 />
-				</span>
+				</Show>
 				<Show when=move || empty_fields.get() == 0>
 					<em>Notes can have a maximum of 10 attachments. Remove other attachments to upload more.</em>
 				</Show>

@@ -1,5 +1,4 @@
 .form {
-	position: relative;
 	overflow: hidden;
 	padding: 3px;
 	display: grid;
@@ -24,15 +23,6 @@
 	display: flex;
 	gap: 0.25rem;
 	flex-flow: wrap;
-}
-
-.form span:global(.is_hidden) {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	top: -10px;
-	left: -10px;
-	overflow: hidden;
 }
 
 .form .btn_line {

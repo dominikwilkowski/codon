@@ -2,7 +2,11 @@
 	display: flex;
 	gap: 0.25rem;
 	flex-wrap: wrap;
-	margin: 0.5rem 0;
+	margin: 0.5rem 0 0 0;
+}
+
+:global(.codon_img_attachment):empty {
+	margin: 0;
 }
 
 @media (min-width: 42rem) {
@@ -18,8 +22,10 @@
 	box-shadow: none;
 	padding: 0;
 	margin: 0;
+	line-height: 0;
 	color: var(--text);
 	height: calc(2rem + 2px);
+	border-radius: var(--border-radius-sm);
 }
 
 .video {
