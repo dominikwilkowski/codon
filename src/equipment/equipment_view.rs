@@ -1,6 +1,6 @@
 use crate::{
 	components::{
-		button::Button,
+		button::{Button, ButtonVariant},
 		pagination::Pagination,
 		select::{MultiSelect, MultiSelectOption},
 	},
@@ -102,7 +102,7 @@ pub fn Equipment() -> impl IntoView {
 												)
 											/>
 											<Button
-												outlined=true
+												variant=ButtonVariant::Outlined
 												on_click=move |_| {
 													field_filter
 														.set(

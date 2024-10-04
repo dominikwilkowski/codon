@@ -1,5 +1,5 @@
 use crate::{
-	components::button::Button,
+	components::button::{Button, ButtonVariant},
 	equipment::{EquipmentCell, EquipmentData, EquipmentStatus, Log, Notes},
 	error_template::ErrorTemplate,
 	icons::EquipmentLogo,
@@ -107,11 +107,13 @@ pub fn EquipmentDetail() -> impl IntoView {
 													<dt>Name</dt>
 													<dd>
 														<EquipmentCell cell=equipment.name />
+														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
 
 													<dt>Equipment Type</dt>
 													<dd>
 														<EquipmentCell cell=equipment.equipment_type.clone() />
+														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
 
 													<dt>Qrcode</dt>
@@ -128,7 +130,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 													<dd>
 														<EquipmentCell cell=equipment.status.clone() />
 
-														<Button outlined=true>
+														<Button variant=ButtonVariant::Outlined>
 															"Mark as \""
 															{EquipmentStatus::get_next_status(
 																	equipment.status.clone(),
@@ -137,43 +139,50 @@ pub fn EquipmentDetail() -> impl IntoView {
 																.to_string()}"\""
 														</Button>
 														<Show when=move || !is_archived>
-															<Button outlined=true>"Archive"</Button>
+															<Button variant=ButtonVariant::Outlined>"Archive"</Button>
 														</Show>
 													</dd>
 
 													<dt>Manufacturer</dt>
 													<dd>
 														<EquipmentCell cell=equipment.manufacturer />
+														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
 
 													<dt>Purchase Date</dt>
 													<dd>
 														<EquipmentCell cell=equipment.purchase_date />
+														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
 
 													<dt>Vendor</dt>
 													<dd>
 														<EquipmentCell cell=equipment.vendor />
+														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
 
 													<dt>Cost</dt>
 													<dd>
 														<EquipmentCell cell=equipment.cost_in_cent />
+														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
 
 													<dt>Warranty Expiration Date</dt>
 													<dd>
 														<EquipmentCell cell=equipment.warranty_expiration_date />
+														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
 
 													<dt>Location</dt>
 													<dd>
 														<EquipmentCell cell=equipment.location />
+														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
 
 													<dt>Notes</dt>
 													<dd>
 														<EquipmentCell cell=equipment.notes />
+														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
 												</dl>
 											</div>

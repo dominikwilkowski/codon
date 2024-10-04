@@ -5,3 +5,66 @@
 :global(.codon-thaw-btn) {
 	background: var(--action);
 }
+
+.btn {
+	appearance: none;
+	color: var(--input-fg);
+	box-shadow:
+		inset 0 0 0 1px hsla(0, 0%, 100%, 0.05),
+		0 0 0 1px hsla(0, 0%, 0%, 0.05),
+		0 0.3px 0.4px hsla(0, 0%, 0%, 0.02),
+		0 0.9px 1.5px hsla(0, 0%, 0%, 0.045),
+		0 0 2px 1px hsla(0, 0%, 0%, 0.35);
+	border: none;
+	border-radius: var(--border-radius-sm);
+	padding: 0.5rem 0.75rem;
+	transition: outline 0.3s;
+	outline: none;
+	background: var(--action);
+	white-space: nowrap;
+	white-space-collapse: discard;
+}
+
+.outlined {
+	background: var(--bg);
+	border: 1px solid var(--action);
+}
+
+.text {
+	all: unset;
+	color: var(--action);
+	cursor: pointer;
+}
+
+.text svg {
+	color: var(--text);
+}
+
+.loading {
+	cursor: progress;
+}
+
+.loading svg {
+	display: inline-block;
+	height: 1rem;
+	margin-right: 0.5rem;
+	animation: btn_loading 1s infinite linear;
+}
+
+.btn:disabled {
+	background: var(--bg);
+	cursor: not-allowed;
+	box-shadow: inset 0 0 0 1px var(--bg);
+	color: var(--disabled-fg);
+	border: none;
+}
+
+.btn.text:disabled {
+	background: transparent;
+}
+
+@keyframes btn_loading {
+	100% {
+		transform: rotate(360deg);
+	}
+}

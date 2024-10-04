@@ -1,7 +1,7 @@
 use crate::{
 	components::{
 		avatar::Avatar,
-		button::Button,
+		button::{Button, ButtonVariant},
 		dropdown::{Dropdown, DropdownItem, DropdownPlacement, DropdownTrigger},
 		file_input::FileInput,
 		img_attachment::ImgAttachment,
@@ -309,7 +309,7 @@ pub fn NoteEdit(
 			</div>
 			<div class=css::btns>
 				<Button loading>Save</Button>
-				<Button on_click=move |_| is_editing.set(false) outlined=true>
+				<Button on_click=move |_| is_editing.set(false) variant=ButtonVariant::Outlined>
 					Cancel
 				</Button>
 				<span>

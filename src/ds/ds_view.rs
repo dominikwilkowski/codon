@@ -1,6 +1,6 @@
 use crate::{
 	components::{
-		button::{use_message, Button, MessageOptions, MessageVariant},
+		button::{use_message, Button, ButtonVariant, MessageOptions, MessageVariant},
 		checkbox::{Checkbox, CheckboxGroup, CheckboxItem},
 		datepicker::DatePicker,
 		dropdown::{Dropdown, DropdownItem, DropdownTrigger},
@@ -115,20 +115,66 @@ pub fn Ds() -> impl IntoView {
 		<section class=css::section>
 			<h2>Buttons</h2>
 			<div class=css::stack_inline>
-				<Button>Button</Button>
-				<Button disabled=create_rw_signal(true)>Disabled Button</Button>
-				<Button loading=create_rw_signal(true)>Button</Button>
+				<Button on_click=|_| logging::log!("Hello World")>Button</Button>
+				<Button on_click=|_| logging::log!("Hello World") kind="submit">
+					Submit Button
+				</Button>
+				<Button on_click=|_| logging::log!("Hello World") disabled=create_rw_signal(true)>
+					Disabled Button
+				</Button>
+				<Button on_click=|_| logging::log!("Hello World") loading=create_rw_signal(true)>
+					Button
+				</Button>
 			</div>
 		</section>
 
 		<section class=css::section>
 			<h2>Buttons outlined</h2>
 			<div class=css::stack_inline>
-				<Button outlined=true>Button</Button>
-				<Button outlined=true disabled=create_rw_signal(true)>
+				<Button variant=ButtonVariant::Outlined on_click=|_| logging::log!("Hello World")>
+					Button
+				</Button>
+				<Button variant=ButtonVariant::Outlined kind="submit" on_click=|_| logging::log!("Hello World")>
+					Submit Button
+				</Button>
+				<Button
+					variant=ButtonVariant::Outlined
+					disabled=create_rw_signal(true)
+					on_click=|_| logging::log!("Hello World")
+				>
 					Disabled Button
 				</Button>
-				<Button outlined=true loading=create_rw_signal(true)>
+				<Button
+					variant=ButtonVariant::Outlined
+					loading=create_rw_signal(true)
+					on_click=|_| logging::log!("Hello World")
+				>
+					Button
+				</Button>
+			</div>
+		</section>
+
+		<section class=css::section>
+			<h2>Buttons text</h2>
+			<div class=css::stack_inline>
+				<Button variant=ButtonVariant::Text on_click=|_| logging::log!("Hello World")>
+					Button
+				</Button>
+				<Button variant=ButtonVariant::Text kind="submit" on_click=|_| logging::log!("Hello World")>
+					Submit Button
+				</Button>
+				<Button
+					variant=ButtonVariant::Text
+					disabled=create_rw_signal(true)
+					on_click=|_| logging::log!("Hello World")
+				>
+					Disabled Button
+				</Button>
+				<Button
+					variant=ButtonVariant::Text
+					loading=create_rw_signal(true)
+					on_click=|_| logging::log!("Hello World")
+				>
 					Button
 				</Button>
 			</div>
@@ -138,7 +184,7 @@ pub fn Ds() -> impl IntoView {
 			<h2>Toasts</h2>
 			<div class=css::stack_inline>
 				<Button
-					outlined=true
+					variant=ButtonVariant::Outlined
 					on_click=move |_| {
 						message
 							.create(
@@ -154,7 +200,7 @@ pub fn Ds() -> impl IntoView {
 					Success toast
 				</Button>
 				<Button
-					outlined=true
+					variant=ButtonVariant::Outlined
 					on_click=move |_| {
 						message
 							.create(
@@ -170,7 +216,7 @@ pub fn Ds() -> impl IntoView {
 					Warning toast
 				</Button>
 				<Button
-					outlined=true
+					variant=ButtonVariant::Outlined
 					on_click=move |_| {
 						message
 							.create(
@@ -281,7 +327,7 @@ pub fn Ds() -> impl IntoView {
 			<div class=css::stack_inline>
 				<Dropdown on_select=move |_| {}>
 					<DropdownTrigger slot>
-						<Button outlined=true>"Click"</Button>
+						<Button variant=ButtonVariant::Outlined>"Click"</Button>
 					</DropdownTrigger>
 					<DropdownItem key="foo" label="Option A"></DropdownItem>
 					<DropdownItem key="bar" label="Option B"></DropdownItem>

@@ -144,8 +144,7 @@ a:focus-visible:not(:global(.increasing_specificity)) {
 }
 
 textarea,
-select,
-:global(.codon-thaw-btn) {
+select {
 	appearance: none;
 	background: var(--input-bg);
 	color: var(--input-fg);
@@ -174,7 +173,6 @@ select,
 		0 0 2px 1px hsla(0, 0%, 0%, 0.35) !important;
 }
 
-:global(.codon-thaw-btn):disabled,
 select:disabled {
 	background: var(--bg);
 	cursor: not-allowed;
