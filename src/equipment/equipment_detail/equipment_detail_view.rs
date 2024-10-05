@@ -1,8 +1,11 @@
 use crate::{
-	components::button::{Button, ButtonVariant},
-	equipment::{EquipmentCell, EquipmentData, EquipmentStatus, Log, Notes},
+	components::{
+		button::{Button, ButtonVariant},
+		input::Input,
+	},
+	equipment::{EquipmentCell, EquipmentData, EquipmentStatus, EquipmentType, Log, Notes},
 	error_template::ErrorTemplate,
-	icons::EquipmentLogo,
+	icons::{FlaskLogo, IncubationCabinetLogo, VesselLogo},
 };
 
 use leptos::*;
@@ -93,9 +96,13 @@ pub fn EquipmentDetail() -> impl IntoView {
 										view! {
 											<div class=css::details>
 												<h1 class=css::heading>
-													<EquipmentLogo />
-													" "
-													{equipment.name.clone()}
+													{match equipment.equipment_type.clone() {
+														EquipmentType::Flask => view! { <FlaskLogo /> }.into_view(),
+														EquipmentType::Vessel => view! { <VesselLogo /> }.into_view(),
+														EquipmentType::IncubationCabinet => {
+															view! { <IncubationCabinetLogo /> }.into_view()
+														}
+													}} " " {equipment.name.clone()}
 												</h1>
 
 												<dl class=css::list>
@@ -106,7 +113,11 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Name</dt>
 													<dd class=css::edit>
-														<EquipmentCell cell=equipment.name />
+														<div>
+															<EquipmentCell cell=equipment.name.clone() />
+															<Input value=create_rw_signal(equipment.name) />
+														</div>
+
 														<Button variant=ButtonVariant::Text>Edit</Button>
 													</dd>
 

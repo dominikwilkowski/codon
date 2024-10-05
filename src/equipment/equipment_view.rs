@@ -59,7 +59,7 @@ pub fn Equipment() -> impl IntoView {
 	);
 
 	view! {
-		<h1>
+		<h1 class=css::heading>
 			<EquipmentLogo />
 			" Equipment"
 		</h1>
