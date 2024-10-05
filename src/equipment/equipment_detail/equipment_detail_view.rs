@@ -129,17 +129,19 @@ pub fn EquipmentDetail() -> impl IntoView {
 													<dt>Status</dt>
 													<dd class=css::status>
 														<EquipmentCell cell=equipment.status.clone() />
-														<Button variant=ButtonVariant::Outlined>
-															"Mark as \""
-															{EquipmentStatus::get_next_status(
-																	equipment.status.clone(),
-																	equipment.equipment_type,
-																)
-																.to_string()}"\""
-														</Button>
-														<Show when=move || !is_archived>
-															<Button variant=ButtonVariant::Outlined>"Archive"</Button>
-														</Show>
+														<div class=css::btns>
+															<Button variant=ButtonVariant::Outlined>
+																"Mark as \""
+																{EquipmentStatus::get_next_status(
+																		equipment.status.clone(),
+																		equipment.equipment_type,
+																	)
+																	.to_string()}"\""
+															</Button>
+															<Show when=move || !is_archived>
+																<Button variant=ButtonVariant::Outlined>"Archive"</Button>
+															</Show>
+														</div>
 													</dd>
 
 													<dt>Manufacturer</dt>

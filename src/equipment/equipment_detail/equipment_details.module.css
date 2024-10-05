@@ -26,18 +26,22 @@
 }
 
 .list dd.status {
-	display: flex;
-	gap: 0.5rem;
+	display: grid;
+	grid-template-columns: 1fr auto;
+	justify-items: left;
 	align-items: center;
+	gap: 0.5rem;
+}
+
+.list dd.status .btns {
+	display: grid;
+	justify-items: right;
+	gap: 0.5rem;
 }
 
 .list dd.status button {
 	background: transparent;
 	font-size: 65%;
-}
-
-.list dd.status div {
-	margin-right: 1rem;
 }
 
 .list dd,
