@@ -85,7 +85,7 @@ body:global(.not_scrollable) {
 	}
 }
 
-@media (min-width: 104rem) {
+@media (min-width: 100rem) {
 	.main:global(.frame) {
 		border-radius: var(--border-radius-lg);
 	}

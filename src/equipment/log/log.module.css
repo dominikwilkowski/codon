@@ -38,25 +38,22 @@
 .log_edit h2 {
 	position: relative;
 	display: inline-block;
-	bottom: -0.5rem;
+	bottom: calc(-0.625rem - 2px);
 	font-size: 1rem;
 	font-weight: 400;
 	margin: 0 0 0 1rem;
-	padding: 0 0.25rem;
+	padding: 0.25rem 0.5rem;
 	background: var(--content-bg);
+	border-radius: var(--border-radius-sm);
 	color: var(--text-muted);
+	border: 1px solid #ffffff30;
 	text-transform: uppercase;
 	font-size: 0.75rem;
 }
 
-.log_edit .old,
 .log_edit .new {
-	padding: 1rem;
+	padding: 1.25rem 1rem 1rem 1rem;
 	margin: 0;
 	border: 1px solid #ffffff30;
 	border-radius: var(--border-radius-md);
-}
-
-.log_edit .old {
-	margin-bottom: 1rem;
 }

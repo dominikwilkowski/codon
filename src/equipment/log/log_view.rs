@@ -85,9 +85,9 @@ pub fn LogItem(log: LogPerson) -> impl IntoView {
 				{if log.log.log_type == EquipmentLogType::Edit {
 					view! {
 						<span class=css::log_edit>
-							<h2>Old value</h2>
-							<p class=css::old>{log.log.old_value}</p>
-							<h2>New value</h2>
+							<h2>"Old value for \""{log.log.field.clone()}"\""</h2>
+							<p class=css::new>{log.log.old_value}</p>
+							<h2>"New value for \""{log.log.field}"\""</h2>
 							<p class=css::new>{log.log.new_value}</p>
 						</span>
 					}
