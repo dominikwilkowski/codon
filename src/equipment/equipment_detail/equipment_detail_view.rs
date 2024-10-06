@@ -2,6 +2,7 @@ use crate::{
 	components::{
 		button::{Button, ButtonVariant},
 		input::{Input, TextArea},
+		select::Select,
 	},
 	equipment::{
 		get_log_for_equipment, EquipmentCell, EquipmentCellView, EquipmentData, EquipmentStatus, EquipmentType, Log, Notes,
@@ -156,7 +157,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 																		class=css::edit_form
 																	>
 																		<input type="hidden" name="id" value=equipment.id />
-																		<select name="equipment_type">
+																		<Select name="equipment_type">
 																			<option
 																				value=format!("{:#?}", EquipmentType::Flask)
 																				selected=equipment.equipment_type == EquipmentType::Flask
@@ -176,7 +177,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 																			>
 																				IncubationCabinet
 																			</option>
-																		</select>
+																		</Select>
 																		<TextArea
 																			name="note"
 																			placeholder="Add a note why you made this change"

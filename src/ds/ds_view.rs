@@ -8,7 +8,7 @@ use crate::{
 		input::{Input, MoneyInput, TextArea},
 		pagination::Pagination,
 		radio::{Radio, RadioGroup, RadioItem},
-		select::{MultiSelect, MultiSelectOption, Select, SelectOption, TagVariant},
+		select::{MultiSelect, MultiSelectOption, Select, TagVariant},
 		switch::Switch,
 	},
 	icons::{
@@ -244,18 +244,22 @@ pub fn Ds() -> impl IntoView {
 		<section class=css::section>
 			<h2>Select</h2>
 			<div class=css::stack_inline>
-				<Select
-					value=create_rw_signal(None)
-					options=vec![
-						SelectOption::new("Option A", String::from("option_a")),
-						SelectOption::new("Option B", String::from("option_b")),
-					]
-				/>
-
-				<select>
+				<Select>
 					<option value="a">Option A</option>
 					<option value="b">Option B</option>
-				</select>
+				</Select>
+
+				<Select disabled=create_rw_signal(true)>
+					<option value="a">Option A</option>
+					<option value="b">Option B</option>
+				</Select>
+
+				<Select disabled=create_rw_signal(true)>
+					<option value="a">Option A</option>
+					<option value="b" selected>
+						Option B
+					</option>
+				</Select>
 			</div>
 		</section>
 

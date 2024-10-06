@@ -1,20 +1,28 @@
 use leptos::*;
-use std::hash::Hash;
-use thaw::{MultiSelect as ThawMultiSelect, Select as ThawSelect};
+use thaw::MultiSelect as ThawMultiSelect;
 
 stylance::import_style!(css, "select.module.css");
 
-pub use thaw::{MultiSelectOption, SelectOption, TagVariant};
+pub use thaw::{MultiSelectOption, TagVariant};
 
 #[component]
-pub fn Select<T>(
-	#[prop(optional, into)] value: RwSignal<Option<T>>,
-	#[prop(optional, into)] options: RwSignal<Vec<SelectOption<T>>>,
-) -> impl IntoView
-where
-	T: Eq + Hash + Clone + 'static,
-{
-	view! { <ThawSelect class="input_shadow" value options /> }
+pub fn Select(
+	#[prop(optional)] name: &'static str,
+	#[prop(optional)] disabled: RwSignal<bool>,
+	children: Children,
+) -> impl IntoView {
+	let class = match disabled.get() {
+		true => css::select_disabled,
+		false => "",
+	};
+
+	view! {
+		<label class=format!("{} {}", css::select_wrapper, class)>
+			<select class=css::select name=name disabled=disabled>
+				{children()}
+			</select>
+		</label>
+	}
 }
 
 #[component]

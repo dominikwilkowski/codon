@@ -124,8 +124,20 @@
 
 .textarea {
 	display: block;
+	appearance: none;
+	background: var(--input-bg);
+	color: var(--input-fg);
+	box-shadow:
+		inset 0 0 0 1px hsla(0, 0%, 100%, 0.05),
+		0 0 0 1px hsla(0, 0%, 0%, 0.05),
+		0 0.3px 0.4px hsla(0, 0%, 0%, 0.02),
+		0 0.9px 1.5px hsla(0, 0%, 0%, 0.045),
+		0 0 2px 1px hsla(0, 0%, 0%, 0.35);
+	border: none;
+	border-radius: var(--border-radius-sm);
+	transition: outline 0.3s;
+	outline: none;
 	min-height: 100px;
 	padding: 0.5rem 0.75rem;
 	line-height: 1.5;
-	border-radius: var(--border-radius-sm);
 }
