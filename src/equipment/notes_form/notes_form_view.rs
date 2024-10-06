@@ -13,7 +13,7 @@ use web_sys::{FormData, SubmitEvent};
 stylance::import_style!(css, "notes_form.module.css");
 
 #[component]
-pub fn NotesForm(id: String, notes_upload_action: Action<FormData, Result<String, ServerFnError>>) -> impl IntoView {
+pub fn NotesForm(id: String, notes_upload_action: Action<FormData, Result<(), ServerFnError>>) -> impl IntoView {
 	let form_ref = create_node_ref::<html::Form>();
 
 	let media1 = create_rw_signal(String::new());
@@ -85,21 +85,26 @@ pub fn NotesForm(id: String, notes_upload_action: Action<FormData, Result<String
 			</div>
 			<div class=css::btn_line>
 				<Button kind="submit" loading>
-					Upload
+					Save
 				</Button>
 				<span>
 					{move || {
 						if notes_upload_action.input().get().is_none() && notes_upload_action.value().get().is_none() {
-							String::from("")
+							view! {}.into_view()
 						} else if notes_upload_action.pending().get() {
 							loading.set(true);
-							String::from("")
-						} else if let Some(Ok(files)) = notes_upload_action.value().get() {
+							view! {}.into_view()
+						} else if let Some(Ok(_)) = notes_upload_action.value().get() {
 							loading.set(false);
-							format!("Finished uploading: {:?}", files)
+							view! { <span class=css::success>Saved successfully</span> }.into_view()
 						} else {
 							loading.set(false);
-							format!("Error: {:?}", notes_upload_action.value().get())
+							view! {
+								<span class=css::error>
+									{format!("Error: {:?}", notes_upload_action.value().get())}
+								</span>
+							}
+								.into_view()
 						}
 					}}
 				</span>
@@ -138,7 +143,7 @@ pub fn create_folder_name(equipment_type: EquipmentType, id: i32) -> String {
 }
 
 #[server(input = MultipartFormData)]
-pub async fn save_notes(data: MultipartData) -> Result<String, ServerFnError> {
+pub async fn save_notes(data: MultipartData) -> Result<(), ServerFnError> {
 	use crate::{components::file_upload::file_upload, db::ssr::get_db};
 
 	let result = file_upload(data, get_folder).await?;
@@ -193,5 +198,5 @@ pub async fn save_notes(data: MultipartData) -> Result<String, ServerFnError> {
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
-	Ok(format!("{result:?}"))
+	Ok(())
 }

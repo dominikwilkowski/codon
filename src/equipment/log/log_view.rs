@@ -8,6 +8,8 @@ use leptos::*;
 
 stylance::import_style!(css, "log.module.css");
 
+type LogData = Resource<(String, usize, usize), Result<(Vec<LogPerson>, i64), ServerFnError>>;
+
 #[component]
 pub fn Log(
 	id: RwSignal<String>,
@@ -16,7 +18,7 @@ pub fn Log(
 	log_query_page: RwSignal<u16>,
 	log_query_ipp: RwSignal<u8>,
 	tab_query: RwSignal<String>,
-	log_data: Resource<(String, usize, usize), Result<(Vec<LogPerson>, i64), ServerFnError>>,
+	log_data: LogData,
 ) -> impl IntoView {
 	view! {
 		<Transition fallback=move || view! { <p>Loading notes...</p> }>
