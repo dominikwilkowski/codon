@@ -26,7 +26,7 @@ pub fn Row(
 					</Show>
 					<Show when=move || { field_filter.get().contains(&String::from("equipment_type")) }>
 						<td class="equipment_listing_equipment_type">
-							<EquipmentCell cell=equipment.equipment_type.clone() table_view=true />
+							<EquipmentCell cell=equipment.equipment_type table_view=true />
 						</td>
 					</Show>
 					<Show when=move || { field_filter.get().contains(&String::from("qrcode")) }>

@@ -3,7 +3,9 @@ use crate::{
 		button::{Button, ButtonVariant},
 		input::{Input, TextArea},
 	},
-	equipment::{EquipmentCell, EquipmentCellView, EquipmentData, EquipmentStatus, EquipmentType, Log, Notes},
+	equipment::{
+		get_log_for_equipment, EquipmentCell, EquipmentCellView, EquipmentData, EquipmentStatus, EquipmentType, Log, Notes,
+	},
 	error_template::ErrorTemplate,
 	icons::{FlaskLogo, IncubationCabinetLogo, VesselLogo},
 };
@@ -75,9 +77,17 @@ pub fn EquipmentDetail() -> impl IntoView {
 	});
 
 	let name_action = create_server_action::<EditName>();
+	let equipment_type_action = create_server_action::<EditType>();
 
-	let equipment_data =
-		create_resource(move || (id.get(), name_action.version().get()), move |_| get_equipment_data_by_id(id.get()));
+	let equipment_data = create_resource(
+		move || (id.get(), name_action.version().get(), equipment_type_action.version().get()),
+		move |_| get_equipment_data_by_id(id.get()),
+	);
+
+	let log_data = create_resource(
+		move || (id.get(), name_action.version().get(), equipment_type_action.version().get()),
+		move |_| get_log_for_equipment(id.get(), log_query_page.get(), log_query_ipp.get()),
+	);
 
 	view! {
 		<Transition fallback=move || view! { <p>Loading equipment...</p> }>
@@ -98,7 +108,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 										view! {
 											<div class=css::details>
 												<h1 class=css::heading>
-													{match equipment.equipment_type.clone() {
+													{match equipment.equipment_type {
 														EquipmentType::Flask => view! { <FlaskLogo /> }.into_view(),
 														EquipmentType::Vessel => view! { <VesselLogo /> }.into_view(),
 														EquipmentType::IncubationCabinet => {
@@ -137,8 +147,45 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Equipment Type</dt>
 													<dd class=css::edit>
-														<EquipmentCell cell=equipment.equipment_type.clone() />
-														<Button variant=ButtonVariant::Text>Edit</Button>
+														<EquipmentFormToggle item=equipment
+															.equipment_type>
+															{
+																view! {
+																	<ActionForm
+																		action=equipment_type_action
+																		class=css::edit_form
+																	>
+																		<input type="hidden" name="id" value=equipment.id />
+																		<select name="equipment_type">
+																			<option
+																				value=format!("{:#?}", EquipmentType::Flask)
+																				selected=equipment.equipment_type == EquipmentType::Flask
+																			>
+																				Flask
+																			</option>
+																			<option
+																				value=format!("{:#?}", EquipmentType::Vessel)
+																				selected=equipment.equipment_type == EquipmentType::Vessel
+																			>
+																				Vessel
+																			</option>
+																			<option
+																				value=format!("{:#?}", EquipmentType::IncubationCabinet)
+																				selected=equipment.equipment_type
+																					== EquipmentType::IncubationCabinet
+																			>
+																				IncubationCabinet
+																			</option>
+																		</select>
+																		<TextArea
+																			name="note"
+																			placeholder="Add a note why you made this change"
+																		/>
+																		<Button kind="submit">Save</Button>
+																	</ActionForm>
+																}
+															}
+														</EquipmentFormToggle>
 													</dd>
 
 													<dt>Qrcode</dt>
@@ -277,6 +324,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 									log_query_page=log_query_page
 									log_query_ipp=log_query_ipp
 									tab_query=tab_query
+									log_data=log_data
 								/>
 							</Show>
 						</div>
@@ -311,7 +359,7 @@ pub async fn edit_name(id: String, name: String, note: String) -> Result<(), Ser
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
 	};
 
-	let old_name: String =
+	let old_value: String =
 		sqlx::query_scalar("SELECT name FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
 
 	sqlx::query!(
@@ -324,7 +372,7 @@ pub async fn edit_name(id: String, name: String, note: String) -> Result<(), Ser
 		14, // TODO
 		note,
 		"name",
-		old_name,
+		old_value,
 		name,
 	)
 	.execute(get_db())
@@ -332,6 +380,43 @@ pub async fn edit_name(id: String, name: String, note: String) -> Result<(), Ser
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	sqlx::query!("UPDATE equipment SET name = $1 WHERE id = $2", name, id).execute(get_db()).await.map(|_| ())?;
+
+	Ok(())
+}
+
+#[server]
+pub async fn edit_type(id: String, equipment_type: String, note: String) -> Result<(), ServerFnError> {
+	use crate::db::ssr::get_db;
+
+	let id = match id.parse::<i32>() {
+		Ok(value) => value,
+		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
+	};
+
+	let old_value: String =
+		sqlx::query_scalar("SELECT equipment_type FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
+
+	sqlx::query!(
+		r#"INSERT INTO equipment_log
+		(log_type, equipment, person, notes, field, old_value, new_value)
+		VALUES
+		($1, $2, $3, $4, $5, $6, $7)"#,
+		"edit",
+		id,
+		14, // TODO
+		note,
+		"type",
+		old_value,
+		equipment_type,
+	)
+	.execute(get_db())
+	.await
+	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+
+	sqlx::query!("UPDATE equipment SET equipment_type = $1 WHERE id = $2", equipment_type, id)
+		.execute(get_db())
+		.await
+		.map(|_| ())?;
 
 	Ok(())
 }

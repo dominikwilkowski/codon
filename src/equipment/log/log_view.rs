@@ -16,10 +16,8 @@ pub fn Log(
 	log_query_page: RwSignal<u16>,
 	log_query_ipp: RwSignal<u8>,
 	tab_query: RwSignal<String>,
+	log_data: Resource<(String, usize, usize), Result<(Vec<LogPerson>, i64), ServerFnError>>,
 ) -> impl IntoView {
-	let log_data =
-		create_resource(move || id.get(), move |id| get_log_for_equipment(id, log_query_page.get(), log_query_ipp.get()));
-
 	view! {
 		<Transition fallback=move || view! { <p>Loading notes...</p> }>
 			<ErrorBoundary fallback=|errors| {

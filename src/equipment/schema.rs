@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
 use sqlx::FromRow;
 
-#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 pub enum EquipmentType {
 	#[default]
 	Flask,
@@ -27,7 +27,14 @@ impl std::fmt::Display for EquipmentType {
 		match self {
 			EquipmentType::Flask => write!(f, "Flask"),
 			EquipmentType::Vessel => write!(f, "Vessel"),
-			EquipmentType::IncubationCabinet => write!(f, "Incubation Cabinet"),
+			EquipmentType::IncubationCabinet => {
+				// Alt formatter for how the value looks in SQL
+				if f.alternate() {
+					write!(f, "IncubationCabinet")
+				} else {
+					write!(f, "Incubation Cabinet")
+				}
+			},
 		}
 	}
 }
