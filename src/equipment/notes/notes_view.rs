@@ -292,7 +292,9 @@ pub fn NoteEdit(
 				</Show>
 			</div>
 			<div class=css::btns>
-				<Button loading>Save</Button>
+				<Button kind="submit" loading>
+					Save
+				</Button>
 				<Button on_click=move |_| is_editing.set(false) variant=ButtonVariant::Outlined>
 					Cancel
 				</Button>

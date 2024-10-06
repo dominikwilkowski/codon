@@ -84,7 +84,9 @@ pub fn NotesForm(id: String, notes_upload_action: Action<FormData, Result<String
 				</Show>
 			</div>
 			<div class=css::btn_line>
-				<Button loading>Upload</Button>
+				<Button kind="submit" loading>
+					Upload
+				</Button>
 				<span>
 					{move || {
 						if notes_upload_action.input().get().is_none() && notes_upload_action.value().get().is_none() {

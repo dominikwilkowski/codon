@@ -1,7 +1,7 @@
 use crate::{
 	components::{
 		button::{Button, ButtonVariant},
-		input::{/*Input,*/ TextArea},
+		input::{Input, TextArea},
 	},
 	equipment::{EquipmentCell, EquipmentCellView, EquipmentData, EquipmentStatus, EquipmentType, Log, Notes},
 	error_template::ErrorTemplate,
@@ -121,10 +121,13 @@ pub fn EquipmentDetail() -> impl IntoView {
 															{
 																let name_clone = equipment.name.clone();
 																view! {
-																	<ActionForm action=name_action>
+																	<ActionForm action=name_action class=css::edit_form>
 																		<input type="hidden" name="id" value=equipment.id />
-																		<input name="name" value=name_clone />
-																		<TextArea name="note" />
+																		<Input name="name" value=create_rw_signal(name_clone) />
+																		<TextArea
+																			name="note"
+																			placeholder="Add a note why you made this change"
+																		/>
 																		<Button kind="submit">Save</Button>
 																	</ActionForm>
 																}
@@ -294,19 +297,41 @@ pub fn EquipmentFormToggle<T: EquipmentCellView + Clone + 'static>(item: T, chil
 		</Show>
 
 		<Button variant=ButtonVariant::Text on_click=move |_| toggle.update(|toggle| *toggle = !*toggle)>
-			Edit
+			{move || if toggle.get() { "Cancel" } else { "Edit" }}
 		</Button>
 	}
 }
 
 #[server]
-pub async fn edit_name(id: String, _name: String, _note: String) -> Result<(), ServerFnError> {
-	// use crate::{db::ssr::get_db, equipment::EquipmentSQLData};
+pub async fn edit_name(id: String, name: String, note: String) -> Result<(), ServerFnError> {
+	use crate::db::ssr::get_db;
 
-	let _id = match id.parse::<i32>() {
+	let id = match id.parse::<i32>() {
 		Ok(value) => value,
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
 	};
+
+	let old_name: String =
+		sqlx::query_scalar("SELECT name FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
+
+	sqlx::query!(
+		r#"INSERT INTO equipment_log
+		(log_type, equipment, person, notes, field, old_value, new_value)
+		VALUES
+		($1, $2, $3, $4, $5, $6, $7)"#,
+		"edit",
+		id,
+		14, // TODO
+		note,
+		"name",
+		old_name,
+		name,
+	)
+	.execute(get_db())
+	.await
+	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+
+	sqlx::query!("UPDATE equipment SET name = $1 WHERE id = $2", name, id).execute(get_db()).await.map(|_| ())?;
 
 	Ok(())
 }

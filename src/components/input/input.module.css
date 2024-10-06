@@ -3,7 +3,7 @@
 	position: relative;
 }
 
-.input:not(:global(.thaw-input--disabled)) {
+.input {
 	border-radius: var(--border-radius-sm);
 	box-shadow:
 		inset 0 0 0 1px hsla(0, 0%, 100%, 0.05),
@@ -13,15 +13,13 @@
 		0 0 2px 1px hsla(0, 0%, 0%, 0.35) !important;
 }
 
-.input:not(:global(.thaw-input--disabled)),
+.input,
 .input_field {
+	padding: 0.25rem 0.75rem;
 	background: var(--input-bg);
 	color: var(--input-fg);
 	border: none;
-}
-
-.input_field {
-	height: 30px;
+	transition: all 0.3s;
 }
 
 .input:focus-within {
@@ -39,15 +37,10 @@
 	outline: none;
 }
 
-.input:hover,
-.input:global(.thaw-input--focus) {
-	border-color: transparent !important;
-}
-
-.input:global(.thaw-input--disabled),
+.input:disabled,
+.textarea:disabled,
 .money_input_disabled:not(:global(.increasing_specificity)),
-:global(.codon-input-field):disabled,
-:global(.thaw-textarea__textarea-el):disabled {
+:global(.codon-input-field):disabled {
 	background: var(--bg) !important;
 	cursor: not-allowed;
 	box-shadow: inset 0 0 0 1px var(--bg) !important;
@@ -57,6 +50,10 @@
 .money_input_disabled:not(:global(.increasing_specificity)) input {
 	cursor: not-allowed;
 	color: var(--disabled-fg);
+}
+
+.money_input_disabled .money_btn {
+	cursor: not-allowed;
 }
 
 .money_input {
@@ -130,4 +127,5 @@
 	min-height: 100px;
 	padding: 0.5rem 0.75rem;
 	line-height: 1.5;
+	border-radius: var(--border-radius-sm);
 }
