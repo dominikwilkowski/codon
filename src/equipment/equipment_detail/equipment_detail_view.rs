@@ -1,9 +1,9 @@
 use crate::{
 	components::{
 		button::{Button, ButtonVariant},
-		input::Input,
+		input::{/*Input,*/ TextArea},
 	},
-	equipment::{EquipmentCell, EquipmentData, EquipmentStatus, EquipmentType, Log, Notes},
+	equipment::{EquipmentCell, EquipmentCellView, EquipmentData, EquipmentStatus, EquipmentType, Log, Notes},
 	error_template::ErrorTemplate,
 	icons::{FlaskLogo, IncubationCabinetLogo, VesselLogo},
 };
@@ -74,8 +74,10 @@ pub fn EquipmentDetail() -> impl IntoView {
 		}
 	});
 
-	#[expect(clippy::redundant_closure)]
-	let equipment_data = create_resource(move || id.get(), move |id| get_equipment_data_by_id(id));
+	let name_action = create_server_action::<EditName>();
+
+	let equipment_data =
+		create_resource(move || (id.get(), name_action.version().get()), move |_| get_equipment_data_by_id(id.get()));
 
 	view! {
 		<Transition fallback=move || view! { <p>Loading equipment...</p> }>
@@ -113,12 +115,21 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Name</dt>
 													<dd class=css::edit>
-														<div>
-															<EquipmentCell cell=equipment.name.clone() />
-															<Input value=create_rw_signal(equipment.name) />
-														</div>
-
-														<Button variant=ButtonVariant::Text>Edit</Button>
+														<EquipmentFormToggle item=equipment
+															.name
+															.clone()>
+															{
+																let name_clone = equipment.name.clone();
+																view! {
+																	<ActionForm action=name_action>
+																		<input type="hidden" name="id" value=equipment.id />
+																		<input name="name" value=name_clone />
+																		<TextArea name="note" />
+																		<Button kind="submit">Save</Button>
+																	</ActionForm>
+																}
+															}
+														</EquipmentFormToggle>
 													</dd>
 
 													<dt>Equipment Type</dt>
@@ -271,6 +282,33 @@ pub fn EquipmentDetail() -> impl IntoView {
 			</ErrorBoundary>
 		</Transition>
 	}
+}
+
+#[component]
+pub fn EquipmentFormToggle<T: EquipmentCellView + Clone + 'static>(item: T, children: ChildrenFn) -> impl IntoView {
+	let toggle = create_rw_signal(false);
+
+	view! {
+		<Show when=move || toggle.get() fallback=move || view! { <EquipmentCell cell=item.clone() /> }>
+			{children()}
+		</Show>
+
+		<Button variant=ButtonVariant::Text on_click=move |_| toggle.update(|toggle| *toggle = !*toggle)>
+			Edit
+		</Button>
+	}
+}
+
+#[server]
+pub async fn edit_name(id: String, _name: String, _note: String) -> Result<(), ServerFnError> {
+	// use crate::{db::ssr::get_db, equipment::EquipmentSQLData};
+
+	let _id = match id.parse::<i32>() {
+		Ok(value) => value,
+		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
+	};
+
+	Ok(())
 }
 
 #[server]
