@@ -8,7 +8,7 @@ use leptos::*;
 
 stylance::import_style!(css, "log.module.css");
 
-type LogData = Resource<(String, usize, usize), Result<(Vec<LogPerson>, i64), ServerFnError>>;
+type LogData = Resource<(String, usize, usize, usize), Result<(Vec<LogPerson>, i64), ServerFnError>>;
 
 #[component]
 pub fn Log(

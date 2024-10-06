@@ -79,14 +79,29 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 	let name_action = create_server_action::<EditName>();
 	let equipment_type_action = create_server_action::<EditType>();
+	let manufacturer_action = create_server_action::<EditManufacturer>();
 
 	let equipment_data = create_resource(
-		move || (id.get(), name_action.version().get(), equipment_type_action.version().get()),
+		move || {
+			(
+				id.get(),
+				name_action.version().get(),
+				equipment_type_action.version().get(),
+				manufacturer_action.version().get(),
+			)
+		},
 		move |_| get_equipment_data_by_id(id.get()),
 	);
 
 	let log_data = create_resource(
-		move || (id.get(), name_action.version().get(), equipment_type_action.version().get()),
+		move || {
+			(
+				id.get(),
+				name_action.version().get(),
+				equipment_type_action.version().get(),
+				manufacturer_action.version().get(),
+			)
+		},
 		move |_| get_log_for_equipment(id.get(), log_query_page.get(), log_query_ipp.get()),
 	);
 
@@ -219,8 +234,29 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Manufacturer</dt>
 													<dd class=css::edit>
-														<EquipmentCell cell=equipment.manufacturer />
-														<Button variant=ButtonVariant::Text>Edit</Button>
+														<EquipmentFormToggle item=equipment
+															.manufacturer
+															.clone()>
+															{
+																let manufacturer_clone = equipment.manufacturer.clone();
+																view! {
+																	<ActionForm action=manufacturer_action class=css::edit_form>
+																		<input type="hidden" name="id" value=equipment.id />
+																		<Input
+																			name="manufacturer"
+																			value=create_rw_signal(
+																				manufacturer_clone.unwrap_or_default(),
+																			)
+																		/>
+																		<TextArea
+																			name="note"
+																			placeholder="Add a note why you made this change"
+																		/>
+																		<Button kind="submit">Save</Button>
+																	</ActionForm>
+																}
+															}
+														</EquipmentFormToggle>
 													</dd>
 
 													<dt>Purchase Date</dt>
@@ -415,6 +451,43 @@ pub async fn edit_type(id: String, equipment_type: String, note: String) -> Resu
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	sqlx::query!("UPDATE equipment SET equipment_type = $1 WHERE id = $2", equipment_type, id)
+		.execute(get_db())
+		.await
+		.map(|_| ())?;
+
+	Ok(())
+}
+
+#[server]
+pub async fn edit_manufacturer(id: String, manufacturer: String, note: String) -> Result<(), ServerFnError> {
+	use crate::db::ssr::get_db;
+
+	let id = match id.parse::<i32>() {
+		Ok(value) => value,
+		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
+	};
+
+	let old_value: String =
+		sqlx::query_scalar("SELECT manufacturer FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
+
+	sqlx::query!(
+		r#"INSERT INTO equipment_log
+		(log_type, equipment, person, notes, field, old_value, new_value)
+		VALUES
+		($1, $2, $3, $4, $5, $6, $7)"#,
+		"edit",
+		id,
+		14, // TODO
+		note,
+		"manufacturer",
+		old_value,
+		manufacturer,
+	)
+	.execute(get_db())
+	.await
+	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+
+	sqlx::query!("UPDATE equipment SET manufacturer = $1 WHERE id = $2", manufacturer, id)
 		.execute(get_db())
 		.await
 		.map(|_| ())?;
