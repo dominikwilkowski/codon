@@ -78,9 +78,16 @@ pub fn TextArea(
 	#[prop(optional)] disabled: RwSignal<bool>,
 	#[prop(optional)] name: &'static str,
 	#[prop(optional)] required: bool,
+	#[prop(optional)] class: String,
 ) -> impl IntoView {
 	view! {
-		<textarea class=css::textarea prop:name=name placeholder=placeholder disabled=disabled required=required>
+		<textarea
+			class=format!("{} {}", class, css::textarea)
+			prop:name=name
+			placeholder=placeholder
+			disabled=disabled
+			required=required
+		>
 			{value.get()}
 		</textarea>
 	}

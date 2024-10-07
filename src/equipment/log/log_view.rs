@@ -84,9 +84,9 @@ pub fn LogItem(log: LogPerson) -> impl IntoView {
 					view! {
 						<span class=css::log_edit>
 							<h2>"Old value for \""{log.log.field.clone()}"\""</h2>
-							<p class=css::new>{log.log.old_value}</p>
+							<p class=css::diff>{log.log.old_value}</p>
 							<h2>"New value for \""{log.log.field}"\""</h2>
-							<p class=css::new>{log.log.new_value}</p>
+							<p class=css::diff>{log.log.new_value}</p>
 						</span>
 					}
 						.into_view()

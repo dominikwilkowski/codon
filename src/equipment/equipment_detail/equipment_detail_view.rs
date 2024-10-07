@@ -18,8 +18,10 @@ use leptos_router::*;
 
 stylance::import_style!(css, "equipment_details.module.css");
 
-pub type LogAction =
-	Resource<(String, usize, usize, usize, usize, usize, usize, usize), Result<(Vec<LogPerson>, i64), ServerFnError>>;
+pub type LogAction = Resource<
+	(String, usize, usize, usize, usize, usize, usize, usize, usize, usize),
+	Result<(Vec<LogPerson>, i64), ServerFnError>,
+>;
 
 #[component]
 pub fn EquipmentDetail() -> impl IntoView {
@@ -89,6 +91,8 @@ pub fn EquipmentDetail() -> impl IntoView {
 	let vendor_action = create_server_action::<EditVendor>();
 	let cost_in_cent_action = create_server_action::<EditCostInCent>();
 	let warranty_expiration_date_action = create_server_action::<EditWarrantyExpirationDate>();
+	let location_action = create_server_action::<EditLocation>();
+	let notes_action = create_server_action::<EditNotes>();
 
 	let equipment_data = create_resource(
 		move || {
@@ -101,6 +105,8 @@ pub fn EquipmentDetail() -> impl IntoView {
 				vendor_action.version().get(),
 				cost_in_cent_action.version().get(),
 				warranty_expiration_date_action.version().get(),
+				location_action.version().get(),
+				notes_action.version().get(),
 			)
 		},
 		move |_| get_equipment_data_by_id(id.get()),
@@ -117,6 +123,8 @@ pub fn EquipmentDetail() -> impl IntoView {
 				vendor_action.version().get(),
 				cost_in_cent_action.version().get(),
 				warranty_expiration_date_action.version().get(),
+				location_action.version().get(),
+				notes_action.version().get(),
 			)
 		},
 		move |_| get_log_for_equipment(id.get(), log_query_page.get(), log_query_ipp.get()),
@@ -395,14 +403,55 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Location</dt>
 													<dd class=css::edit>
-														<EquipmentCell cell=equipment.location />
-														<Button variant=ButtonVariant::Text>TODO: Edit</Button>
+														<EquipmentFormToggle item=equipment
+															.location
+															.clone()>
+															{
+																let location_clone = equipment.location.clone();
+																view! {
+																	<ActionForm action=location_action class=css::edit_form>
+																		<input type="hidden" name="id" value=equipment.id />
+																		<Input
+																			name="location"
+																			value=create_rw_signal(location_clone.unwrap_or_default())
+																		/>
+																		<TextArea
+																			name="note"
+																			placeholder="Add a note why you made this change"
+																		/>
+																		<Button kind="submit">Save</Button>
+																	</ActionForm>
+																}
+															}
+														</EquipmentFormToggle>
 													</dd>
 
 													<dt>Notes</dt>
 													<dd class=css::edit>
-														<EquipmentCell cell=equipment.notes />
-														<Button variant=ButtonVariant::Text>TODO: Edit</Button>
+														<EquipmentFormToggle item=equipment
+															.notes
+															.clone()>
+															{
+																let notes_clone = equipment.notes.clone();
+																view! {
+																	<ActionForm action=notes_action class=css::edit_form>
+																		<input type="hidden" name="id" value=equipment.id />
+																		<TextArea
+																			class=css::notes.to_string()
+																			name="notes"
+																			value=create_rw_signal(
+																				notes_clone.unwrap_or_default().to_string(),
+																			)
+																		/>
+																		<TextArea
+																			name="note"
+																			placeholder="Add a note why you made this change"
+																		/>
+																		<Button kind="submit">Save</Button>
+																	</ActionForm>
+																}
+															}
+														</EquipmentFormToggle>
 													</dd>
 												</dl>
 											</div>
@@ -797,6 +846,74 @@ pub async fn edit_warranty_expiration_date(
 		.execute(get_db())
 		.await
 		.map(|_| ())?;
+
+	Ok(())
+}
+
+#[server]
+pub async fn edit_location(id: String, location: String, note: String) -> Result<(), ServerFnError> {
+	use crate::db::ssr::get_db;
+
+	let id = match id.parse::<i32>() {
+		Ok(value) => value,
+		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
+	};
+
+	let old_value: String =
+		sqlx::query_scalar("SELECT location FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
+
+	sqlx::query!(
+		r#"INSERT INTO equipment_log
+		(log_type, equipment, person, notes, field, old_value, new_value)
+		VALUES
+		($1, $2, $3, $4, $5, $6, $7)"#,
+		"edit",
+		id,
+		14, // TODO
+		note,
+		"location",
+		old_value,
+		location,
+	)
+	.execute(get_db())
+	.await
+	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+
+	sqlx::query!("UPDATE equipment SET location = $1 WHERE id = $2", location, id).execute(get_db()).await.map(|_| ())?;
+
+	Ok(())
+}
+
+#[server]
+pub async fn edit_notes(id: String, notes: String, note: String) -> Result<(), ServerFnError> {
+	use crate::db::ssr::get_db;
+
+	let id = match id.parse::<i32>() {
+		Ok(value) => value,
+		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
+	};
+
+	let old_value: String =
+		sqlx::query_scalar("SELECT notes FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
+
+	sqlx::query!(
+		r#"INSERT INTO equipment_log
+		(log_type, equipment, person, notes, field, old_value, new_value)
+		VALUES
+		($1, $2, $3, $4, $5, $6, $7)"#,
+		"edit",
+		id,
+		14, // TODO
+		note,
+		"notes",
+		old_value,
+		notes,
+	)
+	.execute(get_db())
+	.await
+	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+
+	sqlx::query!("UPDATE equipment SET notes = $1 WHERE id = $2", notes, id).execute(get_db()).await.map(|_| ())?;
 
 	Ok(())
 }

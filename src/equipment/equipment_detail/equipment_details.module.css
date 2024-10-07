@@ -20,7 +20,7 @@
 	display: grid;
 	grid-template-columns: 1fr auto;
 	justify-items: left;
-	align-items: first baseline;
+	align-items: start;
 	gap: 0.5rem;
 }
 
@@ -97,6 +97,10 @@
 
 .edit_form button {
 	justify-self: end;
+}
+
+.edit_form .notes {
+	height: 12.5rem;
 }
 
 .tab {

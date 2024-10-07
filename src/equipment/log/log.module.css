@@ -51,9 +51,11 @@
 	font-size: 0.75rem;
 }
 
-.log_edit .new {
+.log_edit .diff {
 	padding: 1.25rem 1rem 1rem 1rem;
 	margin: 0;
 	border: 1px solid #ffffff30;
 	border-radius: var(--border-radius-md);
+	max-height: 12.5rem;
+	overflow: auto;
 }
