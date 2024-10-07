@@ -2,7 +2,7 @@ use crate::{
 	components::{
 		button::{Button, ButtonVariant},
 		datepicker::DatePicker,
-		input::{Input, TextArea},
+		input::{Input, MoneyInput, TextArea},
 		select::Select,
 	},
 	equipment::{
@@ -19,7 +19,7 @@ use leptos_router::*;
 stylance::import_style!(css, "equipment_details.module.css");
 
 pub type LogAction =
-	Resource<(String, usize, usize, usize, usize, usize), Result<(Vec<LogPerson>, i64), ServerFnError>>;
+	Resource<(String, usize, usize, usize, usize, usize, usize), Result<(Vec<LogPerson>, i64), ServerFnError>>;
 
 #[component]
 pub fn EquipmentDetail() -> impl IntoView {
@@ -87,6 +87,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 	let manufacturer_action = create_server_action::<EditManufacturer>();
 	let purchase_date_action = create_server_action::<EditPurchaseDate>();
 	let vendor_action = create_server_action::<EditVendor>();
+	let cost_in_cent_action = create_server_action::<EditCostInCent>();
 
 	let equipment_data = create_resource(
 		move || {
@@ -97,6 +98,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 				manufacturer_action.version().get(),
 				purchase_date_action.version().get(),
 				vendor_action.version().get(),
+				cost_in_cent_action.version().get(),
 			)
 		},
 		move |_| get_equipment_data_by_id(id.get()),
@@ -111,6 +113,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 				manufacturer_action.version().get(),
 				purchase_date_action.version().get(),
 				vendor_action.version().get(),
+				cost_in_cent_action.version().get(),
 			)
 		},
 		move |_| get_log_for_equipment(id.get(), log_query_page.get(), log_query_ipp.get()),
@@ -334,26 +337,47 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Cost</dt>
 													<dd class=css::edit>
-														<EquipmentCell cell=equipment.cost_in_cent />
-														<Button variant=ButtonVariant::Text>Edit</Button>
+														<EquipmentFormToggle item=equipment
+															.cost_in_cent
+															.clone()>
+															{
+																let cost_in_cent_clone = equipment.cost_in_cent.clone();
+																view! {
+																	<ActionForm action=cost_in_cent_action class=css::edit_form>
+																		<input type="hidden" name="id" value=equipment.id />
+																		<MoneyInput
+																			name="cost_in_cent"
+																			value=create_rw_signal(
+																				cost_in_cent_clone.unwrap_or_default().to_string(),
+																			)
+																		/>
+																		<TextArea
+																			name="note"
+																			placeholder="Add a note why you made this change"
+																		/>
+																		<Button kind="submit">Save</Button>
+																	</ActionForm>
+																}
+															}
+														</EquipmentFormToggle>
 													</dd>
 
 													<dt>Warranty Expiration Date</dt>
 													<dd class=css::edit>
 														<EquipmentCell cell=equipment.warranty_expiration_date />
-														<Button variant=ButtonVariant::Text>Edit</Button>
+														<Button variant=ButtonVariant::Text>TODO: Edit</Button>
 													</dd>
 
 													<dt>Location</dt>
 													<dd class=css::edit>
 														<EquipmentCell cell=equipment.location />
-														<Button variant=ButtonVariant::Text>Edit</Button>
+														<Button variant=ButtonVariant::Text>TODO: Edit</Button>
 													</dd>
 
 													<dt>Notes</dt>
 													<dd class=css::edit>
 														<EquipmentCell cell=equipment.notes />
-														<Button variant=ButtonVariant::Text>Edit</Button>
+														<Button variant=ButtonVariant::Text>TODO: Edit</Button>
 													</dd>
 												</dl>
 											</div>
@@ -641,6 +665,46 @@ pub async fn edit_vendor(id: String, vendor: String, note: String) -> Result<(),
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	sqlx::query!("UPDATE equipment SET vendor = $1 WHERE id = $2", vendor, id).execute(get_db()).await.map(|_| ())?;
+
+	Ok(())
+}
+
+#[server]
+pub async fn edit_cost_in_cent(id: String, cost_in_cent: f32, note: String) -> Result<(), ServerFnError> {
+	use crate::db::ssr::get_db;
+
+	let id = match id.parse::<i32>() {
+		Ok(value) => value,
+		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
+	};
+
+	let cost_in_cent = (cost_in_cent * 100.0) as i32;
+
+	let old_value: i32 =
+		sqlx::query_scalar("SELECT cost_in_cent FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
+	let old_value = format!("{}", (old_value as f32 / 100.0));
+
+	sqlx::query!(
+		r#"INSERT INTO equipment_log
+		(log_type, equipment, person, notes, field, old_value, new_value)
+		VALUES
+		($1, $2, $3, $4, $5, $6, $7)"#,
+		"edit",
+		id,
+		14, // TODO
+		note,
+		"cost_in_cent",
+		old_value,
+		format!("{:.2}", (cost_in_cent as f32 / 100.0)),
+	)
+	.execute(get_db())
+	.await
+	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+
+	sqlx::query!("UPDATE equipment SET cost_in_cent = $1 WHERE id = $2", cost_in_cent, id)
+		.execute(get_db())
+		.await
+		.map(|_| ())?;
 
 	Ok(())
 }

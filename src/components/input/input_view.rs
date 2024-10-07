@@ -17,6 +17,7 @@ pub fn Input(
 pub fn MoneyInput(
 	#[prop(optional)] value: RwSignal<String>,
 	#[prop(optional)] disabled: RwSignal<bool>,
+	#[prop(optional)] name: &'static str,
 	#[prop(optional)] required: bool,
 ) -> impl IntoView {
 	let dis_class = if disabled.get() { css::money_input_disabled } else { "" };
@@ -27,6 +28,7 @@ pub fn MoneyInput(
 			<input
 				type="number"
 				class=format!("{} codon-input-field", css::input_field)
+				name=name
 				prop:value=value
 				on:input=move |event| { value.set_untracked(event_target_value(&event)) }
 				disabled=move || disabled.get()
@@ -35,11 +37,12 @@ pub fn MoneyInput(
 			/>
 			<div class=css::money_btns>
 				<button
+					type="button"
 					title="Add to money"
 					disabled=move || disabled.get()
 					on:click=move |_| {
 						if let Ok(amount) = value.get_untracked().parse::<f64>() {
-							value.set((amount + 1.0).to_string());
+							value.set(format!("{:.2}", (amount + 1.0)));
 						}
 					}
 					class=css::money_btn
@@ -49,11 +52,12 @@ pub fn MoneyInput(
 					</svg>
 				</button>
 				<button
+					type="button"
 					title="Substract from money"
 					disabled=move || disabled.get()
 					on:click=move |_| {
 						if let Ok(amount) = value.get_untracked().parse::<f64>() {
-							value.set((amount - 1.0).to_string());
+							value.set(format!("{:.2}", (amount - 1.0)));
 						}
 					}
 					class=css::money_btn
