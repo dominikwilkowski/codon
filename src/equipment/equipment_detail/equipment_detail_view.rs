@@ -1,11 +1,13 @@
 use crate::{
 	components::{
 		button::{Button, ButtonVariant},
+		datepicker::DatePicker,
 		input::{Input, TextArea},
 		select::Select,
 	},
 	equipment::{
-		get_log_for_equipment, EquipmentCell, EquipmentCellView, EquipmentData, EquipmentStatus, EquipmentType, Log, Notes,
+		get_log_for_equipment, EquipmentCell, EquipmentCellView, EquipmentData, EquipmentStatus, EquipmentType, Log,
+		LogPerson, Notes,
 	},
 	error_template::ErrorTemplate,
 	icons::{FlaskLogo, IncubationCabinetLogo, VesselLogo},
@@ -15,6 +17,8 @@ use leptos::*;
 use leptos_router::*;
 
 stylance::import_style!(css, "equipment_details.module.css");
+
+pub type LogAction = Resource<(String, usize, usize, usize, usize), Result<(Vec<LogPerson>, i64), ServerFnError>>;
 
 #[component]
 pub fn EquipmentDetail() -> impl IntoView {
@@ -80,6 +84,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 	let name_action = create_server_action::<EditName>();
 	let equipment_type_action = create_server_action::<EditType>();
 	let manufacturer_action = create_server_action::<EditManufacturer>();
+	let purchase_date_action = create_server_action::<EditPurchaseDate>();
 
 	let equipment_data = create_resource(
 		move || {
@@ -88,18 +93,20 @@ pub fn EquipmentDetail() -> impl IntoView {
 				name_action.version().get(),
 				equipment_type_action.version().get(),
 				manufacturer_action.version().get(),
+				purchase_date_action.version().get(),
 			)
 		},
 		move |_| get_equipment_data_by_id(id.get()),
 	);
 
-	let log_data = create_resource(
+	let log_data: LogAction = create_resource(
 		move || {
 			(
 				id.get(),
 				name_action.version().get(),
 				equipment_type_action.version().get(),
 				manufacturer_action.version().get(),
+				purchase_date_action.version().get(),
 			)
 		},
 		move |_| get_log_for_equipment(id.get(), log_query_page.get(), log_query_ipp.get()),
@@ -261,8 +268,39 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Purchase Date</dt>
 													<dd class=css::edit>
-														<EquipmentCell cell=equipment.purchase_date />
-														<Button variant=ButtonVariant::Text>Edit</Button>
+														<EquipmentFormToggle item=equipment
+															.purchase_date>
+															{
+																let purchase_date_clone = equipment.purchase_date;
+																view! {
+																	<ActionForm
+																		action=purchase_date_action
+																		class=css::edit_form
+																	>
+																		<input type="hidden" name="id" value=equipment.id />
+																		<input
+																			type="hidden"
+																			id="timezone_offset"
+																			name="timezone_offset"
+																		/>
+																		<script>
+																			{r#"document.getElementById("timezone_offset").value = new Date().getTimezoneOffset();"#}
+																		</script>
+																		<DatePicker
+																			attr:name="purchase_date"
+																			value=create_rw_signal(
+																				Some(purchase_date_clone.unwrap_or_default().date_naive()),
+																			)
+																		/>
+																		<TextArea
+																			name="note"
+																			placeholder="Add a note why you made this change"
+																		/>
+																		<Button kind="submit">Save</Button>
+																	</ActionForm>
+																}
+															}
+														</EquipmentFormToggle>
 													</dd>
 
 													<dt>Vendor</dt>
@@ -488,6 +526,61 @@ pub async fn edit_manufacturer(id: String, manufacturer: String, note: String) -
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	sqlx::query!("UPDATE equipment SET manufacturer = $1 WHERE id = $2", manufacturer, id)
+		.execute(get_db())
+		.await
+		.map(|_| ())?;
+
+	Ok(())
+}
+
+#[server]
+pub async fn edit_purchase_date(
+	id: String,
+	purchase_date: String,
+	timezone_offset: i32,
+	note: String,
+) -> Result<(), ServerFnError> {
+	use crate::db::ssr::get_db;
+
+	use chrono::prelude::*;
+
+	let id = match id.parse::<i32>() {
+		Ok(value) => value,
+		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
+	};
+
+	let hours = timezone_offset / 60;
+	let minutes = timezone_offset % 60;
+	let offset_str = format!("{:+03}:{:02}", hours, minutes.abs());
+	let purchase_date_with_tz = format!("{}T00:00:00{}", purchase_date, offset_str);
+
+	let purchase_date: DateTime<Utc> = match DateTime::parse_from_str(&purchase_date_with_tz, "%Y-%m-%dT%H:%M:%S%z") {
+		Ok(date) => date,
+		Err(error) => return Err(ServerFnError::Request(format!("Invalid date: {}", error))),
+	}
+	.with_timezone(&Utc);
+
+	let old_value: Option<DateTime<Utc>> =
+		sqlx::query_scalar("SELECT purchase_date FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
+
+	sqlx::query!(
+		r#"INSERT INTO equipment_log
+		(log_type, equipment, person, notes, field, old_value, new_value)
+		VALUES
+		($1, $2, $3, $4, $5, $6, $7)"#,
+		"edit",
+		id,
+		14, // TODO
+		note,
+		"purchase_date",
+		old_value.unwrap_or_default().format("%d %b %Y").to_string(),
+		purchase_date.format("%d %b %Y").to_string(),
+	)
+	.execute(get_db())
+	.await
+	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+
+	sqlx::query!("UPDATE equipment SET purchase_date = $1 WHERE id = $2", purchase_date, id)
 		.execute(get_db())
 		.await
 		.map(|_| ())?;

@@ -1,14 +1,12 @@
 use crate::{
 	components::{avatar::Avatar, img_attachment::ImgAttachment, multiline::MultiLine, pagination::Pagination},
-	equipment::{EquipmentLogType, LogPerson},
+	equipment::{EquipmentLogType, LogAction, LogPerson},
 	error_template::ErrorTemplate,
 };
 
 use leptos::*;
 
 stylance::import_style!(css, "log.module.css");
-
-type LogData = Resource<(String, usize, usize, usize), Result<(Vec<LogPerson>, i64), ServerFnError>>;
 
 #[component]
 pub fn Log(
@@ -18,7 +16,7 @@ pub fn Log(
 	log_query_page: RwSignal<u16>,
 	log_query_ipp: RwSignal<u8>,
 	tab_query: RwSignal<String>,
-	log_data: LogData,
+	log_data: LogAction,
 ) -> impl IntoView {
 	view! {
 		<Transition fallback=move || view! { <p>Loading notes...</p> }>
