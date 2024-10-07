@@ -19,7 +19,7 @@ use leptos_router::*;
 stylance::import_style!(css, "equipment_details.module.css");
 
 pub type LogAction =
-	Resource<(String, usize, usize, usize, usize, usize, usize), Result<(Vec<LogPerson>, i64), ServerFnError>>;
+	Resource<(String, usize, usize, usize, usize, usize, usize, usize), Result<(Vec<LogPerson>, i64), ServerFnError>>;
 
 #[component]
 pub fn EquipmentDetail() -> impl IntoView {
@@ -88,6 +88,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 	let purchase_date_action = create_server_action::<EditPurchaseDate>();
 	let vendor_action = create_server_action::<EditVendor>();
 	let cost_in_cent_action = create_server_action::<EditCostInCent>();
+	let warranty_expiration_date_action = create_server_action::<EditWarrantyExpirationDate>();
 
 	let equipment_data = create_resource(
 		move || {
@@ -99,6 +100,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 				purchase_date_action.version().get(),
 				vendor_action.version().get(),
 				cost_in_cent_action.version().get(),
+				warranty_expiration_date_action.version().get(),
 			)
 		},
 		move |_| get_equipment_data_by_id(id.get()),
@@ -114,6 +116,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 				purchase_date_action.version().get(),
 				vendor_action.version().get(),
 				cost_in_cent_action.version().get(),
+				warranty_expiration_date_action.version().get(),
 			)
 		},
 		move |_| get_log_for_equipment(id.get(), log_query_page.get(), log_query_ipp.get()),
@@ -285,14 +288,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 																		class=css::edit_form
 																	>
 																		<input type="hidden" name="id" value=equipment.id />
-																		<input
-																			type="hidden"
-																			id="timezone_offset"
-																			name="timezone_offset"
-																		/>
-																		<script>
-																			{r#"document.getElementById("timezone_offset").value = new Date().getTimezoneOffset();"#}
-																		</script>
+																		<Timezone />
 																		<DatePicker
 																			attr:name="purchase_date"
 																			value=create_rw_signal(
@@ -364,8 +360,37 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Warranty Expiration Date</dt>
 													<dd class=css::edit>
-														<EquipmentCell cell=equipment.warranty_expiration_date />
-														<Button variant=ButtonVariant::Text>TODO: Edit</Button>
+														<EquipmentFormToggle item=equipment
+															.warranty_expiration_date>
+															{
+																let warranty_expiration_date_clone = equipment
+																	.warranty_expiration_date;
+																view! {
+																	<ActionForm
+																		action=warranty_expiration_date_action
+																		class=css::edit_form
+																	>
+																		<input type="hidden" name="id" value=equipment.id />
+																		<Timezone />
+																		<DatePicker
+																			attr:name="warranty_expiration_date"
+																			value=create_rw_signal(
+																				Some(
+																					warranty_expiration_date_clone
+																						.unwrap_or_default()
+																						.date_naive(),
+																				),
+																			)
+																		/>
+																		<TextArea
+																			name="note"
+																			placeholder="Add a note why you made this change"
+																		/>
+																		<Button kind="submit">Save</Button>
+																	</ActionForm>
+																}
+															}
+														</EquipmentFormToggle>
 													</dd>
 
 													<dt>Location</dt>
@@ -454,6 +479,14 @@ pub fn EquipmentDetail() -> impl IntoView {
 				}}
 			</ErrorBoundary>
 		</Transition>
+	}
+}
+
+#[component]
+pub fn Timezone() -> impl IntoView {
+	view! {
+		<input type="hidden" id="timezone_offset" name="timezone_offset" />
+		<script>{r#"document.getElementById("timezone_offset").value = new Date().getTimezoneOffset();"#}</script>
 	}
 }
 
@@ -702,6 +735,65 @@ pub async fn edit_cost_in_cent(id: String, cost_in_cent: f32, note: String) -> R
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	sqlx::query!("UPDATE equipment SET cost_in_cent = $1 WHERE id = $2", cost_in_cent, id)
+		.execute(get_db())
+		.await
+		.map(|_| ())?;
+
+	Ok(())
+}
+
+#[server]
+pub async fn edit_warranty_expiration_date(
+	id: String,
+	warranty_expiration_date: String,
+	timezone_offset: i32,
+	note: String,
+) -> Result<(), ServerFnError> {
+	use crate::db::ssr::get_db;
+
+	use chrono::prelude::*;
+
+	let id = match id.parse::<i32>() {
+		Ok(value) => value,
+		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
+	};
+
+	let hours = timezone_offset / 60;
+	let minutes = timezone_offset % 60;
+	let offset_str = format!("{:+03}:{:02}", hours, minutes.abs());
+	let warranty_expiration_date_with_tz = format!("{}T00:00:00{}", warranty_expiration_date, offset_str);
+
+	let warranty_expiration_date: DateTime<Utc> =
+		match DateTime::parse_from_str(&warranty_expiration_date_with_tz, "%Y-%m-%dT%H:%M:%S%z") {
+			Ok(date) => date,
+			Err(error) => return Err(ServerFnError::Request(format!("Invalid date: {}", error))),
+		}
+		.with_timezone(&Utc);
+
+	let old_value: Option<DateTime<Utc>> =
+		sqlx::query_scalar("SELECT warranty_expiration_date FROM equipment WHERE id = $1")
+			.bind(id)
+			.fetch_one(get_db())
+			.await?;
+
+	sqlx::query!(
+		r#"INSERT INTO equipment_log
+		(log_type, equipment, person, notes, field, old_value, new_value)
+		VALUES
+		($1, $2, $3, $4, $5, $6, $7)"#,
+		"edit",
+		id,
+		14, // TODO
+		note,
+		"warranty_expiration_date",
+		old_value.unwrap_or_default().format("%d %b %Y").to_string(),
+		warranty_expiration_date.format("%d %b %Y").to_string(),
+	)
+	.execute(get_db())
+	.await
+	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+
+	sqlx::query!("UPDATE equipment SET warranty_expiration_date = $1 WHERE id = $2", warranty_expiration_date, id)
 		.execute(get_db())
 		.await
 		.map(|_| ())?;
