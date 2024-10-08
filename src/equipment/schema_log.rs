@@ -12,6 +12,8 @@ pub enum EquipmentLogType {
 	Cleaning,
 	Sterilization,
 	Preparation,
+	Archive,
+	Unarchive,
 }
 
 impl EquipmentLogType {
@@ -21,6 +23,8 @@ impl EquipmentLogType {
 			"cleaning" => EquipmentLogType::Cleaning,
 			"sterilization" => EquipmentLogType::Sterilization,
 			"preparation" => EquipmentLogType::Preparation,
+			"archive" => EquipmentLogType::Archive,
+			"unarchive" => EquipmentLogType::Unarchive,
 			_ => Default::default(),
 		}
 	}
@@ -33,6 +37,8 @@ impl std::fmt::Display for EquipmentLogType {
 			EquipmentLogType::Cleaning => write!(f, "Cleaning"),
 			EquipmentLogType::Sterilization => write!(f, "Sterilization"),
 			EquipmentLogType::Preparation => write!(f, "Preparation"),
+			EquipmentLogType::Archive => write!(f, "Archive"),
+			EquipmentLogType::Unarchive => write!(f, "Unarchive"),
 		}
 	}
 }
@@ -44,6 +50,8 @@ impl EquipmentLogType {
 			String::from("Cleaning"),
 			String::from("Sterilization"),
 			String::from("Preparation"),
+			String::from("Archive"),
+			String::from("Unarchive"),
 		]
 	}
 }
