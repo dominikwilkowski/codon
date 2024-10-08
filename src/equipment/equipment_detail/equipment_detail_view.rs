@@ -15,6 +15,8 @@ use crate::{
 
 use leptos::*;
 use leptos_router::*;
+use server_fn::codec::{MultipartData, MultipartFormData};
+use web_sys::{FormData, SubmitEvent};
 
 stylance::import_style!(css, "equipment_details.module.css");
 
@@ -86,7 +88,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 	let name_action = create_server_action::<EditName>();
 	let equipment_type_action = create_server_action::<EditType>();
-	let status_action = create_server_action::<EditStatus>();
+	let status_action = create_action(|data: &FormData| edit_status(data.clone().into()));
 	let manufacturer_action = create_server_action::<EditManufacturer>();
 	let purchase_date_action = create_server_action::<EditPurchaseDate>();
 	let vendor_action = create_server_action::<EditVendor>();
@@ -201,8 +203,9 @@ pub fn EquipmentDetail() -> impl IntoView {
 																	>
 																		<input type="hidden" name="id" value=equipment.id />
 																		<Select name="equipment_type">
-																			{
-																				EquipmentType::get_fields().into_iter().map(|field| {
+																			{EquipmentType::get_fields()
+																				.into_iter()
+																				.map(|field| {
 																					let equipment_type = EquipmentType::parse(field);
 																					view! {
 																						<option
@@ -212,8 +215,8 @@ pub fn EquipmentDetail() -> impl IntoView {
 																							{format!("{equipment_type}")}
 																						</option>
 																					}
-																				}).collect_view()
-																			}
+																				})
+																				.collect_view()}
 																		</Select>
 																		<TextArea
 																			name="note"
@@ -242,29 +245,76 @@ pub fn EquipmentDetail() -> impl IntoView {
 															.status
 															.clone()>
 															{
+																let form_ref = create_node_ref::<html::Form>();
+																let action_ref = create_node_ref::<html::Input>();
 																view! {
-																	<ActionForm action=status_action class=css::edit_form>
+																	<form
+																		ref=form_ref
+																		class=css::edit_form
+																		method="post"
+																		action="#"
+																		enctype="multipart/form-data"
+																		on:submit=move |event: SubmitEvent| {
+																			event.prevent_default();
+																			let form = form_ref.get().unwrap();
+																			let form_data = match FormData::new_with_form(&form) {
+																				Ok(fd) => fd,
+																				Err(error) => {
+																					logging::log!("Failed to create FormData");
+																					logging::log!("{error:?}");
+																					return;
+																				}
+																			};
+																			status_action.dispatch(form_data);
+																		}
+																	>
 																		<input type="hidden" name="id" value=equipment.id />
+																		<input
+																			ref=action_ref
+																			type="hidden"
+																			name="action"
+																			value="next_status"
+																		/>
 																		<TextArea
 																			name="note"
 																			placeholder="Add a note why you made this change"
 																		/>
-																		<Button kind="submit" name="action" value=create_rw_signal(String::from("next_status"))>
+																		<Button
+																			kind="submit"
+																			on:click=move |_| {
+																				if let Some(action_element) = action_ref.get() {
+																					let _ = action_element
+																						.set_attribute("value", "next_status");
+																				}
+																			}
+																		>
 																			{if equipment.status == EquipmentStatus::Archived {
 																				"Unarchive and mark"
 																			} else {
 																				"Mark"
-																			}} " as \""
+																			}}
+																			" as \""
 																			{EquipmentStatus::get_next_status(
 																					equipment.status,
 																					equipment.equipment_type,
 																				)
-																				.to_string()}"\""
+																				.to_string()}
+																			"\""
 																		</Button>
 																		<Show when=move || !is_archived>
-																			<Button kind="submit" name="action" value=create_rw_signal(String::from("archive")) variant=ButtonVariant::Outlined>Archive</Button>
+																			<Button
+																				kind="submit"
+																				variant=ButtonVariant::Outlined
+																				on:click=move |_| {
+																					if let Some(action_element) = action_ref.get() {
+																						let _ = action_element.set_attribute("value", "archive");
+																					}
+																				}
+																			>
+																				Archive
+																			</Button>
 																		</Show>
-																	</ActionForm>
+																	</form>
 																}
 															}
 														</EquipmentFormToggle>
@@ -638,18 +688,37 @@ pub async fn edit_type(id: String, equipment_type: String, note: String) -> Resu
 	Ok(())
 }
 
-#[server]
-pub async fn edit_status(id: String, action: String, note: String) -> Result<(), ServerFnError> {
-	use crate::db::ssr::get_db;
+#[server(input = MultipartFormData)]
+pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
+	use crate::{components::file_upload::file_upload, db::ssr::get_db, equipment::get_folder};
 
-	let id = match id.parse::<i32>() {
-		Ok(value) => value,
-		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
-	};
+	let result = file_upload(data, get_folder).await?;
+
+	let mut action = None;
+	let mut note = None;
+
+	for (name, value) in &result.additional_fields {
+		match name.as_str() {
+			"action" => action = Some(value),
+			"note" => note = Some(value),
+			_ => {},
+		}
+	}
+
+	if action.is_none() {
+		return Err(ServerFnError::Request(String::from("Missing button action field")));
+	}
+
+	if note.is_none() {
+		return Err(ServerFnError::Request(String::from("Missing note field")));
+	}
+
+	let action = action.unwrap();
+	let note = note.unwrap();
 
 	let (old_status, equipment_type): (String, String) =
 		sqlx::query_as::<_, (String, String)>("SELECT status, equipment_type FROM equipment WHERE id = $1")
-			.bind(id)
+			.bind(result.id)
 			.fetch_one(get_db())
 			.await?;
 	let old_status = EquipmentStatus::parse(old_status);
