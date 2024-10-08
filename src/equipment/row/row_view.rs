@@ -46,7 +46,7 @@ pub fn Row(
 					</Show>
 					<Show when=move || { field_filter.get().contains(&String::from("status")) }>
 						<td class="equipment_listing_status">
-							<EquipmentCell cell=equipment.status.clone() table_view=true />
+							<EquipmentCell cell=equipment.status table_view=true />
 						</td>
 					</Show>
 					<Show when=move || { field_filter.get().contains(&String::from("manufacturer")) }>

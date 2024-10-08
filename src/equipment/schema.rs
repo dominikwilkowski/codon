@@ -49,7 +49,7 @@ impl EquipmentType {
 	}
 }
 
-#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 pub enum EquipmentStatus {
 	Cleaned,
 	Prepared,

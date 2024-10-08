@@ -145,7 +145,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 										view! { <pre class="error">Server Error: {error.to_string()}</pre> }.into_view()
 									}
 									Ok(equipment) => {
-										let is_archived = equipment.status.clone() == EquipmentStatus::Archived;
+										let is_archived = equipment.status == EquipmentStatus::Archived;
 										view! {
 											<div class=css::details>
 												<h1 class=css::heading>
@@ -241,18 +241,22 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Status</dt>
 													<dd class=css::status>
-														<EquipmentCell cell=equipment.status.clone() />
+														<EquipmentCell cell=equipment.status />
 														<div class=css::btns>
 															<Button variant=ButtonVariant::Outlined>
-																"Mark as \""
+																{if equipment.status == EquipmentStatus::Archived {
+																	"Unarchive and mark"
+																} else {
+																	"Mark"
+																}} " as \""
 																{EquipmentStatus::get_next_status(
-																		equipment.status.clone(),
+																		equipment.status,
 																		equipment.equipment_type,
 																	)
 																	.to_string()}"\""
 															</Button>
 															<Show when=move || !is_archived>
-																<Button variant=ButtonVariant::Outlined>"Archive"</Button>
+																<Button variant=ButtonVariant::Outlined>Archive</Button>
 															</Show>
 														</div>
 													</dd>
