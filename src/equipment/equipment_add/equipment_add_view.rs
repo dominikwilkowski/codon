@@ -142,8 +142,8 @@ pub async fn add_equipment(
 		EquipmentType::Vessel => "V",
 		EquipmentType::IncubationCabinet => "I",
 	};
-	let qrcode_path = format!("equipment/qr_{:06}_{}.svg", row.id, equipment_type_short);
-	let file_path = PathBuf::from(format!("{}/public/qrcodes/{}", env!("CARGO_MANIFEST_DIR"), qrcode_path));
+	let qrcode_path = format!("qr_{:06}_{}.svg", row.id, equipment_type_short);
+	let file_path = PathBuf::from(format!("{}/public/qrcodes/equipment/{}", env!("CARGO_MANIFEST_DIR"), qrcode_path));
 
 	fs::write(&file_path, qr_svg)
 		.map_err::<ServerFnError, _>(|_| ServerFnError::ServerError("Failed to save QR code to file".into()))?;
@@ -156,70 +156,70 @@ pub async fn add_equipment(
 	)
 }
 
-#[allow(clippy::too_many_arguments)]
-#[server]
-pub async fn edit_equipment(
-	id: String,
-	equipment_type: String,
-	name: String,
-	status: String,
-	manufacturer: String,
-	purchase_date: String,
-	vendor: String,
-	cost_in_cent: String,
-	warranty_expiration_date: String,
-	location: String,
-	notes: String,
-) -> Result<(), ServerFnError> {
-	use crate::{
-		db::ssr::get_db,
-		equipment::{EquipmentStatus, EquipmentType},
-	};
-	use chrono::prelude::*;
+// #[allow(clippy::too_many_arguments)]
+// #[server]
+// pub async fn edit_equipment(
+// 	id: String,
+// 	equipment_type: String,
+// 	name: String,
+// 	status: String,
+// 	manufacturer: String,
+// 	purchase_date: String,
+// 	vendor: String,
+// 	cost_in_cent: String,
+// 	warranty_expiration_date: String,
+// 	location: String,
+// 	notes: String,
+// ) -> Result<(), ServerFnError> {
+// 	use crate::{
+// 		db::ssr::get_db,
+// 		equipment::{EquipmentStatus, EquipmentType},
+// 	};
+// 	use chrono::prelude::*;
 
-	let id: i32 = id.parse::<i32>()?;
+// 	let id: i32 = id.parse::<i32>()?;
 
-	let purchase_date: Option<DateTime<Utc>> = match purchase_date.parse::<DateTime<Utc>>() {
-		Ok(date) => Some(date),
-		Err(_) => None,
-	};
+// 	let purchase_date: Option<DateTime<Utc>> = match purchase_date.parse::<DateTime<Utc>>() {
+// 		Ok(date) => Some(date),
+// 		Err(_) => None,
+// 	};
 
-	let warranty_expiration_date: Option<DateTime<Utc>> = match warranty_expiration_date.parse::<DateTime<Utc>>() {
-		Ok(date) => Some(date),
-		Err(_) => None,
-	};
+// 	let warranty_expiration_date: Option<DateTime<Utc>> = match warranty_expiration_date.parse::<DateTime<Utc>>() {
+// 		Ok(date) => Some(date),
+// 		Err(_) => None,
+// 	};
 
-	let cost_in_cent: Option<i32> =
-		cost_in_cent.parse::<f64>().ok().map(|cost_in_cent_f64| (cost_in_cent_f64 * 100.0) as i32);
+// 	let cost_in_cent: Option<i32> =
+// 		cost_in_cent.parse::<f64>().ok().map(|cost_in_cent_f64| (cost_in_cent_f64 * 100.0) as i32);
 
-	Ok(
-		sqlx::query!(
-			"UPDATE equipment SET
-			equipment_type = $1,
-			name = $2,
-			status = $3,
-			manufacturer = $4,
-			purchase_date = $5,
-			vendor = $6,
-			cost_in_cent = $7,
-			warranty_expiration_date = $8,
-			location = $9,
-			notes = $10
-		WHERE id = $11",
-			EquipmentType::parse(equipment_type.clone()).to_string(),
-			name,
-			EquipmentStatus::parse(status).to_string(),
-			manufacturer,
-			purchase_date,
-			vendor,
-			cost_in_cent,
-			warranty_expiration_date,
-			location,
-			notes,
-			id,
-		)
-		.execute(get_db())
-		.await
-		.map(|_| ())?,
-	)
-}
+// 	Ok(
+// 		sqlx::query!(
+// 			"UPDATE equipment SET
+// 			equipment_type = $1,
+// 			name = $2,
+// 			status = $3,
+// 			manufacturer = $4,
+// 			purchase_date = $5,
+// 			vendor = $6,
+// 			cost_in_cent = $7,
+// 			warranty_expiration_date = $8,
+// 			location = $9,
+// 			notes = $10
+// 		WHERE id = $11",
+// 			EquipmentType::parse(equipment_type.clone()).to_string(),
+// 			name,
+// 			EquipmentStatus::parse(status).to_string(),
+// 			manufacturer,
+// 			purchase_date,
+// 			vendor,
+// 			cost_in_cent,
+// 			warranty_expiration_date,
+// 			location,
+// 			notes,
+// 			id,
+// 		)
+// 		.execute(get_db())
+// 		.await
+// 		.map(|_| ())?,
+// 	)
+// }

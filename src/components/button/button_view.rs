@@ -16,6 +16,8 @@ pub enum ButtonVariant {
 pub fn Button(
 	#[prop(optional)] disabled: RwSignal<bool>,
 	#[prop(optional)] loading: RwSignal<bool>,
+	#[prop(optional)] name: &'static str,
+	#[prop(optional)] value: RwSignal<String>,
 	#[prop(optional, default = "button")] kind: &'static str,
 	#[prop(optional, default = ButtonVariant::Default)] variant: ButtonVariant,
 	#[prop(optional, into)] on_click: Option<Callback<ev::MouseEvent>>,
@@ -38,6 +40,8 @@ pub fn Button(
 			type=kind
 			class=class.join(" ")
 			disabled=move || disabled.get()
+			name=name
+			value=value
 			on:click=move |x| {
 				if !loading.get() {
 					on_click.unwrap_or_else(|| Callback::from(|_| {}))(x);

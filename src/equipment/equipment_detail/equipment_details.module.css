@@ -24,25 +24,6 @@
 	gap: 0.5rem;
 }
 
-.list dd.status {
-	display: grid;
-	grid-template-columns: 1fr auto;
-	justify-items: left;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.list dd.status .btns {
-	display: grid;
-	justify-items: right;
-	gap: 0.5rem;
-}
-
-.list dd.status button {
-	background: transparent;
-	font-size: 65%;
-}
-
 .list dd,
 .list dt {
 	padding: 0.5rem;

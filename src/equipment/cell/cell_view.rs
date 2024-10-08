@@ -98,7 +98,7 @@ impl EquipmentCellView for Option<Cost> {
 	fn view(self, _: bool) -> impl IntoView {
 		match self {
 			Some(value) => view! { <span>{format!("${value}")}</span> }.into_view(),
-			None => view! {}.into_view(),
+			None => view! { <span/> }.into_view(),
 		}
 	}
 }
@@ -118,7 +118,7 @@ impl EquipmentCellView for Option<Notes> {
 				}
 				.into_view()
 			},
-			None => view! {}.into_view(),
+			None => view! { <div/> }.into_view(),
 		}
 	}
 }
@@ -138,7 +138,7 @@ impl EquipmentCellView for Option<DateTime<Utc>> {
 	fn view(self, _: bool) -> impl IntoView {
 		match self {
 			Some(item) => view! { <DateCell item /> }.into_view(),
-			None => view! {}.into_view(),
+			None => view! { <span/> }.into_view(),
 		}
 	}
 }

@@ -19,7 +19,7 @@ use leptos_router::*;
 stylance::import_style!(css, "equipment_details.module.css");
 
 pub type LogAction = Resource<
-	(String, usize, usize, usize, usize, usize, usize, usize, usize, usize),
+	(String, usize, usize, usize, usize, usize, usize, usize, usize, usize, usize),
 	Result<(Vec<LogPerson>, i64), ServerFnError>,
 >;
 
@@ -86,6 +86,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 	let name_action = create_server_action::<EditName>();
 	let equipment_type_action = create_server_action::<EditType>();
+	let status_action = create_server_action::<EditStatus>();
 	let manufacturer_action = create_server_action::<EditManufacturer>();
 	let purchase_date_action = create_server_action::<EditPurchaseDate>();
 	let vendor_action = create_server_action::<EditVendor>();
@@ -100,6 +101,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 				id.get(),
 				name_action.version().get(),
 				equipment_type_action.version().get(),
+				status_action.version().get(),
 				manufacturer_action.version().get(),
 				purchase_date_action.version().get(),
 				vendor_action.version().get(),
@@ -118,6 +120,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 				id.get(),
 				name_action.version().get(),
 				equipment_type_action.version().get(),
+				status_action.version().get(),
 				manufacturer_action.version().get(),
 				purchase_date_action.version().get(),
 				vendor_action.version().get(),
@@ -198,25 +201,19 @@ pub fn EquipmentDetail() -> impl IntoView {
 																	>
 																		<input type="hidden" name="id" value=equipment.id />
 																		<Select name="equipment_type">
-																			<option
-																				value=format!("{:#?}", EquipmentType::Flask)
-																				selected=equipment.equipment_type == EquipmentType::Flask
-																			>
-																				Flask
-																			</option>
-																			<option
-																				value=format!("{:#?}", EquipmentType::Vessel)
-																				selected=equipment.equipment_type == EquipmentType::Vessel
-																			>
-																				Vessel
-																			</option>
-																			<option
-																				value=format!("{:#?}", EquipmentType::IncubationCabinet)
-																				selected=equipment.equipment_type
-																					== EquipmentType::IncubationCabinet
-																			>
-																				IncubationCabinet
-																			</option>
+																			{
+																				EquipmentType::get_fields().into_iter().map(|field| {
+																					let equipment_type = EquipmentType::parse(field);
+																					view! {
+																						<option
+																							value=format!("{:#?}", equipment_type)
+																							selected=equipment.equipment_type == equipment_type
+																						>
+																							{format!("{equipment_type}")}
+																						</option>
+																					}
+																				}).collect_view()
+																			}
 																		</Select>
 																		<TextArea
 																			name="note"
@@ -240,25 +237,37 @@ pub fn EquipmentDetail() -> impl IntoView {
 													</dd>
 
 													<dt>Status</dt>
-													<dd class=css::status>
-														<EquipmentCell cell=equipment.status />
-														<div class=css::btns>
-															<Button variant=ButtonVariant::Outlined>
-																{if equipment.status == EquipmentStatus::Archived {
-																	"Unarchive and mark"
-																} else {
-																	"Mark"
-																}} " as \""
-																{EquipmentStatus::get_next_status(
-																		equipment.status,
-																		equipment.equipment_type,
-																	)
-																	.to_string()}"\""
-															</Button>
-															<Show when=move || !is_archived>
-																<Button variant=ButtonVariant::Outlined>Archive</Button>
-															</Show>
-														</div>
+													<dd class=css::edit>
+														<EquipmentFormToggle item=equipment
+															.status
+															.clone()>
+															{
+																view! {
+																	<ActionForm action=status_action class=css::edit_form>
+																		<input type="hidden" name="id" value=equipment.id />
+																		<TextArea
+																			name="note"
+																			placeholder="Add a note why you made this change"
+																		/>
+																		<Button kind="submit" name="action" value=create_rw_signal(String::from("next_status"))>
+																			{if equipment.status == EquipmentStatus::Archived {
+																				"Unarchive and mark"
+																			} else {
+																				"Mark"
+																			}} " as \""
+																			{EquipmentStatus::get_next_status(
+																					equipment.status,
+																					equipment.equipment_type,
+																				)
+																				.to_string()}"\""
+																		</Button>
+																		<Show when=move || !is_archived>
+																			<Button kind="submit" name="action" value=create_rw_signal(String::from("archive")) variant=ButtonVariant::Outlined>Archive</Button>
+																		</Show>
+																	</ActionForm>
+																}
+															}
+														</EquipmentFormToggle>
 													</dd>
 
 													<dt>Manufacturer</dt>
@@ -625,6 +634,51 @@ pub async fn edit_type(id: String, equipment_type: String, note: String) -> Resu
 		.execute(get_db())
 		.await
 		.map(|_| ())?;
+
+	Ok(())
+}
+
+#[server]
+pub async fn edit_status(id: String, action: String, note: String) -> Result<(), ServerFnError> {
+	use crate::db::ssr::get_db;
+
+	let id = match id.parse::<i32>() {
+		Ok(value) => value,
+		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
+	};
+
+	let (old_status, equipment_type): (String, String) =
+		sqlx::query_as::<_, (String, String)>("SELECT status, equipment_type FROM equipment WHERE id = $1")
+			.bind(id)
+			.fetch_one(get_db())
+			.await?;
+	let old_status = EquipmentStatus::parse(old_status);
+	let equipment_type = EquipmentType::parse(equipment_type);
+	let next_status = EquipmentStatus::get_next_status(old_status, equipment_type);
+
+	println!("old_status={old_status:?} equipment_type={equipment_type:?} next_status={next_status:?} action={action}");
+
+	// sqlx::query!(
+	// 	r#"INSERT INTO equipment_log
+	// 	(log_type, equipment, person, notes, field, old_value, new_value)
+	// 	VALUES
+	// 	($1, $2, $3, $4, $5, $6, $7)"#,
+	// 	"edit",
+	// 	id,
+	// 	14, // TODO
+	// 	note,
+	// 	"type",
+	// 	old_value,
+	// 	equipment_type,
+	// )
+	// .execute(get_db())
+	// .await
+	// .map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+
+	// sqlx::query!("UPDATE equipment SET equipment_type = $1 WHERE id = $2", equipment_type, id)
+	// 	.execute(get_db())
+	// 	.await
+	// 	.map(|_| ())?;
 
 	Ok(())
 }
