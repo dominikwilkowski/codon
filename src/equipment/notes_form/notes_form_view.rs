@@ -144,7 +144,7 @@ pub fn create_folder_name(equipment_type: EquipmentType, id: i32) -> String {
 
 #[server(input = MultipartFormData)]
 pub async fn save_notes(data: MultipartData) -> Result<(), ServerFnError> {
-	use crate::{components::file_upload::file_upload, db::ssr::get_db};
+	use crate::{components::file_upload::file_upload, db::ssr::get_db, utils::string_to_option};
 
 	let result = file_upload(data, get_folder).await?;
 
@@ -164,14 +164,6 @@ pub async fn save_notes(data: MultipartData) -> Result<(), ServerFnError> {
 			},
 			"notes" => notes = Some(value),
 			_ => {},
-		}
-	}
-
-	fn string_to_option(s: String) -> Option<String> {
-		if s.is_empty() {
-			None
-		} else {
-			Some(s)
 		}
 	}
 

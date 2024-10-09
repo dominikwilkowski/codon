@@ -1,3 +1,5 @@
+use crate::equipment::EquipmentLogType;
+
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
@@ -114,6 +116,19 @@ impl EquipmentStatus {
 			EquipmentStatus::InUse => EquipmentStatus::Dirty,
 			EquipmentStatus::Dirty => EquipmentStatus::Cleaned,
 			EquipmentStatus::Archived => EquipmentStatus::Dirty,
+		}
+	}
+}
+
+impl From<EquipmentStatus> for EquipmentLogType {
+	fn from(val: EquipmentStatus) -> EquipmentLogType {
+		match val {
+			EquipmentStatus::Cleaned => EquipmentLogType::Cleaning,
+			EquipmentStatus::Prepared => EquipmentLogType::Preparation,
+			EquipmentStatus::Sterilized => EquipmentLogType::Sterilization,
+			EquipmentStatus::InUse => EquipmentLogType::Using,
+			EquipmentStatus::Dirty => EquipmentLogType::Dirty,
+			EquipmentStatus::Archived => EquipmentLogType::Archive,
 		}
 	}
 }

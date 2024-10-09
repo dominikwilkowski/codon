@@ -24,6 +24,17 @@
 	gap: 0.5rem;
 }
 
+.list dd .btns {
+	display: flex;
+	justify-content: end;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.success {
+	animation: 0.5s ease 5s forwards fading;
+}
+
 .list dd,
 .list dt {
 	padding: 0.5rem;

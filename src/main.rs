@@ -29,6 +29,7 @@ pub mod icons;
 pub mod nav;
 pub mod qrcode;
 pub mod samples;
+pub mod utils;
 
 #[cfg(feature = "ssr")]
 pub mod fileserv;

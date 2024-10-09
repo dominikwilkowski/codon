@@ -10,10 +10,11 @@ pub enum EquipmentLogType {
 	#[default]
 	Edit,
 	Cleaning,
-	Sterilization,
 	Preparation,
+	Sterilization,
+	Using,
+	Dirty,
 	Archive,
-	Unarchive,
 }
 
 impl EquipmentLogType {
@@ -21,10 +22,11 @@ impl EquipmentLogType {
 		match input.to_lowercase().as_str() {
 			"edit" => EquipmentLogType::Edit,
 			"cleaning" => EquipmentLogType::Cleaning,
-			"sterilization" => EquipmentLogType::Sterilization,
 			"preparation" => EquipmentLogType::Preparation,
+			"sterilization" => EquipmentLogType::Sterilization,
+			"using" => EquipmentLogType::Using,
+			"dirty" => EquipmentLogType::Dirty,
 			"archive" => EquipmentLogType::Archive,
-			"unarchive" => EquipmentLogType::Unarchive,
 			_ => Default::default(),
 		}
 	}
@@ -35,10 +37,11 @@ impl std::fmt::Display for EquipmentLogType {
 		match self {
 			EquipmentLogType::Edit => write!(f, "Edit"),
 			EquipmentLogType::Cleaning => write!(f, "Cleaning"),
-			EquipmentLogType::Sterilization => write!(f, "Sterilization"),
 			EquipmentLogType::Preparation => write!(f, "Preparation"),
+			EquipmentLogType::Sterilization => write!(f, "Sterilization"),
+			EquipmentLogType::Using => write!(f, "Using"),
+			EquipmentLogType::Dirty => write!(f, "Dirty"),
 			EquipmentLogType::Archive => write!(f, "Archive"),
-			EquipmentLogType::Unarchive => write!(f, "Unarchive"),
 		}
 	}
 }
@@ -48,10 +51,11 @@ impl EquipmentLogType {
 		vec![
 			String::from("Edit"),
 			String::from("Cleaning"),
-			String::from("Sterilization"),
 			String::from("Preparation"),
+			String::from("Sterilization"),
+			String::from("Using"),
+			String::from("Dirty"),
 			String::from("Archive"),
-			String::from("Unarchive"),
 		]
 	}
 }

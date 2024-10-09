@@ -2,6 +2,7 @@ use crate::{
 	components::{
 		button::{Button, ButtonVariant},
 		datepicker::DatePicker,
+		file_input::FileInput,
 		input::{Input, MoneyInput, TextArea},
 		select::Select,
 	},
@@ -242,11 +243,21 @@ pub fn EquipmentDetail() -> impl IntoView {
 													<dt>Status</dt>
 													<dd class=css::edit>
 														<EquipmentFormToggle item=equipment
-															.status
-															.clone()>
+															.status>
 															{
 																let form_ref = create_node_ref::<html::Form>();
 																let action_ref = create_node_ref::<html::Input>();
+																let media1 = create_rw_signal(String::new());
+																let media2 = create_rw_signal(String::new());
+																let media3 = create_rw_signal(String::new());
+																let media4 = create_rw_signal(String::new());
+																let media5 = create_rw_signal(String::new());
+																let media6 = create_rw_signal(String::new());
+																let media7 = create_rw_signal(String::new());
+																let media8 = create_rw_signal(String::new());
+																let media9 = create_rw_signal(String::new());
+																let media10 = create_rw_signal(String::new());
+																let loading = create_rw_signal(false);
 																view! {
 																	<form
 																		ref=form_ref
@@ -279,41 +290,99 @@ pub fn EquipmentDetail() -> impl IntoView {
 																			name="note"
 																			placeholder="Add a note why you made this change"
 																		/>
-																		<Button
-																			kind="submit"
-																			on:click=move |_| {
-																				if let Some(action_element) = action_ref.get() {
-																					let _ = action_element
-																						.set_attribute("value", "next_status");
-																				}
-																			}
-																		>
-																			{if equipment.status == EquipmentStatus::Archived {
-																				"Unarchive and mark"
-																			} else {
-																				"Mark"
-																			}}
-																			" as \""
-																			{EquipmentStatus::get_next_status(
-																					equipment.status,
-																					equipment.equipment_type,
-																				)
-																				.to_string()}
-																			"\""
-																		</Button>
-																		<Show when=move || !is_archived>
+																		<div class=css::btns>
+																			<Show when=move || !media9.get().is_empty()>
+																				<FileInput name="media10" value=media10 />
+																			</Show>
+																			<Show when=move || !media8.get().is_empty()>
+																				<FileInput name="media9" value=media9 />
+																			</Show>
+																			<Show when=move || !media7.get().is_empty()>
+																				<FileInput name="media8" value=media8 />
+																			</Show>
+																			<Show when=move || !media6.get().is_empty()>
+																				<FileInput name="media7" value=media7 />
+																			</Show>
+																			<Show when=move || !media5.get().is_empty()>
+																				<FileInput name="media6" value=media6 />
+																			</Show>
+																			<Show when=move || !media4.get().is_empty()>
+																				<FileInput name="media5" value=media5 />
+																			</Show>
+																			<Show when=move || !media3.get().is_empty()>
+																				<FileInput name="media4" value=media4 />
+																			</Show>
+																			<Show when=move || !media2.get().is_empty()>
+																				<FileInput name="media3" value=media3 />
+																			</Show>
+																			<Show when=move || !media1.get().is_empty()>
+																				<FileInput name="media2" value=media2 />
+																			</Show>
+																			<FileInput name="media1" value=media1 />
+																		</div>
+																		<div class=css::btns>
+																			<span>
+																				{move || {
+																					if status_action.input().get().is_none()
+																						&& status_action.value().get().is_none()
+																					{
+																						view! {}.into_view()
+																					} else if status_action.pending().get() {
+																						loading.set(true);
+																						view! {}.into_view()
+																					} else if let Some(Ok(_)) = status_action.value().get() {
+																						loading.set(false);
+																						view! { <span class=css::success>Saved successfully</span> }
+																							.into_view()
+																					} else {
+																						loading.set(false);
+																						view! {
+																							<span>
+																								{format!("Error: {:?}", status_action.value().get())}
+																							</span>
+																						}
+																							.into_view()
+																					}
+																				}}
+																			</span>
+																			<Show when=move || !is_archived>
+																				<Button
+																					kind="submit"
+																					variant=ButtonVariant::Outlined
+																					loading
+																					on:click=move |_| {
+																						if let Some(action_element) = action_ref.get() {
+																							let _ = action_element.set_attribute("value", "archive");
+																						}
+																					}
+																				>
+																					Archive
+																				</Button>
+																			</Show>
 																			<Button
 																				kind="submit"
-																				variant=ButtonVariant::Outlined
+																				loading
 																				on:click=move |_| {
 																					if let Some(action_element) = action_ref.get() {
-																						let _ = action_element.set_attribute("value", "archive");
+																						let _ = action_element
+																							.set_attribute("value", "next_status");
 																					}
 																				}
 																			>
-																				Archive
+																				{if equipment.status == EquipmentStatus::Archived {
+																					"Unarchive and mark"
+																				} else {
+																					"Mark"
+																				}}
+																				" as \""
+																				{EquipmentStatus::get_next_status(
+																						equipment.status,
+																						equipment.equipment_type,
+																					)
+																					.to_string()}
+																				"\""
 																			</Button>
-																		</Show>
+																		</div>
 																	</form>
 																}
 															}
@@ -690,7 +759,12 @@ pub async fn edit_type(id: String, equipment_type: String, note: String) -> Resu
 
 #[server(input = MultipartFormData)]
 pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
-	use crate::{components::file_upload::file_upload, db::ssr::get_db, equipment::get_folder};
+	use crate::{
+		components::file_upload::file_upload,
+		db::ssr::get_db,
+		equipment::{get_folder, EquipmentLogType},
+		utils::string_to_option,
+	};
 
 	let result = file_upload(data, get_folder).await?;
 
@@ -721,33 +795,41 @@ pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 			.bind(result.id)
 			.fetch_one(get_db())
 			.await?;
-	let old_status = EquipmentStatus::parse(old_status);
-	let equipment_type = EquipmentType::parse(equipment_type);
-	let next_status = EquipmentStatus::get_next_status(old_status, equipment_type);
+	let next_status = if action == "next_status" {
+		EquipmentStatus::get_next_status(EquipmentStatus::parse(old_status.clone()), EquipmentType::parse(equipment_type))
+	} else {
+		EquipmentStatus::Archived
+	};
 
-	println!("old_status={old_status:?} equipment_type={equipment_type:?} next_status={next_status:?} action={action}");
+	sqlx::query!(
+		r#"INSERT INTO equipment_log
+		(log_type, equipment, person, notes, old_value, media1, media2, media3, media4, media5, media6, media7, media8, media9, media10)
+		VALUES
+		($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)"#,
+		EquipmentLogType::from(next_status).to_string(),
+		result.id,
+		14,
+		note.to_string(),
+		old_status,
+		string_to_option(result.media1.clone()),
+		string_to_option(result.media2.clone()),
+		string_to_option(result.media3.clone()),
+		string_to_option(result.media4.clone()),
+		string_to_option(result.media5.clone()),
+		string_to_option(result.media6.clone()),
+		string_to_option(result.media7.clone()),
+		string_to_option(result.media8.clone()),
+		string_to_option(result.media9.clone()),
+		string_to_option(result.media10.clone()),
+	)
+	.execute(get_db())
+	.await
+	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
-	// sqlx::query!(
-	// 	r#"INSERT INTO equipment_log
-	// 	(log_type, equipment, person, notes, field, old_value, new_value)
-	// 	VALUES
-	// 	($1, $2, $3, $4, $5, $6, $7)"#,
-	// 	"edit",
-	// 	id,
-	// 	14, // TODO
-	// 	note,
-	// 	"type",
-	// 	old_value,
-	// 	equipment_type,
-	// )
-	// .execute(get_db())
-	// .await
-	// .map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
-
-	// sqlx::query!("UPDATE equipment SET equipment_type = $1 WHERE id = $2", equipment_type, id)
-	// 	.execute(get_db())
-	// 	.await
-	// 	.map(|_| ())?;
+	sqlx::query!("UPDATE equipment SET status = $1 WHERE id = $2", format!("{next_status:#?}"), result.id)
+		.execute(get_db())
+		.await
+		.map(|_| ())?;
 
 	Ok(())
 }
