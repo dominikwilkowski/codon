@@ -55,14 +55,20 @@ leptos-qr-scanner = "0.2"
 chrono = { version = "0.4", features = ["serde"] }
 thaw = { version = "0.3" }
 qrcodegen = "1.8"
-convert_case = "0.6.0"
-uuid = { version = "1.10.0", features = ["serde", "v4", "js"] }
+convert_case = "0.6"
+uuid = { version = "1.10", features = ["serde", "v4", "js"] }
+axum_session_auth = { version = "0.14", optional = true }
+axum_session_sqlx = { version = "0.3", optional = true }
+axum_session = { version = "0.14.2", optional = true }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate", "thaw/hydrate"]
 ssr = [
 	"dep:axum",
 	"dep:tokio",
+	"dep:axum_session_auth",
+	"dep:axum_session_sqlx",
+	"dep:axum_session",
 	"dep:tower",
 	"dep:tower-http",
 	"dep:leptos_axum",

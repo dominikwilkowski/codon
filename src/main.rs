@@ -38,9 +38,6 @@ pub mod fileserv;
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
-	use sqlx::migrate::Migrator;
-	static MIGRATOR: Migrator = sqlx::migrate!("./migrations");
-
 	use crate::{
 		app::App,
 		db::ssr::{get_db, init_db},
@@ -48,12 +45,22 @@ async fn main() {
 	};
 
 	use axum::Router;
+	use axum_session::{DatabasePool, Session, SessionConfig, SessionLayer, SessionStore};
+	use axum_session_auth::{AuthConfig, AuthSession, AuthSessionLayer, Authentication, HasPermission};
+	use axum_session_sqlx::SessionPgPool;
 	use leptos::*;
 	use leptos_axum::{generate_route_list, LeptosRoutes};
+	use sqlx::migrate::Migrator;
 
 	// Init the pool into static
 	init_db().await.expect("Initialization of database failed");
 
+	let session_config = SessionConfig::default().with_table_name("codon_session");
+	let auth_config = AuthConfig::<i64>::default();
+	let auth_config = AuthConfig::<i64>::default().with_anonymous_user_id(Some(1));
+	let session_store = SessionStore::<SessionPgPool>::new(Some(get_db()), session_config);
+
+	static MIGRATOR: Migrator = sqlx::migrate!("./migrations");
 	if let Err(e) = MIGRATOR.run(get_db()).await {
 		eprintln!("{e:?}");
 	}
