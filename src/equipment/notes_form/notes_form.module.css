@@ -39,9 +39,3 @@
 
 .form .btn_line .error {
 }
-
-@keyframes fading {
-	100% {
-		opacity: 0;
-	}
-}

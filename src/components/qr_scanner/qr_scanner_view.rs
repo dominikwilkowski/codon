@@ -2,11 +2,14 @@ use crate::components::button::{Button, ButtonVariant};
 
 use leptos::*;
 use leptos_qr_scanner::Scan;
+use leptos_router::*;
 
 stylance::import_style!(css, "qr_scanner.module.css");
 
 #[component]
 pub fn QRScanner() -> impl IntoView {
+	let navigate = use_navigate();
+
 	let show_scanner = create_rw_signal(false);
 
 	view! {
@@ -41,9 +44,13 @@ pub fn QRScanner() -> impl IntoView {
 			</Button>
 			<Scan
 				active=show_scanner
-				on_scan=move |a| {
-					logging::log!("scanned: {}", &a);
-					show_scanner.set(false);
+				on_scan=move |scanned_url| {
+					if scanned_url.contains("/equipment/") {
+						if let Some(id_bit) = scanned_url.rsplit("/equipment/").next() {
+							show_scanner.set(false);
+							navigate(&format!("/equipment/{id_bit}"), Default::default());
+						}
+					}
 				}
 				class=css::scan
 				video_class=css::video

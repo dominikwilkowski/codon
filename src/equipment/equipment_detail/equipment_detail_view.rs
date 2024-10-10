@@ -7,8 +7,8 @@ use crate::{
 		select::Select,
 	},
 	equipment::{
-		get_log_for_equipment, EquipmentCell, EquipmentCellView, EquipmentData, EquipmentStatus, EquipmentType, Log,
-		LogPerson, Notes,
+		get_log_for_equipment, EquipmentCell, EquipmentCellView, EquipmentData, EquipmentStatus, EquipmentType, Heading,
+		Log, LogPerson, Notes,
 	},
 	error_template::ErrorTemplate,
 	icons::{FlaskLogo, IncubationCabinetLogo, VesselLogo},
@@ -152,17 +152,18 @@ pub fn EquipmentDetail() -> impl IntoView {
 									}
 									Ok(equipment) => {
 										let is_archived = equipment.status == EquipmentStatus::Archived;
+										let title = equipment.name.clone();
 										view! {
 											<div class=css::details>
-												<h1 class=css::heading>
+												<Heading>
 													{match equipment.equipment_type {
 														EquipmentType::Flask => view! { <FlaskLogo /> }.into_view(),
 														EquipmentType::Vessel => view! { <VesselLogo /> }.into_view(),
 														EquipmentType::IncubationCabinet => {
 															view! { <IncubationCabinetLogo /> }.into_view()
 														}
-													}} " " {equipment.name.clone()}
-												</h1>
+													}} " " {title}
+												</Heading>
 
 												<dl class=css::list>
 													<dt>ID</dt>

@@ -166,3 +166,9 @@ a:focus-visible:not(:global(.increasing)):not(:global(.specificity)) {
 :global(.input_shadow):hover {
 	border: none;
 }
+
+@keyframes fading {
+	100% {
+		opacity: 0;
+	}
+}
