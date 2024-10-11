@@ -1,0 +1,28 @@
+.form {
+	display: grid;
+	grid-template-columns: max-content 1fr;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+.label {
+	display: contents;
+}
+
+.label .text {
+	grid-column: 1;
+}
+
+.label .input {
+	grid-column: 2;
+}
+
+.label .input > * {
+	width: 100%;
+}
+
+.form > button {
+	grid-column: 2;
+	justify-self: end;
+	margin-top: 2rem;
+}

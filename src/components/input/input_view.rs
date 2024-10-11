@@ -9,8 +9,19 @@ pub fn Input(
 	#[prop(optional)] name: &'static str,
 	#[prop(optional, default = "text")] kind: &'static str,
 	#[prop(optional)] disabled: RwSignal<bool>,
+	#[prop(optional)] required: bool,
 ) -> impl IntoView {
-	view! { <input type=kind name=name class=css::input placeholder=placeholder value=value disabled=disabled /> }
+	view! {
+		<input
+			type=kind
+			name=name
+			class=css::input
+			placeholder=placeholder
+			value=value
+			disabled=disabled
+			required=required
+		/>
+	}
 }
 
 #[component]

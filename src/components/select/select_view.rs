@@ -9,6 +9,7 @@ pub use thaw::{MultiSelectOption, TagVariant};
 pub fn Select(
 	#[prop(optional)] name: &'static str,
 	#[prop(optional)] disabled: RwSignal<bool>,
+	#[prop(optional)] required: bool,
 	children: Children,
 ) -> impl IntoView {
 	let class = match disabled.get() {
@@ -18,7 +19,7 @@ pub fn Select(
 
 	view! {
 		<label class=format!("{} {}", css::select_wrapper, class)>
-			<select class=css::select name=name disabled=disabled>
+			<select class=css::select name=name disabled=disabled required=required>
 				{children()}
 			</select>
 		</label>

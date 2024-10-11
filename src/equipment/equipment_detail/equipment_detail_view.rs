@@ -5,6 +5,7 @@ use crate::{
 		file_input::FileInput,
 		input::{Input, MoneyInput, TextArea},
 		select::Select,
+		timezone_offset::Timezone,
 	},
 	equipment::{
 		get_log_for_equipment, EquipmentCell, EquipmentCellView, EquipmentData, EquipmentStatus, EquipmentType, Heading,
@@ -661,14 +662,6 @@ pub fn EquipmentDetail() -> impl IntoView {
 				}}
 			</ErrorBoundary>
 		</Transition>
-	}
-}
-
-#[component]
-pub fn Timezone() -> impl IntoView {
-	view! {
-		<input type="hidden" id="timezone_offset" name="timezone_offset" />
-		<script>{r#"document.getElementById("timezone_offset").value = new Date().getTimezoneOffset();"#}</script>
 	}
 }
 

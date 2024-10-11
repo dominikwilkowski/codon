@@ -11,5 +11,5 @@ pub fn DatePicker(
 	#[prop(optional, into)] value: RwSignal<Option<NaiveDate>>,
 	#[prop(attrs)] attrs: Vec<(&'static str, Attribute)>,
 ) -> impl IntoView {
-	view! { <ThawDatePicker class="input_shadow" value attrs /> }
+	view! { <ThawDatePicker class=format!("input_shadow {}", css::datepicker) value attrs /> }
 }
