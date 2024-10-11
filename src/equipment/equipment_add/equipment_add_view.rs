@@ -35,7 +35,7 @@ pub fn EquipmentAdd() -> impl IntoView {
 	});
 
 	view! {
-		<Heading>
+		<Heading hide_new=true>
 			<EquipmentLogo />
 			" Add new Equipment"
 		</Heading>
