@@ -3,8 +3,6 @@ use leptos::*;
 #[cfg(feature = "ssr")]
 use server_fn::codec::MultipartData;
 #[cfg(feature = "ssr")]
-use std::future::Future;
-#[cfg(feature = "ssr")]
 use std::path::{Path, PathBuf};
 #[cfg(feature = "ssr")]
 use tokio::fs::rename;
@@ -16,9 +14,11 @@ async fn move_temp_files(
 	base_path: &String,
 ) -> Result<(), ServerFnError> {
 	while let Some((temp_path, file_name)) = temp_files.pop() {
-		let new_path = Path::new(base_path).join(file_name.clone());
+		let new_path = PathBuf::from(format!("/public{base_path}{file_name}"));
 		rename(temp_path, new_path.clone()).await?;
-		uploaded_files.push(new_path.to_string_lossy().replace("public/", "/"));
+		uploaded_files.push(
+			new_path.to_string_lossy().strip_prefix("/public").unwrap_or(new_path.to_string_lossy().as_ref()).to_string(),
+		);
 	}
 	Ok(())
 }
@@ -41,11 +41,10 @@ pub struct FileUploadResult {
 }
 
 #[cfg(feature = "ssr")]
-pub async fn file_upload<F, Fut>(data: MultipartData, get_folder: F) -> Result<FileUploadResult, ServerFnError>
-where
-	F: for<'a> Fn(i32) -> Fut + Send + Sync + 'static,
-	Fut: Future<Output = Result<String, ServerFnError>> + Send,
-{
+pub async fn file_upload(
+	data: MultipartData,
+	get_folder: impl Fn(i32) -> String,
+) -> Result<FileUploadResult, ServerFnError> {
 	use tokio::{fs::File, io::AsyncWriteExt};
 	use uuid::Uuid;
 
@@ -67,10 +66,9 @@ where
 						Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
 					};
 					equipment_id = Some(id);
-					folder_name = Some(get_folder(id).await?);
+					folder_name = Some(get_folder(id));
 
-					tokio::fs::create_dir_all(format!("public/upload_media/{}", folder_name.clone().unwrap())).await?;
-
+					tokio::fs::create_dir_all(format!("public{}", folder_name.clone().unwrap())).await?;
 					move_temp_files(&mut temp_files, &mut uploaded_files, &folder_name.clone().unwrap()).await?;
 				},
 				"media1" | "media2" | "media3" | "media4" | "media5" | "media6" | "media7" | "media8" | "media9"
@@ -86,9 +84,8 @@ where
 							let file_path = if let Some(ref folder_name) = folder_name {
 								move_temp_files(&mut temp_files, &mut uploaded_files, folder_name).await?;
 
-								let final_path = PathBuf::from("public/upload_media/").join(folder_name).join(&name);
-								uploaded_files
-									.push(format!("{}", PathBuf::from("/upload_media/").join(folder_name).join(&name).to_string_lossy()));
+								let final_path = PathBuf::from(format!("public{folder_name}")).join(&name);
+								uploaded_files.push(format!("{}", PathBuf::from(folder_name).join(&name).to_string_lossy()));
 								final_path
 							} else {
 								// ID has not been processed yet so we store the files in a temp folder until it is

@@ -756,11 +756,13 @@ pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 	use crate::{
 		components::file_upload::file_upload,
 		db::ssr::get_db,
-		equipment::{get_folder, EquipmentLogType},
-		utils::string_to_option,
+		equipment::EquipmentLogType,
+		utils::{get_equipment_base_folder, get_equipment_log_folder},
 	};
 
-	let result = file_upload(data, get_folder).await?;
+	use tokio::fs::rename;
+
+	let result = file_upload(data, |id| format!("{}temp/", get_equipment_base_folder(id))).await?;
 
 	let mut action = None;
 	let mut note = None;
@@ -795,26 +797,124 @@ pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 		EquipmentStatus::Archived
 	};
 
-	sqlx::query!(
-		r#"INSERT INTO equipment_log
-		(log_type, equipment, person, notes, old_value, media1, media2, media3, media4, media5, media6, media7, media8, media9, media10)
-		VALUES
-		($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)"#,
+	let log = sqlx::query!(
+		r#"INSERT INTO equipment_log (log_type, equipment, person, notes, old_value) VALUES ($1, $2, $3, $4, $5) RETURNING id"#,
 		EquipmentLogType::from(next_status).to_string(),
 		result.id,
 		14,
 		note.to_string(),
 		old_status,
-		string_to_option(result.media1.clone()),
-		string_to_option(result.media2.clone()),
-		string_to_option(result.media3.clone()),
-		string_to_option(result.media4.clone()),
-		string_to_option(result.media5.clone()),
-		string_to_option(result.media6.clone()),
-		string_to_option(result.media7.clone()),
-		string_to_option(result.media8.clone()),
-		string_to_option(result.media9.clone()),
-		string_to_option(result.media10.clone()),
+	)
+	.fetch_one(get_db())
+	.await
+	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+
+	let log_folder = get_equipment_log_folder(log.id);
+
+	let media1 = if result.media1.is_empty() {
+		None
+	} else {
+		let new_path = result.media1.replace("temp/", &log_folder);
+		rename(format!("public{}", result.media1), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media2 = if result.media2.is_empty() {
+		None
+	} else {
+		let new_path = result.media2.replace("temp/", &log_folder);
+		rename(format!("public{}", result.media2), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media3 = if result.media3.is_empty() {
+		None
+	} else {
+		let new_path = result.media3.replace("temp/", &log_folder);
+		rename(format!("public{}", result.media3), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media4 = if result.media4.is_empty() {
+		None
+	} else {
+		let new_path = result.media4.replace("temp/", &log_folder);
+		rename(format!("public{}", result.media4), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media5 = if result.media5.is_empty() {
+		None
+	} else {
+		let new_path = result.media5.replace("temp/", &log_folder);
+		rename(format!("public{}", result.media5), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media6 = if result.media6.is_empty() {
+		None
+	} else {
+		let new_path = result.media6.replace("temp/", &log_folder);
+		rename(format!("public{}", result.media6), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media7 = if result.media7.is_empty() {
+		None
+	} else {
+		let new_path = result.media7.replace("temp/", &log_folder);
+		rename(format!("public{}", result.media7), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media8 = if result.media8.is_empty() {
+		None
+	} else {
+		let new_path = result.media8.replace("temp/", &log_folder);
+		rename(format!("public{}", result.media8), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media9 = if result.media9.is_empty() {
+		None
+	} else {
+		let new_path = result.media9.replace("temp/", &log_folder);
+		rename(format!("public{}", result.media9), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media10 = if result.media10.is_empty() {
+		None
+	} else {
+		let new_path = result.media10.replace("temp/", &log_folder);
+		rename(format!("public{}", result.media10), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	sqlx::query!(
+		r#"UPDATE equipment_log set
+			media1 = $1,
+			media2 = $2,
+			media3 = $3,
+			media4 = $4,
+			media5 = $5,
+			media6 = $6,
+			media7 = $7,
+			media8 = $8,
+			media9 = $9,
+			media10 = $10
+		WHERE id = $11"#,
+		media1,
+		media2,
+		media3,
+		media4,
+		media5,
+		media6,
+		media7,
+		media8,
+		media9,
+		media10,
+		log.id,
 	)
 	.execute(get_db())
 	.await

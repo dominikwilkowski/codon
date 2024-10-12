@@ -367,11 +367,16 @@ struct MediasSQL {
 
 #[server(input = MultipartFormData)]
 pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
-	use crate::{components::file_upload::file_upload, db::ssr::get_db, equipment::get_folder};
+	use crate::{
+		components::file_upload::file_upload,
+		db::ssr::get_db,
+		utils::{get_equipment_base_folder, get_equipment_notes_folder},
+	};
 
 	use std::{fs, path::PathBuf};
+	use tokio::fs::rename;
 
-	let result = file_upload(data, get_folder).await?;
+	let result = file_upload(data, |id| format!("{}temp", get_equipment_base_folder(id))).await?;
 
 	let mut note_id = None;
 	let mut notes = None;
@@ -409,6 +414,8 @@ pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 		return Err(ServerFnError::Request(String::from("No note ID was passed")));
 	}
 	let note_id = note_id.unwrap();
+
+	let notes_folder = get_equipment_notes_folder(note_id);
 
 	let medias = sqlx::query_as::<_, MediasSQL>("SELECT media1, media2, media3, media4, media5, media6, media7, media8, media9, media10 FROM equipment_notes WHERE id = $1")
 		.bind(note_id)
@@ -462,7 +469,9 @@ pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 	];
 	for media in media_fields {
 		if !media.is_empty() {
-			new_medias.push(media);
+			let new_path = media.replace("temp/", &notes_folder);
+			rename(format!("public{}", media), format!("public{new_path}")).await?;
+			new_medias.push(new_path);
 		}
 	}
 

@@ -81,7 +81,7 @@ impl EquipmentCellView for String {
 
 impl EquipmentCellView for QRCode {
 	fn view(self, _: bool) -> impl IntoView {
-		view! { <img src=format!("/qrcodes/equipment/{self}") alt="The QR code" class=css::qrcode /> }
+		view! { <img src=format!("{self}") alt="The QR code" class=css::qrcode /> }
 	}
 }
 

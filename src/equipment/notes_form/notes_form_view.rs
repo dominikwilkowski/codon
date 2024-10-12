@@ -1,13 +1,7 @@
 use crate::components::{button::Button, file_input::FileInput, input::TextArea};
-#[cfg(feature = "ssr")]
-use crate::{db::ssr::get_db, equipment::EquipmentType};
 
 use leptos::*;
-#[cfg(feature = "ssr")]
-use serde::{Deserialize, Serialize};
 use server_fn::codec::{MultipartData, MultipartFormData};
-#[cfg(feature = "ssr")]
-use sqlx::FromRow;
 use web_sys::{FormData, SubmitEvent};
 
 stylance::import_style!(css, "notes_form.module.css");
@@ -113,40 +107,17 @@ pub fn NotesForm(id: String, notes_upload_action: Action<FormData, Result<(), Se
 	}
 }
 
-#[cfg(feature = "ssr")]
-pub async fn get_folder(id: i32) -> Result<String, ServerFnError> {
-	#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
-	struct EquipmentSQLIDType {
-		id: i32,
-		equipment_type: String,
-	}
-
-	let equipment_sql_data =
-		sqlx::query_as::<_, EquipmentSQLIDType>("SELECT id, equipment_type FROM equipment WHERE id = $1")
-			.bind(id)
-			.fetch_one(get_db())
-			.await
-			.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
-
-	Ok(create_folder_name(EquipmentType::parse(equipment_sql_data.equipment_type), equipment_sql_data.id))
-}
-
-#[cfg(feature = "ssr")]
-pub fn create_folder_name(equipment_type: EquipmentType, id: i32) -> String {
-	let category = match equipment_type {
-		EquipmentType::Flask => "F",
-		EquipmentType::Vessel => "V",
-		EquipmentType::IncubationCabinet => "I",
-	};
-
-	format!("{category}-{}/", id)
-}
-
 #[server(input = MultipartFormData)]
 pub async fn save_notes(data: MultipartData) -> Result<(), ServerFnError> {
-	use crate::{components::file_upload::file_upload, db::ssr::get_db, utils::string_to_option};
+	use crate::{
+		components::file_upload::file_upload,
+		db::ssr::get_db,
+		utils::{get_equipment_base_folder, get_equipment_notes_folder},
+	};
 
-	let result = file_upload(data, get_folder).await?;
+	use tokio::fs::rename;
+
+	let result = file_upload(data, |id| format!("{}temp/", get_equipment_base_folder(id))).await?;
 
 	let mut person = None;
 	let mut notes = None;
@@ -167,24 +138,122 @@ pub async fn save_notes(data: MultipartData) -> Result<(), ServerFnError> {
 		}
 	}
 
-	sqlx::query!(
-		r#"INSERT INTO equipment_notes
-		(equipment, person, notes, media1, media2, media3, media4, media5, media6, media7, media8, media9, media10)
-		VALUES
-		($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)"#,
+	let note = sqlx::query!(
+		r#"INSERT INTO equipment_notes (equipment, person, notes) VALUES ($1, $2, $3) RETURNING id"#,
 		result.id,
 		person,
 		notes,
-		string_to_option(result.media1.clone()),
-		string_to_option(result.media2.clone()),
-		string_to_option(result.media3.clone()),
-		string_to_option(result.media4.clone()),
-		string_to_option(result.media5.clone()),
-		string_to_option(result.media6.clone()),
-		string_to_option(result.media7.clone()),
-		string_to_option(result.media8.clone()),
-		string_to_option(result.media9.clone()),
-		string_to_option(result.media10.clone()),
+	)
+	.fetch_one(get_db())
+	.await
+	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+
+	let notes_folder = get_equipment_notes_folder(note.id);
+
+	let media1 = if result.media1.is_empty() {
+		None
+	} else {
+		let new_path = result.media1.replace("temp/", &notes_folder);
+		rename(format!("public{}", result.media1), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media2 = if result.media2.is_empty() {
+		None
+	} else {
+		let new_path = result.media2.replace("temp/", &notes_folder);
+		rename(format!("public{}", result.media2), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media3 = if result.media3.is_empty() {
+		None
+	} else {
+		let new_path = result.media3.replace("temp/", &notes_folder);
+		rename(format!("public{}", result.media3), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media4 = if result.media4.is_empty() {
+		None
+	} else {
+		let new_path = result.media4.replace("temp/", &notes_folder);
+		rename(format!("public{}", result.media4), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media5 = if result.media5.is_empty() {
+		None
+	} else {
+		let new_path = result.media5.replace("temp/", &notes_folder);
+		rename(format!("public{}", result.media5), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media6 = if result.media6.is_empty() {
+		None
+	} else {
+		let new_path = result.media6.replace("temp/", &notes_folder);
+		rename(format!("public{}", result.media6), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media7 = if result.media7.is_empty() {
+		None
+	} else {
+		let new_path = result.media7.replace("temp/", &notes_folder);
+		rename(format!("public{}", result.media7), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media8 = if result.media8.is_empty() {
+		None
+	} else {
+		let new_path = result.media8.replace("temp/", &notes_folder);
+		rename(format!("public{}", result.media8), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media9 = if result.media9.is_empty() {
+		None
+	} else {
+		let new_path = result.media9.replace("temp/", &notes_folder);
+		rename(format!("public{}", result.media9), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	let media10 = if result.media10.is_empty() {
+		None
+	} else {
+		let new_path = result.media10.replace("temp/", &notes_folder);
+		rename(format!("public{}", result.media10), format!("public{new_path}")).await?;
+		Some(new_path)
+	};
+
+	sqlx::query!(
+		r#"UPDATE equipment_notes set
+			media1 = $1,
+			media2 = $2,
+			media3 = $3,
+			media4 = $4,
+			media5 = $5,
+			media6 = $6,
+			media7 = $7,
+			media8 = $8,
+			media9 = $9,
+			media10 = $10
+		WHERE id = $11"#,
+		media1,
+		media2,
+		media3,
+		media4,
+		media5,
+		media6,
+		media7,
+		media8,
+		media9,
+		media10,
+		note.id,
 	)
 	.execute(get_db())
 	.await
