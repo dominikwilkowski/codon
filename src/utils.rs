@@ -25,30 +25,30 @@ fn test_get_equipment_base_folder() {
 
 pub fn get_equipment_notes_folder(id: i32) -> String {
 	let (lower_bound, upper_bound) = get_bounds(id);
-	format!("notes_{lower_bound}-{upper_bound}k/")
+	format!("notes/{lower_bound}-{upper_bound}k/")
 }
 
 #[test]
 fn test_get_equipment_notes_folder() {
-	assert_eq!(get_equipment_notes_folder(2), String::from("notes_0-5k/"));
-	assert_eq!(get_equipment_notes_folder(50), String::from("notes_0-5k/"));
-	assert_eq!(get_equipment_notes_folder(4999), String::from("notes_0-5k/"));
-	assert_eq!(get_equipment_notes_folder(5000), String::from("notes_5-10k/"));
-	assert_eq!(get_equipment_notes_folder(28_999), String::from("notes_25-30k/"));
-	assert_eq!(get_equipment_notes_folder(2_147_483_647), String::from("notes_2147480-2147485k/"));
+	assert_eq!(get_equipment_notes_folder(2), String::from("notes/0-5k/"));
+	assert_eq!(get_equipment_notes_folder(50), String::from("notes/0-5k/"));
+	assert_eq!(get_equipment_notes_folder(4999), String::from("notes/0-5k/"));
+	assert_eq!(get_equipment_notes_folder(5000), String::from("notes/5-10k/"));
+	assert_eq!(get_equipment_notes_folder(28_999), String::from("notes/25-30k/"));
+	assert_eq!(get_equipment_notes_folder(2_147_483_647), String::from("notes/2147480-2147485k/"));
 }
 
 pub fn get_equipment_log_folder(id: i32) -> String {
 	let (lower_bound, upper_bound) = get_bounds(id);
-	format!("log_{lower_bound}-{upper_bound}k/")
+	format!("log/{lower_bound}-{upper_bound}k/")
 }
 
 #[test]
 fn test_get_equipment_log_folder() {
-	assert_eq!(get_equipment_log_folder(2), String::from("log_0-5k/"));
-	assert_eq!(get_equipment_log_folder(50), String::from("log_0-5k/"));
-	assert_eq!(get_equipment_log_folder(4999), String::from("log_0-5k/"));
-	assert_eq!(get_equipment_log_folder(5000), String::from("log_5-10k/"));
-	assert_eq!(get_equipment_log_folder(28_999), String::from("log_25-30k/"));
-	assert_eq!(get_equipment_log_folder(2_147_483_647), String::from("log_2147480-2147485k/"));
+	assert_eq!(get_equipment_log_folder(2), String::from("log/0-5k/"));
+	assert_eq!(get_equipment_log_folder(50), String::from("log/0-5k/"));
+	assert_eq!(get_equipment_log_folder(4999), String::from("log/0-5k/"));
+	assert_eq!(get_equipment_log_folder(5000), String::from("log/5-10k/"));
+	assert_eq!(get_equipment_log_folder(28_999), String::from("log/25-30k/"));
+	assert_eq!(get_equipment_log_folder(2_147_483_647), String::from("log/2147480-2147485k/"));
 }
