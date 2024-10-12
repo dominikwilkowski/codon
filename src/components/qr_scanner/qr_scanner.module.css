@@ -1,0 +1,54 @@
+.qr_scanner {
+	position: fixed;
+	top: 2rem;
+	left: 2.5%;
+	align-content: center;
+	width: 95%;
+	background: var(--bg);
+	z-index: 100;
+	border-radius: var(--border-radius-lg);
+	overflow: hidden;
+	box-shadow:
+		inset 0 0 0 1px hsla(0, 0%, 100%, 0.05),
+		0 0 0 1px hsla(0, 0%, 0%, 0.05),
+		0 0.3px 0.4px hsla(0, 0%, 0%, 0.02),
+		0 0.9px 1.5px hsla(0, 0%, 0%, 0.045),
+		3.5px 0 12px 3px hsla(0, 0%, 0%, 0.35);
+	display: none;
+}
+
+.qr_scanner button {
+	position: absolute;
+	z-index: 2;
+	top: 0.25rem;
+	right: 0.25rem;
+}
+
+.btn_backdrop {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 99;
+	appearance: none;
+	border: none;
+	background: #000c;
+	box-shadow: none;
+	padding: 0;
+	margin: 0;
+	display: none;
+}
+
+.qr_scanner.is_open,
+.btn_backdrop.is_open {
+	display: grid;
+}
+
+.qr_scanner .scan {
+}
+
+.qr_scanner .video {
+	width: 100%;
+	margin-bottom: -3px;
+}

@@ -14,9 +14,11 @@ pub mod components {
 	pub mod input;
 	pub mod multiline;
 	pub mod pagination;
+	pub mod qr_scanner;
 	pub mod radio;
 	pub mod select;
 	pub mod switch;
+	pub mod timezone_offset;
 }
 pub mod db;
 pub mod ds;

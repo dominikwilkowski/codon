@@ -31,6 +31,11 @@ pub mod equipment_add {
 }
 pub use equipment_add::equipment_add_view::*;
 
+pub mod heading {
+	pub mod heading_view;
+}
+pub use heading::heading_view::*;
+
 pub mod row {
 	pub mod row_view;
 }

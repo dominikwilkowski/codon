@@ -1,0 +1,36 @@
+.heading {
+	display: flex;
+	gap: 1rem;
+	align-items: end;
+	margin: 0;
+}
+
+.heading_wrapper {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	align-items: end;
+	margin-bottom: 4rem;
+}
+
+.heading_wrapper .heading_btns {
+	display: grid;
+	grid-auto-flow: column;
+	gap: 2rem;
+	align-items: end;
+}
+
+.heading_wrapper .heading_btns a {
+	display: inline-grid;
+	justify-items: center;
+	text-align: center;
+	gap: 0.25rem;
+}
+
+.heading_wrapper .heading_btns svg {
+	height: 2rem;
+}
+
+.heading_wrapper .heading_btns button span {
+	flex-flow: column;
+	gap: 0.25rem;
+}

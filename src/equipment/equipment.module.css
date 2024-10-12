@@ -1,9 +1,3 @@
-.heading {
-	display: flex;
-	gap: 1rem;
-	align-items: end;
-}
-
 .table_wrapper {
 	max-width: 100%;
 	overflow: auto;

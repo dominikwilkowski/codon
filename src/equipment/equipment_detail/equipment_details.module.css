@@ -1,12 +1,6 @@
 .details {
 }
 
-.heading {
-	display: flex;
-	gap: 1rem;
-	align-items: end;
-}
-
 .list {
 	display: grid;
 	grid-template-columns: 1fr;
@@ -28,6 +22,7 @@
 	display: flex;
 	justify-content: end;
 	align-items: center;
+	flex-wrap: wrap;
 	gap: 0.5rem;
 }
 

@@ -4,7 +4,7 @@ use crate::{
 		pagination::Pagination,
 		select::{MultiSelect, MultiSelectOption},
 	},
-	equipment::{EquipmentData, Row, THead},
+	equipment::{EquipmentData, Heading, Row, THead},
 	error_template::ErrorTemplate,
 	icons::EquipmentLogo,
 };
@@ -59,11 +59,10 @@ pub fn Equipment() -> impl IntoView {
 	);
 
 	view! {
-		<h1 class=css::heading>
+		<Heading>
 			<EquipmentLogo />
 			" Equipment"
-		</h1>
-		<A href="add/">Add new</A>
+		</Heading>
 		<Transition fallback=move || view! { <p>Loading equipment...</p> }>
 			<ErrorBoundary fallback=|errors| {
 				view! { <ErrorTemplate errors /> }

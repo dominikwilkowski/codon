@@ -2,3 +2,7 @@
 	outline: 1px solid var(--focus) !important;
 	outline-offset: 1px;
 }
+
+.datepicker:global(.thaw-input) {
+	border: none;
+}
