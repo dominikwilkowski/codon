@@ -32,6 +32,43 @@
 	border-radius: var(--border-radius-sm);
 }
 
+.log_type:global(.type_cleaning) {
+	background-color: var(--state-clean-bg);
+	color: var(--state-clean-fb);
+	border-color: var(--state-clean-fb);
+}
+.log_type:global(.type_preparation) {
+	background-color: var(--state-prepare-bg);
+	color: var(--state-prepare-fb);
+	border-color: var(--state-prepare-fb);
+}
+.log_type:global(.type_sterilization) {
+	background-color: var(--state-sterilize-bg);
+	color: var(--state-sterilize-fb);
+	border-color: var(--state-sterilize-fb);
+}
+.log_type:global(.type_using) {
+	background-color: var(--state-use-bg);
+	color: var(--state-use-fb);
+	border-color: var(--state-use-fb);
+}
+.log_type:global(.type_dirty) {
+	background-color: var(--state-dirty-bg);
+	color: var(--state-dirty-fb);
+	border-color: var(--state-dirty-fb);
+}
+.log_type:global(.type_archive) {
+	background-color: var(--state-archive-bg);
+	color: var(--state-archive-fb);
+	border-color: var(--state-archive-fb);
+	border-style: dashed;
+}
+.log_type:global(.type_edit) {
+	background-color: #101432;
+	color: #5274ff;
+	border-color: #5274ff;
+}
+
 .log_edit {
 }
 

@@ -38,32 +38,32 @@
 }
 
 .cleaned {
-	background-color: #161e1a;
-	color: #18a058;
-	border: 1px solid #18a058;
+	background-color: var(--state-clean-bg);
+	color: var(--state-clean-fb);
+	border: 1px solid var(--state-clean-fb);
 }
 .prepared {
-	background-color: #1e1c16;
-	color: #f0a020;
-	border: 1px solid #f0a020;
+	background-color: var(--state-prepare-bg);
+	color: var(--state-prepare-fb);
+	border: 1px solid var(--state-prepare-fb);
 }
 .sterilized {
-	background-color: #1f2122;
-	color: #ccc;
-	border: 1px solid #ccc;
+	background-color: var(--state-sterilize-bg);
+	color: var(--state-sterilize-fb);
+	border: 1px solid var(--state-sterilize-fb);
 }
 .inuse {
-	background-color: #191622;
-	color: var(--secondary);
-	border: 1px solid var(--secondary);
+	background-color: var(--state-use-bg);
+	color: var(--state-use-fb);
+	border: 1px solid var(--state-use-fb);
 }
 .dirty {
-	background-color: #221a1a;
-	color: #d03050;
-	border: 1px solid #d03050;
+	background-color: var(--state-dirty-bg);
+	color: var(--state-dirty-fb);
+	border: 1px solid var(--state-dirty-fb);
 }
 .archived {
-	background-color: #1f2122;
-	color: #ccc;
-	border: 1px dashed #ccc;
+	background-color: var(--state-archive-bg);
+	color: var(--state-archive-fb);
+	border: 1px dashed var(--state-archive-fb);
 }
