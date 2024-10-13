@@ -71,7 +71,7 @@ pub fn EquipmentAdd() -> impl IntoView {
 			<label class=css::label>
 				<span class=css::text>Purchase Date:</span>
 				<span class=css::input>
-					<DatePicker attr:name="purchase_date" />
+					<DatePicker attr:name="purchase_date" attr:placeholder="Purchase Date" />
 				</span>
 			</label>
 
@@ -85,14 +85,14 @@ pub fn EquipmentAdd() -> impl IntoView {
 			<label class=css::label>
 				<span class=css::text>Cost:</span>
 				<span class=css::input>
-					<MoneyInput name="cost_in_cent" />
+					<MoneyInput name="cost_in_cent" placeholder="Cost" />
 				</span>
 			</label>
 
 			<label class=css::label>
 				<span class=css::text>Warranty Expiration:</span>
 				<span class=css::input>
-					<DatePicker attr:name="warranty_expiration_date" />
+					<DatePicker attr:name="warranty_expiration_date" attr:placeholder="Warranty Expiration" />
 				</span>
 			</label>
 
