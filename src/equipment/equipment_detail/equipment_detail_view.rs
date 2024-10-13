@@ -293,34 +293,34 @@ pub fn EquipmentDetail() -> impl IntoView {
 																			placeholder="Add a note why you made this change"
 																		/>
 																		<div class=css::btns>
-																			<Show when=move || !media9.get().is_empty()>
-																				<FileInput name="media10" value=media10 />
-																			</Show>
-																			<Show when=move || !media8.get().is_empty()>
-																				<FileInput name="media9" value=media9 />
-																			</Show>
-																			<Show when=move || !media7.get().is_empty()>
-																				<FileInput name="media8" value=media8 />
-																			</Show>
-																			<Show when=move || !media6.get().is_empty()>
-																				<FileInput name="media7" value=media7 />
-																			</Show>
-																			<Show when=move || !media5.get().is_empty()>
-																				<FileInput name="media6" value=media6 />
-																			</Show>
-																			<Show when=move || !media4.get().is_empty()>
-																				<FileInput name="media5" value=media5 />
-																			</Show>
-																			<Show when=move || !media3.get().is_empty()>
-																				<FileInput name="media4" value=media4 />
+																			<FileInput name="media1" value=media1 />
+																			<Show when=move || !media1.get().is_empty()>
+																				<FileInput name="media2" value=media2 />
 																			</Show>
 																			<Show when=move || !media2.get().is_empty()>
 																				<FileInput name="media3" value=media3 />
 																			</Show>
-																			<Show when=move || !media1.get().is_empty()>
-																				<FileInput name="media2" value=media2 />
+																			<Show when=move || !media3.get().is_empty()>
+																				<FileInput name="media4" value=media4 />
 																			</Show>
-																			<FileInput name="media1" value=media1 />
+																			<Show when=move || !media4.get().is_empty()>
+																				<FileInput name="media5" value=media5 />
+																			</Show>
+																			<Show when=move || !media5.get().is_empty()>
+																				<FileInput name="media6" value=media6 />
+																			</Show>
+																			<Show when=move || !media6.get().is_empty()>
+																				<FileInput name="media7" value=media7 />
+																			</Show>
+																			<Show when=move || !media7.get().is_empty()>
+																				<FileInput name="media8" value=media8 />
+																			</Show>
+																			<Show when=move || !media8.get().is_empty()>
+																				<FileInput name="media9" value=media9 />
+																			</Show>
+																			<Show when=move || !media9.get().is_empty()>
+																				<FileInput name="media10" value=media10 />
+																			</Show>
 																		</div>
 																		<div class=css::btns>
 																			<span>
