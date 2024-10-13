@@ -470,7 +470,7 @@ pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 	for media in media_fields {
 		if !media.is_empty() {
 			let new_path = media.replace("temp/", &notes_folder);
-			rename(format!("public{}", media), format!("public{new_path}")).await?;
+			rename(format!("public{media}"), format!("public{new_path}")).await?;
 			new_medias.push(new_path);
 		}
 	}

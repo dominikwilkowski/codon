@@ -757,10 +757,8 @@ pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 		components::file_upload::file_upload,
 		db::ssr::get_db,
 		equipment::EquipmentLogType,
-		utils::{get_equipment_base_folder, get_equipment_log_folder},
+		utils::{get_equipment_base_folder, get_equipment_log_folder, move_file},
 	};
-
-	use tokio::fs::rename;
 
 	let result = file_upload(data, |id| format!("{}temp/", get_equipment_base_folder(id))).await?;
 
@@ -811,85 +809,16 @@ pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 
 	let log_folder = get_equipment_log_folder(log.id);
 
-	let media1 = if result.media1.is_empty() {
-		None
-	} else {
-		let new_path = result.media1.replace("temp/", &log_folder);
-		rename(format!("public{}", result.media1), format!("public{new_path}")).await?;
-		Some(new_path)
-	};
-
-	let media2 = if result.media2.is_empty() {
-		None
-	} else {
-		let new_path = result.media2.replace("temp/", &log_folder);
-		rename(format!("public{}", result.media2), format!("public{new_path}")).await?;
-		Some(new_path)
-	};
-
-	let media3 = if result.media3.is_empty() {
-		None
-	} else {
-		let new_path = result.media3.replace("temp/", &log_folder);
-		rename(format!("public{}", result.media3), format!("public{new_path}")).await?;
-		Some(new_path)
-	};
-
-	let media4 = if result.media4.is_empty() {
-		None
-	} else {
-		let new_path = result.media4.replace("temp/", &log_folder);
-		rename(format!("public{}", result.media4), format!("public{new_path}")).await?;
-		Some(new_path)
-	};
-
-	let media5 = if result.media5.is_empty() {
-		None
-	} else {
-		let new_path = result.media5.replace("temp/", &log_folder);
-		rename(format!("public{}", result.media5), format!("public{new_path}")).await?;
-		Some(new_path)
-	};
-
-	let media6 = if result.media6.is_empty() {
-		None
-	} else {
-		let new_path = result.media6.replace("temp/", &log_folder);
-		rename(format!("public{}", result.media6), format!("public{new_path}")).await?;
-		Some(new_path)
-	};
-
-	let media7 = if result.media7.is_empty() {
-		None
-	} else {
-		let new_path = result.media7.replace("temp/", &log_folder);
-		rename(format!("public{}", result.media7), format!("public{new_path}")).await?;
-		Some(new_path)
-	};
-
-	let media8 = if result.media8.is_empty() {
-		None
-	} else {
-		let new_path = result.media8.replace("temp/", &log_folder);
-		rename(format!("public{}", result.media8), format!("public{new_path}")).await?;
-		Some(new_path)
-	};
-
-	let media9 = if result.media9.is_empty() {
-		None
-	} else {
-		let new_path = result.media9.replace("temp/", &log_folder);
-		rename(format!("public{}", result.media9), format!("public{new_path}")).await?;
-		Some(new_path)
-	};
-
-	let media10 = if result.media10.is_empty() {
-		None
-	} else {
-		let new_path = result.media10.replace("temp/", &log_folder);
-		rename(format!("public{}", result.media10), format!("public{new_path}")).await?;
-		Some(new_path)
-	};
+	let media1 = move_file(result.media1, &log_folder).await?;
+	let media2 = move_file(result.media2, &log_folder).await?;
+	let media3 = move_file(result.media3, &log_folder).await?;
+	let media4 = move_file(result.media4, &log_folder).await?;
+	let media5 = move_file(result.media5, &log_folder).await?;
+	let media6 = move_file(result.media6, &log_folder).await?;
+	let media7 = move_file(result.media7, &log_folder).await?;
+	let media8 = move_file(result.media8, &log_folder).await?;
+	let media9 = move_file(result.media9, &log_folder).await?;
+	let media10 = move_file(result.media10, &log_folder).await?;
 
 	sqlx::query!(
 		r#"UPDATE equipment_log set
