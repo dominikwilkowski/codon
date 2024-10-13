@@ -36,6 +36,32 @@ pub mod utils;
 #[cfg(feature = "ssr")]
 pub mod fileserv;
 
+use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct User {
+	pub id: i32,
+	pub anonymous: bool,
+	pub username: String,
+	pub permissions: HashSet<String>,
+}
+
+impl Default for User {
+	fn default() -> Self {
+		let mut permissions = HashSet::new();
+
+		permissions.insert("Category::View".to_owned());
+
+		Self {
+			id: 1,
+			anonymous: true,
+			username: "Guest".into(),
+			permissions,
+		}
+	}
+}
+
 #[allow(clippy::needless_return)]
 #[cfg(feature = "ssr")]
 #[tokio::main]
@@ -47,20 +73,21 @@ async fn main() {
 	};
 
 	use axum::Router;
-	use axum_session::{DatabasePool, Session, SessionConfig, SessionLayer, SessionStore};
-	use axum_session_auth::{AuthConfig, AuthSession, AuthSessionLayer, Authentication, HasPermission};
+	use axum_session::{SessionConfig, SessionLayer, SessionStore};
+	use axum_session_auth::*;
 	use axum_session_sqlx::SessionPgPool;
 	use leptos::*;
 	use leptos_axum::{generate_route_list, LeptosRoutes};
-	use sqlx::migrate::Migrator;
+	use sqlx::{migrate::Migrator, PgPool};
 
 	// Init the pool into static
 	init_db().await.expect("Initialization of database failed");
 
 	let session_config = SessionConfig::default().with_table_name("codon_session");
-	let auth_config = AuthConfig::<i64>::default();
 	let auth_config = AuthConfig::<i64>::default().with_anonymous_user_id(Some(1));
-	let session_store = SessionStore::<SessionPgPool>::new(Some(get_db()), session_config);
+	let session_store = SessionStore::<SessionPgPool>::new(Some(get_db().clone().into()), session_config)
+		.await
+		.expect("Failed to create session store");
 
 	static MIGRATOR: Migrator = sqlx::migrate!("./migrations");
 	if let Err(e) = MIGRATOR.run(get_db()).await {
@@ -81,7 +108,9 @@ async fn main() {
 	let app = Router::new()
 		.leptos_routes(&leptos_options, routes, App)
 		.fallback(file_and_error_handler)
-		.with_state(leptos_options);
+		.with_state(leptos_options)
+		.layer(AuthSessionLayer::<User, i64, SessionPgPool, PgPool>::new(Some(get_db().clone())).with_config(auth_config))
+		.layer(SessionLayer::new(session_store));
 
 	let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
 	axum::serve(listener, app.into_make_service()).await.unwrap();
