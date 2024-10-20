@@ -2,6 +2,7 @@
 pub mod macros;
 
 pub mod app;
+pub mod auth;
 pub mod components {
 	pub mod avatar;
 	pub mod button;
@@ -29,6 +30,7 @@ pub mod header;
 pub mod home;
 pub mod icons;
 pub mod nav;
+pub mod permission;
 pub mod qrcode;
 pub mod samples;
 pub mod utils;
@@ -36,63 +38,88 @@ pub mod utils;
 #[cfg(feature = "ssr")]
 pub mod fileserv;
 
-use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
+use crate::{
+	app::App,
+	auth::{ssr::AuthSession, User},
+	fileserv::file_and_error_handler,
+};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct User {
-	pub id: i32,
-	pub anonymous: bool,
-	pub username: String,
-	pub permissions: HashSet<String>,
+use axum::{
+	body::Body as AxumBody,
+	extract::{FromRef, Path, State},
+	http::Request,
+	response::{IntoResponse, Response},
+	routing::get,
+	Router,
+};
+use axum_session::{SessionConfig, SessionLayer, SessionStore};
+use axum_session_auth::{AuthConfig, AuthSessionLayer};
+pub use axum_session_sqlx::SessionPgPool;
+use leptos::*;
+use leptos_axum::{generate_route_list, handle_server_fns_with_context, render_route_with_context, LeptosRoutes};
+use leptos_router::RouteListing;
+use sqlx::{migrate::Migrator, PgPool};
+
+#[derive(FromRef, Debug, Clone)]
+pub struct AppState {
+	pub leptos_options: LeptosOptions,
+	pub routes: Vec<RouteListing>,
+	pub pool: PgPool,
 }
 
-impl Default for User {
-	fn default() -> Self {
-		let mut permissions = HashSet::new();
+async fn server_fn_handler(
+	State(app_state): State<AppState>,
+	auth_session: AuthSession,
+	_path: Path<String>,
+	request: Request<AxumBody>,
+) -> impl IntoResponse {
+	handle_server_fns_with_context(
+		move || {
+			provide_context(auth_session.clone());
+			provide_context(app_state.pool.clone());
+		},
+		request,
+	)
+	.await
+}
 
-		permissions.insert("Category::View".to_owned());
-
-		Self {
-			id: 1,
-			anonymous: true,
-			username: "Guest".into(),
-			permissions,
-		}
-	}
+async fn leptos_routes_handler(
+	auth_session: AuthSession,
+	State(app_state): State<AppState>,
+	req: Request<AxumBody>,
+) -> Response {
+	let handler = render_route_with_context(
+		app_state.leptos_options.clone(),
+		app_state.routes.clone(),
+		move || {
+			provide_context(auth_session.clone());
+			provide_context(app_state.pool.clone());
+		},
+		App,
+	);
+	handler(req).await.into_response()
 }
 
 #[allow(clippy::needless_return)]
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
-	use crate::{
-		app::App,
-		db::ssr::{get_db, init_db},
-		fileserv::file_and_error_handler,
-	};
+	use crate::db::ssr::{get_db, init_db};
 
-	use axum::Router;
-	use axum_session::{SessionConfig, SessionLayer, SessionStore};
-	use axum_session_auth::*;
-	use axum_session_sqlx::SessionPgPool;
-	use leptos::*;
-	use leptos_axum::{generate_route_list, LeptosRoutes};
-	use sqlx::{migrate::Migrator, PgPool};
-
-	// Init the pool into static
+	// Init the Postgres pool into static
 	init_db().await.expect("Initialization of database failed");
 
-	let session_config = SessionConfig::default().with_table_name("codon_session");
-	let auth_config = AuthConfig::<i64>::default().with_anonymous_user_id(Some(1));
-	let session_store = SessionStore::<SessionPgPool>::new(Some(get_db().clone().into()), session_config)
-		.await
-		.expect("Failed to create session store");
-
 	static MIGRATOR: Migrator = sqlx::migrate!("./migrations");
+
 	if let Err(e) = MIGRATOR.run(get_db()).await {
 		eprintln!("{e:?}");
 	}
+
+	// Auth section
+	let session_config = SessionConfig::default().with_table_name("axum_sessions");
+	let auth_config = AuthConfig::<i32>::default();
+	let session_store =
+		SessionStore::<SessionPgPool>::new(Some(SessionPgPool::from(get_db().clone())), session_config).await.unwrap();
 
 	// Setting get_configuration(None) means we'll be using cargo-leptos's env values
 	// For deployment these variables are:
@@ -104,13 +131,20 @@ async fn main() {
 	let addr = leptos_options.site_addr;
 	let routes = generate_route_list(App);
 
+	let app_state = AppState {
+		leptos_options,
+		routes: routes.clone(),
+		pool: get_db().clone(),
+	};
+
 	// build our application with a route
 	let app = Router::new()
-		.leptos_routes(&leptos_options, routes, App)
+		.route("/api/*fn_name", get(server_fn_handler).post(server_fn_handler))
+		.leptos_routes_with_handler(routes, get(leptos_routes_handler))
 		.fallback(file_and_error_handler)
-		.with_state(leptos_options)
-		.layer(AuthSessionLayer::<User, i64, SessionPgPool, PgPool>::new(Some(get_db().clone())).with_config(auth_config))
-		.layer(SessionLayer::new(session_store));
+		.layer(AuthSessionLayer::<User, i32, SessionPgPool, PgPool>::new(Some(get_db().clone())).with_config(auth_config))
+		.layer(SessionLayer::new(session_store))
+		.with_state(app_state);
 
 	let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
 	axum::serve(listener, app.into_make_service()).await.unwrap();

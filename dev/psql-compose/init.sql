@@ -12,39 +12,41 @@ INSERT INTO samples (sample_type, analyst) VALUES ('sample_type1', 'Analyst One'
 
 -- people_status = 'Active', 'OnLeave', 'Left'
 CREATE TABLE people (
-	id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-	employee_id TEXT UNIQUE,
-	status TEXT NOT NULL,
-	first_name TEXT,
-	last_name TEXT,
-	preferred_name TEXT NOT NULL,
-	email TEXT UNIQUE NOT NULL,
-	phone_number TEXT,
-	department TEXT,
-	role TEXT,
-	hire_date TIMESTAMPTZ,
-	emergency_contact TEXT,
-	certifications TEXT,
-	specializations TEXT,
-	picture TEXT,
-	bio TEXT,
-	create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+	id                   INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	employee_id          TEXT UNIQUE,
+	status               TEXT NOT NULL,
+	first_name           TEXT,
+	last_name            TEXT,
+	preferred_name       TEXT NOT NULL,
+	email                TEXT UNIQUE NOT NULL,
+	phone_number         TEXT,
+	department           TEXT,
+	role                 TEXT,
+	hire_date            TIMESTAMPTZ,
+	emergency_contact    TEXT,
+	certifications       TEXT,
+	specializations      TEXT,
+	picture              TEXT,
+	bio                  TEXT,
+	permission_equipment TEXT NOT NULL,
+  permission_user      TEXT NOT NULL,
+	create_date          TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
-INSERT INTO people (employee_id, first_name, last_name, preferred_name, email, phone_number, bio, department, role, hire_date, status, emergency_contact, certifications, specializations, picture) VALUES
-('BIO10-0001', 'Gene', 'Splicer', 'Gene Splicer', 'gene.splicer@biolab.com', '555-0100', 'Always on the cutting edge.', 'Genetics', 'Senior Scientist', '2020-01-15', 'Active', 'Dr. Helix (555-1111)', 'PhD in Genetics', 'DNA recombination', 'gene_splicer.png'),
-('BIO10-0002', 'Elle', 'Ment', 'Elle Ment', 'elle.ment@biolab.com', '555-0101', 'Her experiments always have great chemistry.', 'Chemistry', 'Lab Assistant', '2021-06-01', 'Active', 'Sam Ment (555-2222)', 'BSc in Chemistry', 'Chemical analysis', 'elle_ment.png'),
-('BIO10-0003', 'Adam', 'Zyme', 'Adam Zyme', 'adam.zyme@biolab.com', '555-0102', 'Enzymes are his catalyst.', 'Biochemistry', 'Research Scientist', '2019-09-10', 'Left', 'Eve Zyme (555-3333)', 'PhD in Biochemistry', 'Enzymology', 'adam_zyme.png'),
-('BIO10-0004', 'Ann', 'Tibody', 'Ann Tibody', 'ann.tibody@biolab.com', '555-0103', 'Her work is highly defensive.', 'Immunology', 'Lab Technician', '2018-05-20', 'OnLeave', 'Ian Tibody (555-4444)', 'BSc in Biology', 'Antibody production', 'ann_tibody.png'),
-('BIO10-0005', 'Phil', 'Ter', 'Phil Ter', 'phil.ter@biolab.com', '555-0104', 'Filtering out the impurities.', 'Microbiology', 'Lab Assistant', '2022-02-14', 'Active', 'Sue Ter (555-5555)', 'BSc in Microbiology', 'Filtration techniques', 'phil_ter.png'),
-('BIO10-0006', 'Ben', 'Doyle', 'Ben Doyle', 'ben.doyle@biolab.com', '555-0105', 'Digging deep into research.', 'Geology', 'Research Scientist', '2017-11-01', 'Left', 'Maggie Doyle (555-6666)', 'PhD in Geology', 'Soil analysis', 'ben_doyle.png'),
-('BIO10-0007', 'Ari', 'Ous', 'Ari Ous', 'ari.ous@biolab.com', '555-0106', 'Her ideas are contagious.', 'Virology', 'Senior Scientist', '2016-07-30', 'Active', 'Val Ous (555-7777)', 'PhD in Virology', 'Virus research', 'ari_ous.png'),
-('BIO10-0008', 'Polly', 'Merase', 'Polly Merase', 'polly.merase@biolab.com', '555-0107', 'She never stops copying.', 'Molecular Biology', 'Lab Technician', '2021-03-12', 'OnLeave', 'Ruth Merase (555-8888)', 'BSc in Molecular Biology', 'PCR techniques', 'polly_merase.png'),
-('BIO10-0009', 'Dee', 'N.A.', 'Dee N.A.', 'dee.na@biolab.com', '555-0108', 'At the core of every discovery.', 'Genomics', 'Research Scientist', '2018-08-24', 'Left', 'Jay N.A. (555-9999)', 'PhD in Genomics', 'Genome sequencing', 'dee_na.png'),
-('BIO10-0010', 'Helix', 'Turner', 'Helix Turner', 'helix.turner@biolab.com', '555-0109', 'Twists and turns in his research.', 'Structural Biology', 'Lab Assistant', '2020-12-05', 'Left', 'Felix Turner (555-1010)', 'BSc in Structural Biology', 'Protein folding', 'helix_turner.png'),
-('BIO10-0011', 'Max', 'A Million', 'Max A Million', 'max.a.million@biolab.com', '555-0110', 'Always reaching for the maximum.', 'Data Analysis', 'Data Scientist', '2019-04-01', 'Left', 'Mina Million (555-1111)', 'MSc in Data Science', 'Big data analytics', 'max_a_million.png'),
-('BIO10-0012', 'Eve', 'Olution', 'Eve Olution', 'eve.olution@biolab.com', '555-0111', 'Constantly adapting.', 'Evolutionary Biology', 'Senior Scientist', '2015-10-10', 'Active', 'Adam Olution (555-1212)', 'PhD in Evolutionary Biology', 'Species adaptation', 'eve_olution.png'),
-('BIO10-0013', 'Michael', 'Shipley', 'Mic Shipley', 'mic@biolab.com', '555-25372', 'Calm but busy', 'Operations', 'Research Operations', '2011-01-12', 'Active', 'Briar (555-836417)', 'PhD in Patience', 'Species of Dune', 'mic.png'),
-('BIO10-0014', 'Dominik', 'Wilkowski', 'Dom', 'dom.wilko@biolab.com', '555-666', 'Total nerd.', 'Computer science', 'Senior Dork', '2023-12-24', 'Active', 'Belle (555-11101)', 'Dropout', 'Compiling things', NULL);
+INSERT INTO people (employee_id, first_name, last_name, preferred_name, email, phone_number, bio, department, role, hire_date, status, emergency_contact, certifications, specializations, picturepermission_equipment, permission_user) VALUES
+('BIO10-0001', 'Gene', 'Splicer', 'Gene Splicer', 'gene.splicer@biolab.com', '555-0100', 'Always on the cutting edge.', 'Genetics', 'Senior Scientist', '2020-01-15', 'Active', 'Dr. Helix (555-1111)', 'PhD in Genetics', 'DNA recombination', 'gene_splicer.png', 'READ(*)|WRITE(*)|CREATE(true)', 'READ(*)|WRITE(*)|CREATE(true)'),
+('BIO10-0002', 'Elle', 'Ment', 'Elle Ment', 'elle.ment@biolab.com', '555-0101', 'Her experiments always have great chemistry.', 'Chemistry', 'Lab Assistant', '2021-06-01', 'Active', 'Sam Ment (555-2222)', 'BSc in Chemistry', 'Chemical analysis', 'elle_ment.png', 'READ(*)|WRITE(*)|CREATE(true)', 'READ(*)|WRITE(*)|CREATE(true)'),
+('BIO10-0003', 'Adam', 'Zyme', 'Adam Zyme', 'adam.zyme@biolab.com', '555-0102', 'Enzymes are his catalyst.', 'Biochemistry', 'Research Scientist', '2019-09-10', 'Left', 'Eve Zyme (555-3333)', 'PhD in Biochemistry', 'Enzymology', 'adam_zyme.png', 'READ(*)|WRITE(*)|CREATE(true)', 'READ(*)|WRITE(*)|CREATE(true)'),
+('BIO10-0004', 'Ann', 'Tibody', 'Ann Tibody', 'ann.tibody@biolab.com', '555-0103', 'Her work is highly defensive.', 'Immunology', 'Lab Technician', '2018-05-20', 'OnLeave', 'Ian Tibody (555-4444)', 'BSc in Biology', 'Antibody production', 'ann_tibody.png', 'READ(*)|WRITE(*)|CREATE(true)', 'READ(*)|WRITE(*)|CREATE(true)'),
+('BIO10-0005', 'Phil', 'Ter', 'Phil Ter', 'phil.ter@biolab.com', '555-0104', 'Filtering out the impurities.', 'Microbiology', 'Lab Assistant', '2022-02-14', 'Active', 'Sue Ter (555-5555)', 'BSc in Microbiology', 'Filtration techniques', 'phil_ter.png', 'READ(*)|WRITE(*)|CREATE(true)', 'READ(*)|WRITE(*)|CREATE(true)'),
+('BIO10-0006', 'Ben', 'Doyle', 'Ben Doyle', 'ben.doyle@biolab.com', '555-0105', 'Digging deep into research.', 'Geology', 'Research Scientist', '2017-11-01', 'Left', 'Maggie Doyle (555-6666)', 'PhD in Geology', 'Soil analysis', 'ben_doyle.png', 'READ(*)|WRITE(*)|CREATE(true)', 'READ(*)|WRITE(*)|CREATE(true)'),
+('BIO10-0007', 'Ari', 'Ous', 'Ari Ous', 'ari.ous@biolab.com', '555-0106', 'Her ideas are contagious.', 'Virology', 'Senior Scientist', '2016-07-30', 'Active', 'Val Ous (555-7777)', 'PhD in Virology', 'Virus research', 'ari_ous.png', 'READ(*)|WRITE(*)|CREATE(true)', 'READ(*)|WRITE(*)|CREATE(true)'),
+('BIO10-0008', 'Polly', 'Merase', 'Polly Merase', 'polly.merase@biolab.com', '555-0107', 'She never stops copying.', 'Molecular Biology', 'Lab Technician', '2021-03-12', 'OnLeave', 'Ruth Merase (555-8888)', 'BSc in Molecular Biology', 'PCR techniques', 'polly_merase.png', 'READ(*)|WRITE(*)|CREATE(true)', 'READ(*)|WRITE(*)|CREATE(true)'),
+('BIO10-0009', 'Dee', 'N.A.', 'Dee N.A.', 'dee.na@biolab.com', '555-0108', 'At the core of every discovery.', 'Genomics', 'Research Scientist', '2018-08-24', 'Left', 'Jay N.A. (555-9999)', 'PhD in Genomics', 'Genome sequencing', 'dee_na.png', 'READ(*)|WRITE(*)|CREATE(true)', 'READ(*)|WRITE(*)|CREATE(true)'),
+('BIO10-0010', 'Helix', 'Turner', 'Helix Turner', 'helix.turner@biolab.com', '555-0109', 'Twists and turns in his research.', 'Structural Biology', 'Lab Assistant', '2020-12-05', 'Left', 'Felix Turner (555-1010)', 'BSc in Structural Biology', 'Protein folding', 'helix_turner.png', 'READ(*)|WRITE(*)|CREATE(true)', 'READ(*)|WRITE(*)|CREATE(true)'),
+('BIO10-0011', 'Max', 'A Million', 'Max A Million', 'max.a.million@biolab.com', '555-0110', 'Always reaching for the maximum.', 'Data Analysis', 'Data Scientist', '2019-04-01', 'Left', 'Mina Million (555-1111)', 'MSc in Data Science', 'Big data analytics', 'max_a_million.png', 'READ(*)|WRITE(*)|CREATE(true)', 'READ(*)|WRITE(*)|CREATE(true)'),
+('BIO10-0012', 'Eve', 'Olution', 'Eve Olution', 'eve.olution@biolab.com', '555-0111', 'Constantly adapting.', 'Evolutionary Biology', 'Senior Scientist', '2015-10-10', 'Active', 'Adam Olution (555-1212)', 'PhD in Evolutionary Biology', 'Species adaptation', 'eve_olution.png', 'READ(*)|WRITE(*)|CREATE(true)', 'READ(*)|WRITE(*)|CREATE(true)'),
+('BIO10-0013', 'Michael', 'Shipley', 'Mic Shipley', 'mic@biolab.com', '555-25372', 'Calm but busy', 'Operations', 'Research Operations', '2011-01-12', 'Active', 'Briar (555-836417)', 'PhD in Patience', 'Species of Dune', 'mic.png', 'READ(*)|WRITE(*)|CREATE(true)', 'READ(*)|WRITE(*)|CREATE(true)'),
+('BIO10-0014', 'Dominik', 'Wilkowski', 'Dom', 'dom.wilko@biolab.com', '555-666', 'Total nerd.', 'Computer science', 'Senior Dork', '2023-12-24', 'Active', 'Belle (555-11101)', 'Dropout', 'Compiling things', NULL, 'READ(*)|WRITE(*)|CREATE(true)', 'READ(*)|WRITE(*)|CREATE(true)');
 
 
 
@@ -53,50 +55,52 @@ INSERT INTO people (employee_id, first_name, last_name, preferred_name, email, p
 -- equipment_type = 'Flask', 'Vessel', 'IncubationCabinet'
 -- status = 'Cleaned', 'Prepared', 'Sterilized', 'InUse', 'Dirty', 'Archived'
 CREATE TABLE equipment (
-	id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-	equipment_type TEXT NOT NULL,
-	qrcode TEXT UNIQUE,
-	create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	name TEXT NOT NULL,
-	status TEXT NOT NULL,
-	manufacturer TEXT,
-	purchase_date TIMESTAMPTZ,
-	vendor TEXT,
-	cost_in_cent INT,
+	id                       INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	equipment_type           TEXT NOT NULL,
+	qrcode                   TEXT UNIQUE,
+	person                   INT NOT NULL REFERENCES people(id),
+	create_date              TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	name                     TEXT NOT NULL,
+	status                   TEXT NOT NULL,
+	manufacturer             TEXT,
+	purchase_date            TIMESTAMPTZ,
+	vendor                   TEXT,
+	cost_in_cent             INT,
 	warranty_expiration_date TIMESTAMPTZ,
-	location TEXT,
-	notes TEXT
+	location                 TEXT,
+	notes                    TEXT
 );
-INSERT INTO equipment (equipment_type, qrcode, create_date, name, status, manufacturer, purchase_date, vendor, cost_in_cent, warranty_expiration_date, location, notes) VALUES
-('Flask', '/upload_media/equipment/0-5k/1/qr_1.svg', '2022-09-18T12:45:59.324310806Z', 'Stevens Flask', 'Cleaned', 'Flasktastic Labs', '2022-09-19T12:45:59.324310806Z', 'SupplySidekick',50000,'2025-01-15T12:45:59.324310806Z', 'Back Row D, Column 27', 'This one is a working horse!'),
-('Vessel', '/upload_media/equipment/0-5k/2/qr_2.svg', '2024-08-15T12:45:59.324310806Z', 'Britta', 'Dirty', 'VesselForge', '2022-06-10T12:45:59.324310806Z', 'ScienceStash',75000,'2024-06-10T12:45:59.324310806Z', 'In the cafeterias fridge', 'Has a crack on the top left'),
-('Flask', '/upload_media/equipment/0-5k/3/qr_3.svg', '2023-01-12T12:45:59.324310806Z', 'Flasky McFlaskface', 'Sterilized', 'BeakerMakers', '2022-12-01T12:45:59.324310806Z', 'LabGear Galore',62050,'2026-01-12T12:45:59.324310806Z', 'Top Shelf, Aisle 5', 'Always keeps it clean!'),
-('Vessel', '/upload_media/equipment/0-5k/4/qr_4.svg', '2023-05-20T12:45:59.324310806Z', 'Vessela', 'Archived', 'VesselMakers Inc.', '2021-07-15T12:45:59.324310806Z', 'SupplySidekick',82000,'2023-11-20T12:45:59.324310806Z', 'Storage Room B, Shelf 3', 'Handle with care... or not.'),
-('IncubationCabinet', '/upload_media/equipment/0-5k/5/qr_5.svg', '2022-11-05T12:45:59.324310806Z', 'Microbe Motel', 'Dirty', 'Germination Station Inc.', '2022-10-25T12:45:59.324310806Z', 'ScienceStash',58099,'2025-10-05T12:45:59.324310806Z', 'Chemical Lab, Table 4', 'Whips up a storm in experiments!'),
-('Vessel', '/upload_media/equipment/0-5k/6/qr_6.svg', '2024-03-30T12:45:59.324310806Z', 'Vesselina', 'Archived', 'VesselVentures', '2023-04-18T12:45:59.324310806Z', 'LabGear Galore',99000,'2024-03-30T12:45:59.324310806Z', 'Main Lab, Counter 12', 'All sailed out.'),
-('IncubationCabinet', '/upload_media/equipment/0-5k/7/qr_7.svg', '2024-02-10T12:45:59.324310806Z', 'Microbe Mansion', 'Cleaned', 'Hot Box Industries', '2023-11-11T12:45:59.324310806Z', 'SupplySidekick',73000,'2027-02-10T12:45:59.324310806Z', 'Mixology Lab, Station 8', 'Holds mixes like a pro!'),
-('IncubationCabinet', '/upload_media/equipment/0-5k/8/qr_8.svg', '2023-07-22T12:45:59.324310806Z', 'Captain Contain', 'Prepared', 'Containment Creations', '2022-08-02T12:45:59.324310806Z', 'ScienceStash',67000,'2026-07-22T12:45:59.324310806Z', 'Secure Storage, Area 3', 'A true captain of containment.'),
-('Flask', '/upload_media/equipment/0-5k/9/qr_9.svg', '2023-09-09T12:45:59.324310806Z', 'Dr. Flaskenstein', 'InUse', 'Mad Flask Labs', '2023-05-19T12:45:59.324310806Z', 'LabGear Galore',52069,'2025-09-09T12:45:59.324310806Z', 'Experiment Zone, Bay 2', 'Brings experiments to life!'),
-('Vessel', '/upload_media/equipment/0-5k/10/qr_10.svg', '2024-04-15T12:45:59.324310806Z', 'Vesselocity', 'Sterilized', 'Vessel Velocity Inc.', '2023-07-01T12:45:59.324310806Z', 'SupplySidekick',84500,'2026-04-15T12:45:59.324310806Z', 'High-Speed Lab, Corner 9', 'Speedy and sleek, always on the go!'),
-('Flask', '/upload_media/equipment/0-5k/11/qr_11.svg', '2024-01-18T12:45:59.324310806Z', 'Flask-in-a-Box', 'InUse', 'Boxed Labs', '2022-12-15T12:45:59.324310806Z', 'ScienceStash',54000,'2027-01-18T12:45:59.324310806Z', 'Storage Unit 12, Shelf 4', 'Comes with a twist!'),
-('IncubationCabinet', '/upload_media/equipment/0-5k/12/qr_12.svg', '2023-10-25T12:45:59.324310806Z', 'Spore Spa', 'Prepared', 'WonderCabinets', '2022-03-11T12:45:59.324310806Z', 'LabGear Galore',91010,'2024-10-25T12:45:59.324310806Z', 'Mystery Lab, Area 7',E'Welcome to the "Spore Spa"—where fungi come to relax, rejuvenate, and sporulate! 🧖‍♂️🍄\nBrought to you by WonderCabinets, this state-of-the-art incubation cabinet is the pinnacle of fungal luxury.\nOur team of intrepid scientists and researchers are on a mission to mold a better future by discovering sustainable solutions that are good for the planet.\n\nSo sit back, relax, and let the spores do the work—because saving the world shouldn\'t be a mushroom for error!');
+INSERT INTO equipment (equipment_type, qrcode, person, create_date, name, status, manufacturer, purchase_date, vendor, cost_in_cent, warranty_expiration_date, location, notes) VALUES
+('Flask', '/upload_media/equipment/0-5k/1/qr_1.svg', '1', '2022-09-18T12:45:59.324310806Z', 'Stevens Flask', 'Cleaned', 'Flasktastic Labs', '2022-09-19T12:45:59.324310806Z', 'SupplySidekick',50000,'2025-01-15T12:45:59.324310806Z', 'Back Row D, Column 27', 'This one is a working horse!'),
+('Vessel', '/upload_media/equipment/0-5k/2/qr_2.svg', '2', '2024-08-15T12:45:59.324310806Z', 'Britta', 'Dirty', 'VesselForge', '2022-06-10T12:45:59.324310806Z', 'ScienceStash',75000,'2024-06-10T12:45:59.324310806Z', 'In the cafeterias fridge', 'Has a crack on the top left'),
+('Flask', '/upload_media/equipment/0-5k/3/qr_3.svg', '3', '2023-01-12T12:45:59.324310806Z', 'Flasky McFlaskface', 'Sterilized', 'BeakerMakers', '2022-12-01T12:45:59.324310806Z', 'LabGear Galore',62050,'2026-01-12T12:45:59.324310806Z', 'Top Shelf, Aisle 5', 'Always keeps it clean!'),
+('Vessel', '/upload_media/equipment/0-5k/4/qr_4.svg', '4', '2023-05-20T12:45:59.324310806Z', 'Vessela', 'Archived', 'VesselMakers Inc.', '2021-07-15T12:45:59.324310806Z', 'SupplySidekick',82000,'2023-11-20T12:45:59.324310806Z', 'Storage Room B, Shelf 3', 'Handle with care... or not.'),
+('IncubationCabinet', '/upload_media/equipment/0-5k/5/qr_5.svg', '5', '2022-11-05T12:45:59.324310806Z', 'Microbe Motel', 'Dirty', 'Germination Station Inc.', '2022-10-25T12:45:59.324310806Z', 'ScienceStash',58099,'2025-10-05T12:45:59.324310806Z', 'Chemical Lab, Table 4', 'Whips up a storm in experiments!'),
+('Vessel', '/upload_media/equipment/0-5k/6/qr_6.svg', '6', '2024-03-30T12:45:59.324310806Z', 'Vesselina', 'Archived', 'VesselVentures', '2023-04-18T12:45:59.324310806Z', 'LabGear Galore',99000,'2024-03-30T12:45:59.324310806Z', 'Main Lab, Counter 12', 'All sailed out.'),
+('IncubationCabinet', '/upload_media/equipment/0-5k/7/qr_7.svg', '7', '2024-02-10T12:45:59.324310806Z', 'Microbe Mansion', 'Cleaned', 'Hot Box Industries', '2023-11-11T12:45:59.324310806Z', 'SupplySidekick',73000,'2027-02-10T12:45:59.324310806Z', 'Mixology Lab, Station 8', 'Holds mixes like a pro!'),
+('IncubationCabinet', '/upload_media/equipment/0-5k/8/qr_8.svg', '8', '2023-07-22T12:45:59.324310806Z', 'Captain Contain', 'Prepared', 'Containment Creations', '2022-08-02T12:45:59.324310806Z', 'ScienceStash',67000,'2026-07-22T12:45:59.324310806Z', 'Secure Storage, Area 3', 'A true captain of containment.'),
+('Flask', '/upload_media/equipment/0-5k/9/qr_9.svg', '9', '2023-09-09T12:45:59.324310806Z', 'Dr. Flaskenstein', 'InUse', 'Mad Flask Labs', '2023-05-19T12:45:59.324310806Z', 'LabGear Galore',52069,'2025-09-09T12:45:59.324310806Z', 'Experiment Zone, Bay 2', 'Brings experiments to life!'),
+('Vessel', '/upload_media/equipment/0-5k/10/qr_10.svg', '10', '2024-04-15T12:45:59.324310806Z', 'Vesselocity', 'Sterilized', 'Vessel Velocity Inc.', '2023-07-01T12:45:59.324310806Z', 'SupplySidekick',84500,'2026-04-15T12:45:59.324310806Z', 'High-Speed Lab, Corner 9', 'Speedy and sleek, always on the go!'),
+('Flask', '/upload_media/equipment/0-5k/11/qr_11.svg', '11', '2024-01-18T12:45:59.324310806Z', 'Flask-in-a-Box', 'InUse', 'Boxed Labs', '2022-12-15T12:45:59.324310806Z', 'ScienceStash',54000,'2027-01-18T12:45:59.324310806Z', 'Storage Unit 12, Shelf 4', 'Comes with a twist!'),
+('IncubationCabinet', '/upload_media/equipment/0-5k/12/qr_12.svg', '12', '2023-10-25T12:45:59.324310806Z', 'Spore Spa', 'Prepared', 'WonderCabinets', '2022-03-11T12:45:59.324310806Z', 'LabGear Galore',91010,'2024-10-25T12:45:59.324310806Z', 'Mystery Lab, Area 7',E'Welcome to the "Spore Spa"—where fungi come to relax, rejuvenate, and sporulate! 🧖‍♂️🍄\nBrought to you by WonderCabinets, this state-of-the-art incubation cabinet is the pinnacle of fungal luxury.\nOur team of intrepid scientists and researchers are on a mission to mold a better future by discovering sustainable solutions that are good for the planet.\n\nSo sit back, relax, and let the spores do the work—because saving the world shouldn\'t be a mushroom for error!');
+
 
 CREATE TABLE equipment_notes (
-	id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-	equipment INT NOT NULL REFERENCES equipment(id) ON DELETE CASCADE,
+	id          INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	equipment   INT NOT NULL REFERENCES equipment(id) ON DELETE CASCADE,
 	create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	person INT NOT NULL REFERENCES people(id),
-	notes TEXT NOT NULL,
-	media1 TEXT,
-	media2 TEXT,
-	media3 TEXT,
-	media4 TEXT,
-	media5 TEXT,
-	media6 TEXT,
-	media7 TEXT,
-	media8 TEXT,
-	media9 TEXT,
-	media10 TEXT
+	person      INT NOT NULL REFERENCES people(id),
+	notes       TEXT NOT NULL,
+	media1      TEXT,
+	media2      TEXT,
+	media3      TEXT,
+	media4      TEXT,
+	media5      TEXT,
+	media6      TEXT,
+	media7      TEXT,
+	media8      TEXT,
+	media9      TEXT,
+	media10     TEXT
 );
 CREATE INDEX equipment_notes_equipment ON equipment_notes (equipment);
 CREATE INDEX equipment_notes_person ON equipment_notes (person);
@@ -137,27 +141,28 @@ INSERT INTO equipment_notes (equipment, person, notes, media1, media2, media3, m
 (12, 5, E'If found speaking to the equipment, please consult HR. Again', '/upload_media/equipment/0-5k/12/notes/0-5k/027eea60-4544-408f-81d2-9dcb8c721c3f.jpg', '/upload_media/equipment/0-5k/12/notes/0-5k/28090d96-0610-455e-8203-468cdcb76858.jpg', '/upload_media/equipment/0-5k/12/notes/0-5k/8897c75f-2cdb-4dcf-9570-59e2f14fedf9.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (12, 5, E'Do not mention obsolescence; it\'s a sensitive topic.', '/upload_media/equipment/0-5k/12/notes/0-5k/93df09f5-9167-445d-b29a-462afa4984fd.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
+
 -- log_type = 'cleaning', 'sterilization', 'preparation', 'edit'
 CREATE TABLE equipment_log (
-	id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-	log_type TEXT NOT NULL,
-	equipment INT NOT NULL REFERENCES equipment(id) ON DELETE CASCADE,
+	id          INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	log_type    TEXT NOT NULL,
+	equipment   INT NOT NULL REFERENCES equipment(id) ON DELETE CASCADE,
 	create_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	person INT NOT NULL REFERENCES people(id),
-	notes TEXT,
-	field TEXT,
-	old_value TEXT,
-	new_value TEXT,
-	media1 TEXT,
-	media2 TEXT,
-	media3 TEXT,
-	media4 TEXT,
-	media5 TEXT,
-	media6 TEXT,
-	media7 TEXT,
-	media8 TEXT,
-	media9 TEXT,
-	media10 TEXT
+	person      INT NOT NULL REFERENCES people(id),
+	notes       TEXT,
+	field       TEXT,
+	old_value   TEXT,
+	new_value   TEXT,
+	media1      TEXT,
+	media2      TEXT,
+	media3      TEXT,
+	media4      TEXT,
+	media5      TEXT,
+	media6      TEXT,
+	media7      TEXT,
+	media8      TEXT,
+	media9      TEXT,
+	media10     TEXT
 );
 CREATE INDEX equipment_log_equipment ON equipment_log (equipment);
 CREATE INDEX equipment_log_person ON equipment_log (person);
@@ -196,19 +201,19 @@ INSERT INTO equipment_log (log_type, equipment, person, notes, field, old_value,
 
 -- culture_contamination_status = 'Clean', 'Xenic', 'Monoxenic', 'Axenic', 'Contaminated', 'ParentContaminated', 'CleanWasContaminated'
 CREATE TABLE culture (
-	id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-	qrcode TEXT NOT NULL UNIQUE,
-	create_date TIMESTAMPTZ DEFAULT CURRENT_DATE,
-	create_by INT REFERENCES people(id),
-	name TEXT NOT NULL,
-	parent INT NOT NULL REFERENCES culture(id),
-	culture_method TEXT,
-	species TEXT,
-	genus TEXT,
-	location TEXT,
-	storage_conditions TEXT,
-	equipment INT REFERENCES equipment(id),
-	growth_medium TEXT,
+	id                   INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	qrcode               TEXT NOT NULL UNIQUE,
+	create_date          TIMESTAMPTZ DEFAULT CURRENT_DATE,
+	create_by            INT REFERENCES people(id),
+	name                 TEXT NOT NULL,
+	parent               INT NOT NULL REFERENCES culture(id),
+	culture_method       TEXT,
+	species              TEXT,
+	genus                TEXT,
+	location             TEXT,
+	storage_conditions   TEXT,
+	equipment            INT REFERENCES equipment(id),
+	growth_medium        TEXT,
 	contamination_status TEXT,
-	notes TEXT
+	notes                TEXT
 );
