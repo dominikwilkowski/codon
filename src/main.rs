@@ -38,12 +38,14 @@ pub mod utils;
 #[cfg(feature = "ssr")]
 pub mod fileserv;
 
+#[cfg(feature = "ssr")]
 use crate::{
 	app::App,
 	auth::{ssr::AuthSession, User},
 	fileserv::file_and_error_handler,
 };
 
+#[cfg(feature = "ssr")]
 use axum::{
 	body::Body as AxumBody,
 	extract::{FromRef, Path, State},
@@ -52,21 +54,30 @@ use axum::{
 	routing::get,
 	Router,
 };
+#[cfg(feature = "ssr")]
 use axum_session::{SessionConfig, SessionLayer, SessionStore};
+#[cfg(feature = "ssr")]
 use axum_session_auth::{AuthConfig, AuthSessionLayer};
+#[cfg(feature = "ssr")]
 pub use axum_session_sqlx::SessionPgPool;
 use leptos::*;
+#[cfg(feature = "ssr")]
 use leptos_axum::{generate_route_list, handle_server_fns_with_context, render_route_with_context, LeptosRoutes};
+#[cfg(feature = "ssr")]
 use leptos_router::RouteListing;
+#[cfg(feature = "ssr")]
 use sqlx::{migrate::Migrator, PgPool};
 
-#[derive(FromRef, Debug, Clone)]
+#[cfg_attr(feature = "ssr", derive(FromRef, Debug, Clone))]
 pub struct AppState {
 	pub leptos_options: LeptosOptions,
+	#[cfg(feature = "ssr")]
 	pub routes: Vec<RouteListing>,
+	#[cfg(feature = "ssr")]
 	pub pool: PgPool,
 }
 
+#[cfg(feature = "ssr")]
 async fn server_fn_handler(
 	State(app_state): State<AppState>,
 	auth_session: AuthSession,
@@ -83,6 +94,7 @@ async fn server_fn_handler(
 	.await
 }
 
+#[cfg(feature = "ssr")]
 async fn leptos_routes_handler(
 	auth_session: AuthSession,
 	State(app_state): State<AppState>,

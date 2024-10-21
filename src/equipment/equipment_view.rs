@@ -197,7 +197,7 @@ pub fn Equipment() -> impl IntoView {
 	}
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn get_equipment_data(
 	field: String,
 	order: String,
@@ -205,7 +205,24 @@ pub async fn get_equipment_data(
 	items_per_page: u8,
 	show_archived: bool,
 ) -> Result<(Vec<EquipmentData>, i64), ServerFnError> {
-	use crate::{db::ssr::get_db, equipment::EquipmentSQLData};
+	use crate::{auth::get_user, equipment::EquipmentSQLData, permission::Permissions};
+
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let user = get_user().await?;
+
+	let auth_query = match user {
+		Some(user) => {
+			let Permissions::ReadWrite {
+				read: perm,
+				write: _,
+				create: _,
+			} = user.permission_todo;
+			perm.get_query_select("id")
+		},
+		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
+	};
 
 	let order_sanitized = match order.to_lowercase().as_str() {
 		"asc" => "ASC",
@@ -239,32 +256,34 @@ pub async fn get_equipment_data(
 	};
 
 	let query =
-		format!("SELECT * FROM equipment {status_where} ORDER BY {field_sanitized} {order_sanitized} LIMIT $1 OFFSET $2",);
+		format!("SELECT * FROM equipment {status_where} ORDER BY {field_sanitized} {order_sanitized} LIMIT $1 OFFSET $2 {auth_query}",);
 
 	let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLData>(&query)
 		.bind(limit)
 		.bind(offset)
-		.fetch_all(get_db())
+		.fetch_all(&pool)
 		.await
 		.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	let equipment_data: Vec<EquipmentData> = equipment_sql_data.into_iter().map(Into::into).collect();
 
 	let row_count: i64 =
-		sqlx::query_scalar(&format!("SELECT COUNT(*) FROM equipment {status_where}")).fetch_one(get_db()).await?;
+		sqlx::query_scalar(&format!("SELECT COUNT(*) FROM equipment {status_where}")).fetch_one(&pool).await?;
 
 	Ok((equipment_data, row_count))
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn delete_equipment(id: i32) -> Result<(), ServerFnError> {
-	use crate::db::ssr::get_db;
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	use server_fn::error::NoCustomError;
 	use std::{fs, path::PathBuf};
 
 	let qrcode_path: String =
-		sqlx::query_scalar("SELECT qrcode FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
+		sqlx::query_scalar("SELECT qrcode FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
 	// TODO: delete all logs and notes as well
 
 	let file_path = PathBuf::from(format!("{}/public/qrcodes/{}", env!("CARGO_MANIFEST_DIR"), qrcode_path));
@@ -273,5 +292,5 @@ pub async fn delete_equipment(id: i32) -> Result<(), ServerFnError> {
 		fs::remove_file(&file_path).map_err(|error| ServerFnError::<NoCustomError>::ServerError(error.to_string()))?;
 	}
 
-	Ok(sqlx::query!("DELETE FROM equipment WHERE id = $1", id).execute(get_db()).await.map(|_| ())?)
+	Ok(sqlx::query!("DELETE FROM equipment WHERE id = $1", id).execute(&pool).await.map(|_| ())?)
 }

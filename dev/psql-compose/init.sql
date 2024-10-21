@@ -32,7 +32,7 @@ CREATE TABLE people (
   permission_user      TEXT NOT NULL,
 	create_date          TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
-INSERT INTO people (employee_id, first_name, last_name, preferred_name, email, phone_number, bio, department, role, hire_date, status, emergency_contact, certifications, specializations, picturepermission_equipment, permission_user) VALUES
+INSERT INTO people (employee_id, first_name, last_name, preferred_name, email, phone_number, bio, department, role, hire_date, status, emergency_contact, certifications, specializations, picture, permission_equipment, permission_user) VALUES
 ('BIO10-0001', 'Gene', 'Splicer', 'Gene Splicer', 'gene.splicer@biolab.com', '555-0100', 'Always on the cutting edge.', 'Genetics', 'Senior Scientist', '2020-01-15', 'Active', 'Dr. Helix (555-1111)', 'PhD in Genetics', 'DNA recombination', 'gene_splicer.png', 'READ(*)|WRITE(*)|CREATE(true)', 'READ(*)|WRITE(*)|CREATE(true)'),
 ('BIO10-0002', 'Elle', 'Ment', 'Elle Ment', 'elle.ment@biolab.com', '555-0101', 'Her experiments always have great chemistry.', 'Chemistry', 'Lab Assistant', '2021-06-01', 'Active', 'Sam Ment (555-2222)', 'BSc in Chemistry', 'Chemical analysis', 'elle_ment.png', 'READ(*)|WRITE(*)|CREATE(true)', 'READ(*)|WRITE(*)|CREATE(true)'),
 ('BIO10-0003', 'Adam', 'Zyme', 'Adam Zyme', 'adam.zyme@biolab.com', '555-0102', 'Enzymes are his catalyst.', 'Biochemistry', 'Research Scientist', '2019-09-10', 'Left', 'Eve Zyme (555-3333)', 'PhD in Biochemistry', 'Enzymology', 'adam_zyme.png', 'READ(*)|WRITE(*)|CREATE(true)', 'READ(*)|WRITE(*)|CREATE(true)'),

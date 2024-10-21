@@ -680,9 +680,11 @@ pub fn EquipmentFormToggle<T: EquipmentCellView + Clone + 'static>(item: T, chil
 	}
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn edit_name(id: String, name: String, note: String) -> Result<(), ServerFnError> {
-	use crate::db::ssr::get_db;
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
@@ -690,7 +692,7 @@ pub async fn edit_name(id: String, name: String, note: String) -> Result<(), Ser
 	};
 
 	let old_value: String =
-		sqlx::query_scalar("SELECT name FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
+		sqlx::query_scalar("SELECT name FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
 
 	sqlx::query!(
 		r#"INSERT INTO equipment_log
@@ -705,18 +707,20 @@ pub async fn edit_name(id: String, name: String, note: String) -> Result<(), Ser
 		old_value,
 		name,
 	)
-	.execute(get_db())
+	.execute(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
-	sqlx::query!("UPDATE equipment SET name = $1 WHERE id = $2", name, id).execute(get_db()).await.map(|_| ())?;
+	sqlx::query!("UPDATE equipment SET name = $1 WHERE id = $2", name, id).execute(&pool).await.map(|_| ())?;
 
 	Ok(())
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn edit_type(id: String, equipment_type: String, note: String) -> Result<(), ServerFnError> {
-	use crate::db::ssr::get_db;
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
@@ -724,7 +728,7 @@ pub async fn edit_type(id: String, equipment_type: String, note: String) -> Resu
 	};
 
 	let old_value: String =
-		sqlx::query_scalar("SELECT equipment_type FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
+		sqlx::query_scalar("SELECT equipment_type FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
 
 	sqlx::query!(
 		r#"INSERT INTO equipment_log
@@ -739,28 +743,30 @@ pub async fn edit_type(id: String, equipment_type: String, note: String) -> Resu
 		old_value,
 		equipment_type,
 	)
-	.execute(get_db())
+	.execute(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	sqlx::query!("UPDATE equipment SET equipment_type = $1 WHERE id = $2", equipment_type, id)
-		.execute(get_db())
+		.execute(&pool)
 		.await
 		.map(|_| ())?;
 
 	Ok(())
 }
 
-#[server(input = MultipartFormData)]
+#[server(input = MultipartFormData, prefix = "/api")]
 pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 	use crate::{
 		components::file_upload::file_upload,
-		db::ssr::get_db,
 		equipment::EquipmentLogType,
 		utils::{get_equipment_base_folder, get_equipment_log_folder},
 	};
 
+	use sqlx::PgPool;
 	use tokio::fs::rename;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	let result = file_upload(data, |id| format!("{}temp/", get_equipment_base_folder(id))).await?;
 
@@ -789,7 +795,7 @@ pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 	let (old_status, equipment_type): (String, String) =
 		sqlx::query_as::<_, (String, String)>("SELECT status, equipment_type FROM equipment WHERE id = $1")
 			.bind(result.id)
-			.fetch_one(get_db())
+			.fetch_one(&pool)
 			.await?;
 	let next_status = if action == "next_status" {
 		EquipmentStatus::get_next_status(EquipmentStatus::parse(old_status.clone()), EquipmentType::parse(equipment_type))
@@ -805,7 +811,7 @@ pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 		note.to_string(),
 		old_status,
 	)
-	.fetch_one(get_db())
+	.fetch_one(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
@@ -916,21 +922,23 @@ pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 		media10,
 		log.id,
 	)
-	.execute(get_db())
+	.execute(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	sqlx::query!("UPDATE equipment SET status = $1 WHERE id = $2", format!("{next_status:#?}"), result.id)
-		.execute(get_db())
+		.execute(&pool)
 		.await
 		.map(|_| ())?;
 
 	Ok(())
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn edit_manufacturer(id: String, manufacturer: String, note: String) -> Result<(), ServerFnError> {
-	use crate::db::ssr::get_db;
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
@@ -938,7 +946,7 @@ pub async fn edit_manufacturer(id: String, manufacturer: String, note: String) -
 	};
 
 	let old_value: String =
-		sqlx::query_scalar("SELECT manufacturer FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
+		sqlx::query_scalar("SELECT manufacturer FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
 
 	sqlx::query!(
 		r#"INSERT INTO equipment_log
@@ -953,28 +961,29 @@ pub async fn edit_manufacturer(id: String, manufacturer: String, note: String) -
 		old_value,
 		manufacturer,
 	)
-	.execute(get_db())
+	.execute(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	sqlx::query!("UPDATE equipment SET manufacturer = $1 WHERE id = $2", manufacturer, id)
-		.execute(get_db())
+		.execute(&pool)
 		.await
 		.map(|_| ())?;
 
 	Ok(())
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn edit_purchase_date(
 	id: String,
 	purchase_date: String,
 	timezone_offset: i32,
 	note: String,
 ) -> Result<(), ServerFnError> {
-	use crate::db::ssr::get_db;
-
 	use chrono::prelude::*;
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
@@ -993,7 +1002,7 @@ pub async fn edit_purchase_date(
 	.with_timezone(&Utc);
 
 	let old_value: Option<DateTime<Utc>> =
-		sqlx::query_scalar("SELECT purchase_date FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
+		sqlx::query_scalar("SELECT purchase_date FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
 
 	sqlx::query!(
 		r#"INSERT INTO equipment_log
@@ -1008,21 +1017,23 @@ pub async fn edit_purchase_date(
 		old_value.unwrap_or_default().format("%d %b %Y").to_string(),
 		purchase_date.format("%d %b %Y").to_string(),
 	)
-	.execute(get_db())
+	.execute(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	sqlx::query!("UPDATE equipment SET purchase_date = $1 WHERE id = $2", purchase_date, id)
-		.execute(get_db())
+		.execute(&pool)
 		.await
 		.map(|_| ())?;
 
 	Ok(())
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn edit_vendor(id: String, vendor: String, note: String) -> Result<(), ServerFnError> {
-	use crate::db::ssr::get_db;
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
@@ -1030,7 +1041,7 @@ pub async fn edit_vendor(id: String, vendor: String, note: String) -> Result<(),
 	};
 
 	let old_value: String =
-		sqlx::query_scalar("SELECT vendor FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
+		sqlx::query_scalar("SELECT vendor FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
 
 	sqlx::query!(
 		r#"INSERT INTO equipment_log
@@ -1045,18 +1056,20 @@ pub async fn edit_vendor(id: String, vendor: String, note: String) -> Result<(),
 		old_value,
 		vendor,
 	)
-	.execute(get_db())
+	.execute(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
-	sqlx::query!("UPDATE equipment SET vendor = $1 WHERE id = $2", vendor, id).execute(get_db()).await.map(|_| ())?;
+	sqlx::query!("UPDATE equipment SET vendor = $1 WHERE id = $2", vendor, id).execute(&pool).await.map(|_| ())?;
 
 	Ok(())
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn edit_cost_in_cent(id: String, cost_in_cent: f32, note: String) -> Result<(), ServerFnError> {
-	use crate::db::ssr::get_db;
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
@@ -1066,7 +1079,7 @@ pub async fn edit_cost_in_cent(id: String, cost_in_cent: f32, note: String) -> R
 	let cost_in_cent = (cost_in_cent * 100.0) as i32;
 
 	let old_value: i32 =
-		sqlx::query_scalar("SELECT cost_in_cent FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
+		sqlx::query_scalar("SELECT cost_in_cent FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
 	let old_value = format!("{}", (old_value as f32 / 100.0));
 
 	sqlx::query!(
@@ -1082,28 +1095,29 @@ pub async fn edit_cost_in_cent(id: String, cost_in_cent: f32, note: String) -> R
 		old_value,
 		format!("{:.2}", (cost_in_cent as f32 / 100.0)),
 	)
-	.execute(get_db())
+	.execute(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	sqlx::query!("UPDATE equipment SET cost_in_cent = $1 WHERE id = $2", cost_in_cent, id)
-		.execute(get_db())
+		.execute(&pool)
 		.await
 		.map(|_| ())?;
 
 	Ok(())
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn edit_warranty_expiration_date(
 	id: String,
 	warranty_expiration_date: String,
 	timezone_offset: i32,
 	note: String,
 ) -> Result<(), ServerFnError> {
-	use crate::db::ssr::get_db;
-
 	use chrono::prelude::*;
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
@@ -1125,7 +1139,7 @@ pub async fn edit_warranty_expiration_date(
 	let old_value: Option<DateTime<Utc>> =
 		sqlx::query_scalar("SELECT warranty_expiration_date FROM equipment WHERE id = $1")
 			.bind(id)
-			.fetch_one(get_db())
+			.fetch_one(&pool)
 			.await?;
 
 	sqlx::query!(
@@ -1141,21 +1155,23 @@ pub async fn edit_warranty_expiration_date(
 		old_value.unwrap_or_default().format("%d %b %Y").to_string(),
 		warranty_expiration_date.format("%d %b %Y").to_string(),
 	)
-	.execute(get_db())
+	.execute(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	sqlx::query!("UPDATE equipment SET warranty_expiration_date = $1 WHERE id = $2", warranty_expiration_date, id)
-		.execute(get_db())
+		.execute(&pool)
 		.await
 		.map(|_| ())?;
 
 	Ok(())
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn edit_location(id: String, location: String, note: String) -> Result<(), ServerFnError> {
-	use crate::db::ssr::get_db;
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
@@ -1163,7 +1179,7 @@ pub async fn edit_location(id: String, location: String, note: String) -> Result
 	};
 
 	let old_value: String =
-		sqlx::query_scalar("SELECT location FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
+		sqlx::query_scalar("SELECT location FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
 
 	sqlx::query!(
 		r#"INSERT INTO equipment_log
@@ -1178,18 +1194,20 @@ pub async fn edit_location(id: String, location: String, note: String) -> Result
 		old_value,
 		location,
 	)
-	.execute(get_db())
+	.execute(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
-	sqlx::query!("UPDATE equipment SET location = $1 WHERE id = $2", location, id).execute(get_db()).await.map(|_| ())?;
+	sqlx::query!("UPDATE equipment SET location = $1 WHERE id = $2", location, id).execute(&pool).await.map(|_| ())?;
 
 	Ok(())
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn edit_notes(id: String, notes: String, note: String) -> Result<(), ServerFnError> {
-	use crate::db::ssr::get_db;
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
@@ -1197,7 +1215,7 @@ pub async fn edit_notes(id: String, notes: String, note: String) -> Result<(), S
 	};
 
 	let old_value: String =
-		sqlx::query_scalar("SELECT notes FROM equipment WHERE id = $1").bind(id).fetch_one(get_db()).await?;
+		sqlx::query_scalar("SELECT notes FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
 
 	sqlx::query!(
 		r#"INSERT INTO equipment_log
@@ -1212,18 +1230,22 @@ pub async fn edit_notes(id: String, notes: String, note: String) -> Result<(), S
 		old_value,
 		notes,
 	)
-	.execute(get_db())
+	.execute(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
-	sqlx::query!("UPDATE equipment SET notes = $1 WHERE id = $2", notes, id).execute(get_db()).await.map(|_| ())?;
+	sqlx::query!("UPDATE equipment SET notes = $1 WHERE id = $2", notes, id).execute(&pool).await.map(|_| ())?;
 
 	Ok(())
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn get_equipment_data_by_id(id: String) -> Result<EquipmentData, ServerFnError> {
-	use crate::{db::ssr::get_db, equipment::EquipmentSQLData};
+	use crate::equipment::EquipmentSQLData;
+
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
@@ -1232,7 +1254,7 @@ pub async fn get_equipment_data_by_id(id: String) -> Result<EquipmentData, Serve
 
 	let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLData>("SELECT * FROM equipment WHERE id = $1")
 		.bind(id)
-		.fetch_one(get_db())
+		.fetch_one(&pool)
 		.await
 		.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 

@@ -118,7 +118,7 @@ pub fn EquipmentAdd() -> impl IntoView {
 }
 
 #[allow(clippy::too_many_arguments)]
-#[server]
+#[server(prefix = "/api")]
 pub async fn add_equipment(
 	timezone_offset: i32,
 	equipment_type: String,
@@ -132,14 +132,16 @@ pub async fn add_equipment(
 	notes: String,
 ) -> Result<i32, ServerFnError> {
 	use crate::{
-		db::ssr::get_db,
 		equipment::{EquipmentStatus, EquipmentType},
 		qrcode::generate_qr,
 		utils::get_equipment_base_folder,
 	};
 
 	use chrono::prelude::*;
+	use sqlx::PgPool;
 	use std::{fs, path::PathBuf};
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	let hours = timezone_offset / 60;
 	let minutes = timezone_offset % 60;
@@ -192,7 +194,7 @@ pub async fn add_equipment(
 		location,
 		notes,
 	)
-	.fetch_one(get_db())
+	.fetch_one(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| {
 		ServerFnError::ServerError(error.to_string())
@@ -210,7 +212,7 @@ pub async fn add_equipment(
 
 	if let Ok(stripped_path) = qr_path.strip_prefix("/public") {
 		sqlx::query!("UPDATE equipment SET qrcode = $1 WHERE id = $2", &stripped_path.to_string_lossy(), row.id)
-			.execute(get_db())
+			.execute(&pool)
 			.await
 			.map(|_| ())?;
 	} else {

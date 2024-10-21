@@ -365,16 +365,18 @@ struct MediasSQL {
 	media10: Option<String>,
 }
 
-#[server(input = MultipartFormData)]
+#[server(input = MultipartFormData, prefix = "/api")]
 pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 	use crate::{
 		components::file_upload::file_upload,
-		db::ssr::get_db,
 		utils::{get_equipment_base_folder, get_equipment_notes_folder},
 	};
 
+	use sqlx::PgPool;
 	use std::{fs, path::PathBuf};
 	use tokio::fs::rename;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	let result = file_upload(data, |id| format!("{}temp", get_equipment_base_folder(id))).await?;
 
@@ -419,7 +421,7 @@ pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 
 	let medias = sqlx::query_as::<_, MediasSQL>("SELECT media1, media2, media3, media4, media5, media6, media7, media8, media9, media10 FROM equipment_notes WHERE id = $1")
 		.bind(note_id)
-		.fetch_one(get_db())
+		.fetch_one(&pool)
 		.await
 		.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
@@ -513,22 +515,23 @@ pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 		new_media9,
 		new_media10,
 	)
-	.execute(get_db())
+	.execute(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	Ok(())
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn delete_note(id: i32) -> Result<(), ServerFnError> {
-	use crate::db::ssr::get_db;
-
+	use sqlx::PgPool;
 	use std::{fs, path::PathBuf};
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	let medias = sqlx::query_as::<_, MediasSQL>("SELECT media1, media2, media3, media4, media5, media6, media7, media8, media9, media10 FROM equipment_notes WHERE id = $1")
 		.bind(id)
-		.fetch_one(get_db())
+		.fetch_one(&pool)
 		.await
 		.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
@@ -554,16 +557,20 @@ pub async fn delete_note(id: i32) -> Result<(), ServerFnError> {
 		}
 	}
 
-	Ok(sqlx::query!("DELETE FROM equipment_notes WHERE id = $1", id).execute(get_db()).await.map(|_| ())?)
+	Ok(sqlx::query!("DELETE FROM equipment_notes WHERE id = $1", id).execute(&pool).await.map(|_| ())?)
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn get_notes_for_equipment(
 	id: String,
 	page: u16,
 	items_per_page: u8,
 ) -> Result<(Vec<NotesPerson>, i64), ServerFnError> {
-	use crate::{db::ssr::get_db, equipment::NotesPersonSQL};
+	use crate::equipment::NotesPersonSQL;
+
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
@@ -619,16 +626,14 @@ pub async fn get_notes_for_equipment(
 	.bind(id)
 	.bind(limit)
 	.bind(offset)
-	.fetch_all(get_db())
+	.fetch_all(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	let notes_data: Vec<NotesPerson> = notes_sql_data.into_iter().map(Into::into).collect();
 
-	let row_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM equipment_notes WHERE equipment = $1")
-		.bind(id)
-		.fetch_one(get_db())
-		.await?;
+	let row_count: i64 =
+		sqlx::query_scalar("SELECT COUNT(*) FROM equipment_notes WHERE equipment = $1").bind(id).fetch_one(&pool).await?;
 
 	Ok((notes_data, row_count))
 }
