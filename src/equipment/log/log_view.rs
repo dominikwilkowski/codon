@@ -76,7 +76,11 @@ pub fn LogItem(log: LogPerson) -> impl IntoView {
 			<div class=css::log_content>
 				<small>
 					{log.log.create_date.format("%d %b %Y %I:%M:%S %P").to_string()} {" "}
-					<span class=css::log_type>{format!("{}", log.log.log_type)}</span>
+					<span class=format!(
+						"{} type_{}",
+						css::log_type,
+						log.log.log_type.to_string().to_lowercase(),
+					)>{log.log.log_type.to_string()}</span>
 				</small>
 				<MultiLine text=log.log.notes.unwrap_or_default() />
 				<br />

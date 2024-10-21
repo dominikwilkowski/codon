@@ -16,6 +16,19 @@
 	--input-bg: #252a31; /* rgb(37, 42, 49) */
 	--input-fg: #fff; /* rgb(255, 255, 255) */
 
+	--state-clean-fb: #18a058;
+	--state-clean-bg: #161e1a;
+	--state-prepare-fb: #f0a020;
+	--state-prepare-bg: #1e1c16;
+	--state-sterilize-fb: #ccc;
+	--state-sterilize-bg: #1f2122;
+	--state-use-fb: var(--secondary);
+	--state-use-bg: #191622;
+	--state-dirty-fb: #d03050;
+	--state-dirty-bg: #221a1a;
+	--state-archive-fb: #ccc;
+	--state-archive-bg: #1f2122;
+
 	--thaw-font-color: #fff; /* rgb(255, 255, 255) */
 
 	--border-radius-sm: 3px;

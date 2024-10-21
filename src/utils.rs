@@ -1,3 +1,6 @@
+#[cfg(feature = "ssr")]
+use tokio::fs::rename;
+
 fn get_bounds(id: i32) -> (i64, i64) {
 	let lower_bound: i64 = (id as i64 / 5_000) * 5_000;
 	let upper_bound: i64 = lower_bound + 5_000;
@@ -51,4 +54,15 @@ fn test_get_equipment_log_folder() {
 	assert_eq!(get_equipment_log_folder(5000), String::from("log/5-10k/"));
 	assert_eq!(get_equipment_log_folder(28_999), String::from("log/25-30k/"));
 	assert_eq!(get_equipment_log_folder(2_147_483_647), String::from("log/2147480-2147485k/"));
+}
+
+#[cfg(feature = "ssr")]
+pub async fn move_file(from: String, to: &str) -> Result<Option<String>, std::io::Error> {
+	if from.is_empty() {
+		Ok(None)
+	} else {
+		let new_path = from.replace("temp/", to);
+		rename(format!("public{from}"), format!("public{new_path}")).await?;
+		Ok(Some(new_path))
+	}
 }

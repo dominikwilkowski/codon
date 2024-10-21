@@ -30,6 +30,7 @@ pub fn MoneyInput(
 	#[prop(optional)] disabled: RwSignal<bool>,
 	#[prop(optional)] name: &'static str,
 	#[prop(optional)] required: bool,
+	#[prop(optional)] placeholder: &'static str,
 ) -> impl IntoView {
 	let dis_class = if disabled.get() { css::money_input_disabled } else { "" };
 
@@ -45,6 +46,7 @@ pub fn MoneyInput(
 				disabled=move || disabled.get()
 				step="0.01"
 				required=required
+				placeholder=placeholder
 			/>
 			<div class=css::money_btns>
 				<button
