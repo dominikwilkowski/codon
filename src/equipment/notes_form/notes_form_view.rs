@@ -107,13 +107,16 @@ pub fn NotesForm(id: String, notes_upload_action: Action<FormData, Result<(), Se
 	}
 }
 
-#[server(input = MultipartFormData)]
+#[server(input = MultipartFormData, prefix = "/api")]
 pub async fn save_notes(data: MultipartData) -> Result<(), ServerFnError> {
 	use crate::{
 		components::file_upload::file_upload,
-		db::ssr::get_db,
 		utils::{get_equipment_base_folder, get_equipment_notes_folder, move_file},
 	};
+
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	let result = file_upload(data, |id| format!("{}temp/", get_equipment_base_folder(id))).await?;
 
@@ -142,7 +145,7 @@ pub async fn save_notes(data: MultipartData) -> Result<(), ServerFnError> {
 		person,
 		notes,
 	)
-	.fetch_one(get_db())
+	.fetch_one(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
@@ -184,7 +187,7 @@ pub async fn save_notes(data: MultipartData) -> Result<(), ServerFnError> {
 		media10,
 		note.id,
 	)
-	.execute(get_db())
+	.execute(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 

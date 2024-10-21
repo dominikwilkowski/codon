@@ -114,13 +114,17 @@ pub fn LogItem(log: LogPerson) -> impl IntoView {
 	}
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn get_log_for_equipment(
 	id: String,
 	page: u16,
 	items_per_page: u8,
 ) -> Result<(Vec<LogPerson>, i64), ServerFnError> {
-	use crate::{db::ssr::get_db, equipment::LogPersonSQL};
+	use crate::equipment::LogPersonSQL;
+
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
@@ -180,14 +184,14 @@ pub async fn get_log_for_equipment(
 	.bind(id)
 	.bind(limit)
 	.bind(offset)
-	.fetch_all(get_db())
+	.fetch_all(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	let notes_data: Vec<LogPerson> = notes_sql_data.into_iter().map(Into::into).collect();
 
 	let row_count: i64 =
-		sqlx::query_scalar("SELECT COUNT(*) FROM equipment_log WHERE equipment = $1").bind(id).fetch_one(get_db()).await?;
+		sqlx::query_scalar("SELECT COUNT(*) FROM equipment_log WHERE equipment = $1").bind(id).fetch_one(&pool).await?;
 
 	Ok((notes_data, row_count))
 }

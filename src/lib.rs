@@ -2,6 +2,7 @@
 pub mod macros;
 
 pub mod app;
+pub mod auth;
 pub mod components {
 	pub mod avatar;
 	pub mod button;
@@ -28,7 +29,9 @@ pub mod footer;
 pub mod header;
 pub mod home;
 pub mod icons;
+pub mod login;
 pub mod nav;
+pub mod permission;
 pub mod qrcode;
 pub mod samples;
 pub mod utils;

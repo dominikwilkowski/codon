@@ -24,9 +24,9 @@ keywords = [
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-axum = { version = "0.7", optional = true }
+axum = { version = "0.7", features = ["macros"], optional = true }
 console_error_panic_hook = "0.1"
-futures = "0.3.30"
+futures = "0.3"
 leptos = { version = "0.6", features = ["nightly"] }
 leptos_axum = { version = "0.6", optional = true }
 leptos_meta = { version = "0.6", features = ["nightly"] }
@@ -55,17 +55,30 @@ leptos-qr-scanner = "0.2"
 chrono = { version = "0.4", features = ["serde"] }
 thaw = { version = "0.3" }
 qrcodegen = "1.8"
-convert_case = "0.6.0"
-uuid = { version = "1.10.0", features = ["serde", "v4", "js"] }
+convert_case = "0.6"
+uuid = { version = "1.10", features = ["serde", "v4", "js"] }
+anyhow = "1.0"
+async-trait = { version = "0.1", optional = true }
+rand = { version = "0.8", features = ["min_const_gen"], optional = true }
+axum_session_auth = { version = "0.14", optional = true }
+axum_session_sqlx = { version = "0.3", features = [ "postgres", "tls-rustls"], optional = true }
+axum_session = { version = "0.14", optional = true }
+argon2 = { version = "0.5", features = ["std"], optional = true }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate", "thaw/hydrate"]
 ssr = [
 	"dep:axum",
 	"dep:tokio",
+	"dep:axum_session",
+	"dep:axum_session_auth",
+	"dep:axum_session_sqlx",
+	"dep:argon2",
+	"dep:rand",
 	"dep:tower",
 	"dep:tower-http",
 	"dep:leptos_axum",
+	"dep:async-trait",
 	"dep:sqlx",
 	"leptos/ssr",
 	"leptos_meta/ssr",

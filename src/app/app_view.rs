@@ -1,10 +1,12 @@
 use crate::{
+	auth::{Login, Logout},
 	ds::Ds,
 	equipment::{Equipment, EquipmentAdd, EquipmentDetail},
 	error_template::{AppError, ErrorTemplate},
 	footer::Footer,
 	header::Header,
 	home::Home,
+	login::Login,
 	samples::Samples,
 };
 
@@ -16,6 +18,8 @@ use thaw::*;
 stylance::import_style!(css, "app.module.css");
 
 pub type ScrollableBody = RwSignal<bool>;
+pub type LoginAction = Action<Login, Result<(), ServerFnError>>;
+pub type LogoutAction = Action<Logout, Result<(), ServerFnError>>;
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -50,6 +54,12 @@ pub fn App() -> impl IntoView {
 	let is_body_scrollable = create_rw_signal(true);
 	provide_context::<ScrollableBody>(is_body_scrollable);
 
+	let login = create_server_action::<Login>();
+	provide_context::<LoginAction>(login);
+
+	let logout = create_server_action::<Logout>();
+	provide_context::<LogoutAction>(logout);
+
 	view! {
 		<Body class=move || { if is_body_scrollable.get() { "" } else { "not_scrollable" } } />
 		<Stylesheet id="leptos" href="/pkg/codon.css" />
@@ -71,6 +81,7 @@ pub fn App() -> impl IntoView {
 					<main class=format!("{} frame", css::main)>
 						<Routes>
 							<Route path="" view=Home />
+							<Route path="/login" view=Login />
 							<Route path="/ds" view=Ds />
 							<Route path="/samples" view=Samples />
 							<Route path="/equipment" view=Equipment />

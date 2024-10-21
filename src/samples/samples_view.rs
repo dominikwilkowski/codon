@@ -160,9 +160,11 @@ pub fn SampleItem(
 	}
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn get_samples() -> Result<Vec<SampleData>, ServerFnError> {
-	use crate::db::ssr::get_db;
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	sqlx::query!("SELECT * FROM samples ORDER BY id")
 		.map(|data| SampleData {
@@ -170,41 +172,47 @@ pub async fn get_samples() -> Result<Vec<SampleData>, ServerFnError> {
 			sample_type: data.sample_type.expect("No `sample_type` found in `samples` table"),
 			analyst: data.analyst.expect("No `analyst` found in `samples` table"),
 		})
-		.fetch_all(get_db())
+		.fetch_all(&pool)
 		.await
 		.map_err(|error| ServerFnError::ServerError(error.to_string()))
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn add_sample(sample_type: String, analyst: String) -> Result<(), ServerFnError> {
-	use crate::db::ssr::get_db;
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	// fake API delay
 	std::thread::sleep(std::time::Duration::from_millis(1250));
 
 	Ok(
 		sqlx::query!("INSERT INTO samples (sample_type, analyst) VALUES ($1, $2)", sample_type, analyst)
-			.execute(get_db())
+			.execute(&pool)
 			.await
 			.map(|_| ())?,
 	)
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn edit_sample(id: i32, sample_type: String, analyst: String) -> Result<(), ServerFnError> {
-	use crate::db::ssr::get_db;
+	use sqlx::PgPool;
+
+	let pool = use_context::<PgPool>().expect("Database not initialized");
 
 	Ok(
 		sqlx::query!("UPDATE samples SET sample_type = $1,analyst = $2 WHERE id = $3", sample_type, analyst, id)
-			.execute(get_db())
+			.execute(&pool)
 			.await
 			.map(|_| ())?,
 	)
 }
 
-#[server]
+#[server(prefix = "/api")]
 pub async fn delete_sample(id: i32) -> Result<(), ServerFnError> {
-	use crate::db::ssr::get_db;
+	use sqlx::PgPool;
 
-	Ok(sqlx::query!("DELETE FROM samples WHERE id = $1", id).execute(get_db()).await.map(|_| ())?)
+	let pool = use_context::<PgPool>().expect("Database not initialized");
+
+	Ok(sqlx::query!("DELETE FROM samples WHERE id = $1", id).execute(&pool).await.map(|_| ())?)
 }
