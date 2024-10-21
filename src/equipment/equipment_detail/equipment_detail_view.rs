@@ -764,7 +764,6 @@ pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 	};
 
 	use sqlx::PgPool;
-	use tokio::fs::rename;
 
 	let pool = use_context::<PgPool>().expect("Database not initialized");
 

@@ -218,7 +218,7 @@ pub async fn get_equipment_data(
 				read: perm,
 				write: _,
 				create: _,
-			} = user.permission_todo;
+			} = user.permission_equipment;
 			perm.get_query_select("id")
 		},
 		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),

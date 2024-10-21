@@ -13,7 +13,6 @@ pub struct User {
 	pub username: String,
 	pub permission_equipment: Permissions,
 	pub permission_user: Permissions,
-	pub permission_todo: Permissions,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -24,7 +23,6 @@ pub struct UserSQL {
 	pub password: String,
 	pub permission_equipment: String,
 	pub permission_user: String,
-	pub permission_todo: String,
 }
 
 #[cfg(feature = "ssr")]
@@ -35,7 +33,6 @@ impl From<UserSQL> for User {
 			username: val.username,
 			permission_equipment: Permission::parse(val.permission_equipment).expect("Invalid permission string"),
 			permission_user: Permission::parse(val.permission_user).expect("Invalid permission string"),
-			permission_todo: Permission::parse(val.permission_todo).expect("Invalid permission string"),
 		}
 	}
 }
@@ -63,11 +60,6 @@ impl Default for User {
 				write: Permission::Write(vec![Scope::Equipment(-1)]),
 				create: Permission::Create(false),
 			},
-			permission_todo: Permissions::ReadWrite {
-				read: Permission::Read(vec![Scope::Equipment(-1)]),
-				write: Permission::Write(vec![Scope::Equipment(-1)]),
-				create: Permission::Create(false),
-			},
 		}
 	}
 }
@@ -91,8 +83,13 @@ pub mod ssr {
 
 	impl User {
 		pub async fn get_from_id_with_passhash(id: i32, pool: &PgPool) -> Option<(Self, UserPasshash)> {
-			let sqluser =
-				sqlx::query_as::<_, UserSQL>("SELECT * FROM users WHERE id = $1").bind(id).fetch_one(pool).await.ok()?;
+			let sqluser = sqlx::query_as::<_, UserSQL>(
+				"SELECT id, username, password, permission_equipment, permission_user FROM people WHERE id = $1",
+			)
+			.bind(id)
+			.fetch_one(pool)
+			.await
+			.ok()?;
 
 			Some(sqluser.into_user())
 		}
@@ -102,11 +99,13 @@ pub mod ssr {
 		}
 
 		pub async fn get_from_username_with_passhash(name: String, pool: &PgPool) -> Option<(Self, UserPasshash)> {
-			let sqluser = sqlx::query_as::<_, UserSQL>("SELECT * FROM users WHERE username = $1")
-				.bind(name)
-				.fetch_one(pool)
-				.await
-				.ok()?;
+			let sqluser = sqlx::query_as::<_, UserSQL>(
+				"SELECT id, username, password, permission_equipment, permission_user FROM people WHERE username = $1",
+			)
+			.bind(name)
+			.fetch_one(pool)
+			.await
+			.ok()?;
 
 			Some(sqluser.into_user())
 		}
@@ -185,6 +184,8 @@ pub async fn signup(
 	let pool = use_context::<PgPool>().expect("Database not initialized");
 	let auth = use_context::<AuthSession>().expect("No session found");
 
+	// TODO: check for permissions
+
 	if password != password_confirmation {
 		return Err(ServerFnError::ServerError("Passwords did not match.".to_string()));
 	}
@@ -197,10 +198,10 @@ pub async fn signup(
 		.to_string();
 
 	sqlx::query(
-		"INSERT INTO users
-		(username, password, permission_equipment, permission_user, permission_todo)
+		"INSERT INTO people
+		(username, password, permission_equipment, permission_user)
 		VALUES
-		($1, $2, 'READ(*)|WRITE(*)', 'READ(*)|WRITE(*)', 'READ(*)|WRITE(*)')",
+		($1, $2, 'READ(-1)|WRITE(-1)|CREATE(false)', 'READ(-1)|WRITE(-1)|CREATE(false)')",
 	)
 	.bind(username.clone())
 	.bind(password_hashed)

@@ -29,6 +29,7 @@ pub mod footer;
 pub mod header;
 pub mod home;
 pub mod icons;
+pub mod login;
 pub mod nav;
 pub mod permission;
 pub mod qrcode;
