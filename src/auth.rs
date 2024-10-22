@@ -146,7 +146,12 @@ pub async fn get_user() -> Result<Option<User>, ServerFnError> {
 }
 
 #[server(prefix = "/api")]
-pub async fn login(username: String, password: String, remember: Option<String>) -> Result<(), ServerFnError> {
+pub async fn login(
+	username: String,
+	password: String,
+	remember: Option<String>,
+	redirect: String,
+) -> Result<(), ServerFnError> {
 	use self::ssr::*;
 	use server_fn::error::NoCustomError;
 
@@ -164,7 +169,7 @@ pub async fn login(username: String, password: String, remember: Option<String>)
 		Ok(_) => {
 			auth.login_user(user.id);
 			auth.remember_user(remember.is_some());
-			leptos_axum::redirect("/");
+			leptos_axum::redirect(&redirect);
 			Ok(())
 		},
 		Err(_) => Err(ServerFnError::ServerError("Username or Password does not match.".to_string())),

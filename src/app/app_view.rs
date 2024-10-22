@@ -81,7 +81,7 @@ pub fn App() -> impl IntoView {
 					<main class=format!("{} frame", css::main)>
 						<Routes>
 							<Route path="" view=Home />
-							<Route path="/login" view=Login />
+							<Route path="/login" view=move || view! { <Login /> } />
 							<Route path="/ds" view=Ds />
 							<Route path="/samples" view=Samples />
 							<Route path="/equipment" view=Equipment />

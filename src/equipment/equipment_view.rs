@@ -1,4 +1,5 @@
 use crate::{
+	app::LoginAction,
 	components::{
 		button::{Button, ButtonVariant},
 		pagination::Pagination,
@@ -7,6 +8,7 @@ use crate::{
 	equipment::{EquipmentData, Heading, Row, THead},
 	error_template::ErrorTemplate,
 	icons::EquipmentLogo,
+	login::Login,
 };
 
 use leptos::*;
@@ -51,8 +53,10 @@ pub fn Equipment() -> impl IntoView {
 		String::from("notes"),
 	]);
 
+	let login_action = use_context::<LoginAction>().expect("No login action found in context");
+
 	let equipment_data = create_resource(
-		move || (delete_equipment.version().get()),
+		move || (delete_equipment.version().get(), login_action.version().get()),
 		move |_| {
 			get_equipment_data(query_field.get(), query_order.get(), query_page.get(), query_ipp.get(), query_archived.get())
 		},
@@ -72,7 +76,13 @@ pub fn Equipment() -> impl IntoView {
 						{equipment_data
 							.get()
 							.map(move |data| match data {
-								Err(e) => view! { <pre class="error">Server Error: {e.to_string()}</pre> }.into_view(),
+								Err(error) => {
+									if error.to_string().contains("User not authenticated") {
+										view! { <Login redirect="/equipment" /> }
+									} else {
+										view! { <pre class="error">Server Error: {error.to_string()}</pre> }.into_view()
+									}
+								}
 								Ok((equipment, row_count)) => {
 									let hidden_fields = vec![
 										(String::from("field"), query_field.get()),
