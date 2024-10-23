@@ -1,0 +1,21 @@
+.login_form {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 0.5rem;
+	max-width: 30rem;
+	margin: 0 auto;
+}
+
+.login_form .label {
+	display: grid;
+	grid-column: 1 / -1;
+	grid-template-columns: subgrid;
+	align-items: baseline;
+}
+
+.login_form .footer {
+	display: grid;
+	grid-column: 1 / -1;
+	justify-items: left;
+	gap: 1.5rem;
+}

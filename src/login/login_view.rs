@@ -1,4 +1,7 @@
-use crate::app::LoginAction;
+use crate::{
+	app::LoginAction,
+	components::{button::Button, checkbox::Checkbox, input::Input},
+};
 
 use leptos::*;
 use leptos_router::*;
@@ -11,23 +14,21 @@ pub fn Login(#[prop(optional, default = "/")] redirect: &'static str) -> impl In
 
 	view! {
 		<div>
-			<h1>Login</h1>
-			<ActionForm action=login_action>
+			<ActionForm action=login_action class=css::login_form>
+				<h1>Login</h1>
 				<input type="hidden" name="redirect" value=redirect />
-				<label>"User:" <input type="text" placeholder="Username" maxlength="32" name="username" /></label>
-				<br />
-				<label>
-					"Password:" <input type="password" placeholder="Password" name="password" class="auth-input" />
+				<label class=css::label>
+					<span>User:</span>
+					<Input name="username" placeholder="Username" value=create_rw_signal(String::new()) />
 				</label>
-				<br />
-				<label>
-					<input type="checkbox" name="remember" class="auth-input" />
-					"Remember me?"
+				<label class=css::label>
+					<span>Password:</span>
+					<Input name="password" placeholder="Password" value=create_rw_signal(String::new()) />
 				</label>
-				<br />
-				<button type="submit" class="button">
-					"Log In"
-				</button>
+				<div class=css::footer>
+					<Checkbox attr::name="remember">Remember me</Checkbox>
+					<Button kind="submit">Log In</Button>
+				</div>
 			</ActionForm>
 			{move || {
 				if let Some(responds) = login_action.value().get() {
