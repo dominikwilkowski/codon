@@ -3,7 +3,10 @@ use leptos::*;
 #[cfg(feature = "ssr")]
 use server_fn::codec::MultipartData;
 #[cfg(feature = "ssr")]
-use std::path::{Path, PathBuf};
+use std::{
+	fs,
+	path::{Path, PathBuf},
+};
 #[cfg(feature = "ssr")]
 use tokio::fs::rename;
 
@@ -143,4 +146,71 @@ pub async fn file_upload(
 			additional_fields,
 		})
 	}
+}
+
+#[cfg(feature = "ssr")]
+pub async fn remove_temp_files(result: FileUploadResult) -> Result<(), ServerFnError> {
+	let media_fields = [
+		if result.media1.is_empty() {
+			None
+		} else {
+			Some(result.media1)
+		},
+		if result.media2.is_empty() {
+			None
+		} else {
+			Some(result.media2)
+		},
+		if result.media3.is_empty() {
+			None
+		} else {
+			Some(result.media3)
+		},
+		if result.media4.is_empty() {
+			None
+		} else {
+			Some(result.media4)
+		},
+		if result.media5.is_empty() {
+			None
+		} else {
+			Some(result.media5)
+		},
+		if result.media6.is_empty() {
+			None
+		} else {
+			Some(result.media6)
+		},
+		if result.media7.is_empty() {
+			None
+		} else {
+			Some(result.media7)
+		},
+		if result.media8.is_empty() {
+			None
+		} else {
+			Some(result.media8)
+		},
+		if result.media9.is_empty() {
+			None
+		} else {
+			Some(result.media9)
+		},
+		if result.media10.is_empty() {
+			None
+		} else {
+			Some(result.media10)
+		},
+	];
+	for media in media_fields.into_iter().flatten() {
+		let file_path = PathBuf::from(format!("{}/public/{}", env!("CARGO_MANIFEST_DIR"), media));
+		if file_path.exists() {
+			match fs::remove_file(&file_path) {
+				Ok(_) => {},
+				Err(_) => return Err(ServerFnError::Request(format!("Could not delete temp file {file_path:?}"))),
+			}
+		}
+	}
+
+	Ok(())
 }

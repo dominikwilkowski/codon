@@ -193,7 +193,13 @@ pub fn EquipmentDetail() -> impl IntoView {
 																				match responds {
 																					Ok(_) => view! {}.into_view(),
 																					Err(error) => {
-																						view! { <span>{error.to_string().replace("Error running server function: ", "")}</span> }
+																						view! {
+																							<span>
+																								{error
+																									.to_string()
+																									.replace("Error running server function: ", "")}
+																							</span>
+																						}
 																							.into_view()
 																					}
 																				}
@@ -684,6 +690,21 @@ pub fn EquipmentFormToggle<T: EquipmentCellView + Clone + 'static>(item: T, chil
 
 	// TODO: toggel only when request was successful and enable loading while waiting
 
+	// TODO: add error message
+	// {move || {
+	// 	if let Some(responds) = name_action.value().get() {
+	// 		match responds {
+	// 			Ok(_) => view! {}.into_view(),
+	// 			Err(error) => {
+	// 				view! { <span>{error.to_string().replace("Error running server function: ", "")}</span> }
+	// 					.into_view()
+	// 			}
+	// 		}
+	// 	} else {
+	// 		view! {}.into_view()
+	// 	}
+	// }}
+
 	view! {
 		<Show when=move || toggle.get() fallback=move || view! { <EquipmentCell cell=item.clone() /> }>
 			{children()}
@@ -704,8 +725,12 @@ pub async fn edit_name(id: String, name: String, note: String) -> Result<(), Ser
 	let pool = use_context::<PgPool>().expect("Database not initialized");
 	let user = get_user().await?;
 
-	let auth_query;
-	let auth_query_update;
+	let id = match id.parse::<i32>() {
+		Ok(value) => value,
+		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
+	};
+
+	let user_id;
 	match user {
 		Some(user) => {
 			let Permissions::ReadWrite {
@@ -713,31 +738,28 @@ pub async fn edit_name(id: String, name: String, note: String) -> Result<(), Ser
 				write: perm,
 				create: _,
 			} = user.permission_equipment;
-			auth_query = perm.get_query_select("id");
-			auth_query_update = perm.get_query_select_without_where("id");
+			user_id = user.id;
+
+			if !perm.can_write(id, user_id) {
+				return Err(ServerFnError::Request(String::from("User not authenticated")));
+			}
 		},
 		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
 	};
 
-	let id = match id.parse::<i32>() {
-		Ok(value) => value,
-		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
-	};
+	let old_value: String =
+		sqlx::query_scalar("SELECT name FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
 
-	let old_value: String = sqlx::query_scalar(&format!("SELECT name FROM equipment WHERE id = $1 {auth_query}"))
-		.bind(id)
-		.fetch_one(&pool)
-		.await?;
-
-	sqlx::query(&format!(
-		r#"INSERT INTO equipment_log
+	sqlx::query(
+		r#"
+		INSERT INTO equipment_log
 		(log_type, equipment, person, notes, field, old_value, new_value)
 		VALUES
-		($1, $2, $3, $4, $5, $6, $7) {auth_query}"#
-	))
+		($1, $2, $3, $4, $5, $6, $7)"#,
+	)
 	.bind("edit")
 	.bind(id)
-	.bind(14) // TODO
+	.bind(user_id)
 	.bind(note)
 	.bind("name")
 	.bind(old_value)
@@ -746,48 +768,65 @@ pub async fn edit_name(id: String, name: String, note: String) -> Result<(), Ser
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
-	sqlx::query(&format!("UPDATE equipment SET name = $1 WHERE id = $2 {auth_query_update}"))
-		.bind(name)
-		.bind(id)
-		.execute(&pool)
-		.await
-		.map(|_| ())?;
+	sqlx::query("UPDATE equipment SET name = $1 WHERE id = $2").bind(name).bind(id).execute(&pool).await.map(|_| ())?;
 
 	Ok(())
 }
 
 #[server(prefix = "/api")]
 pub async fn edit_type(id: String, equipment_type: String, note: String) -> Result<(), ServerFnError> {
+	use crate::{auth::get_user, permission::Permissions};
+
 	use sqlx::PgPool;
 
 	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
 	};
 
+	let user_id;
+	match user {
+		Some(user) => {
+			let Permissions::ReadWrite {
+				read: _,
+				write: perm,
+				create: _,
+			} = user.permission_equipment;
+			user_id = user.id;
+
+			if !perm.can_write(id, user_id) {
+				return Err(ServerFnError::Request(String::from("User not authenticated")));
+			}
+		},
+		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
+	};
+
 	let old_value: String =
 		sqlx::query_scalar("SELECT equipment_type FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
 
-	sqlx::query!(
+	sqlx::query(
 		r#"INSERT INTO equipment_log
 		(log_type, equipment, person, notes, field, old_value, new_value)
 		VALUES
 		($1, $2, $3, $4, $5, $6, $7)"#,
-		"edit",
-		id,
-		14, // TODO
-		note,
-		"type",
-		old_value,
-		equipment_type,
 	)
+	.bind("edit")
+	.bind(id)
+	.bind(user_id)
+	.bind(note)
+	.bind("type")
+	.bind(old_value)
+	.bind(equipment_type.clone())
 	.execute(&pool)
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
-	sqlx::query!("UPDATE equipment SET equipment_type = $1 WHERE id = $2", equipment_type, id)
+	sqlx::query("UPDATE equipment SET equipment_type = $1 WHERE id = $2")
+		.bind(equipment_type)
+		.bind(id)
 		.execute(&pool)
 		.await
 		.map(|_| ())?;
@@ -798,16 +837,40 @@ pub async fn edit_type(id: String, equipment_type: String, note: String) -> Resu
 #[server(input = MultipartFormData, prefix = "/api")]
 pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 	use crate::{
-		components::file_upload::file_upload,
+		auth::get_user,
+		components::file_upload::{file_upload, remove_temp_files},
 		equipment::EquipmentLogType,
+		permission::Permissions,
 		utils::{get_equipment_base_folder, get_equipment_log_folder, move_file},
 	};
 
 	use sqlx::PgPool;
 
 	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let user = get_user().await?;
 
 	let result = file_upload(data, |id| format!("{}temp/", get_equipment_base_folder(id))).await?;
+
+	let user_id;
+	match user {
+		Some(user) => {
+			let Permissions::ReadWrite {
+				read: _,
+				write: perm,
+				create: _,
+			} = user.permission_equipment;
+			user_id = user.id;
+
+			if !perm.can_write(result.id, user_id) {
+				remove_temp_files(result).await?;
+				return Err(ServerFnError::Request(String::from("User not authenticated")));
+			}
+		},
+		None => {
+			remove_temp_files(result).await?;
+			return Err(ServerFnError::Request(String::from("User not authenticated")));
+		},
+	};
 
 	let mut action = None;
 	let mut note = None;
@@ -843,12 +906,17 @@ pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 	};
 
 	let log = sqlx::query!(
-		r#"INSERT INTO equipment_log (log_type, equipment, person, notes, old_value) VALUES ($1, $2, $3, $4, $5) RETURNING id"#,
+		r#"
+		INSERT INTO equipment_log
+		(log_type, equipment, person, notes, old_value)
+		VALUES
+		($1, $2, $3, $4, $5)
+		RETURNING id"#,
 		EquipmentLogType::from(next_status).to_string(),
 		result.id,
-		14,
+		user_id,
 		note.to_string(),
-		old_status,
+		old_status
 	)
 	.fetch_one(&pool)
 	.await
@@ -896,7 +964,9 @@ pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
-	sqlx::query!("UPDATE equipment SET status = $1 WHERE id = $2", format!("{next_status:#?}"), result.id)
+	sqlx::query("UPDATE equipment SET status = $1 WHERE id = $2")
+		.bind(format!("{next_status:#?}"))
+		.bind(result.id)
 		.execute(&pool)
 		.await
 		.map(|_| ())?;
