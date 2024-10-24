@@ -12,7 +12,7 @@ pub struct User {
 	pub id: i32,
 	pub username: String,
 	pub permission_equipment: Permissions,
-	pub permission_user: Permissions,
+	pub permission_people: Permissions,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -22,7 +22,7 @@ pub struct UserSQL {
 	pub username: String,
 	pub password: String,
 	pub permission_equipment: String,
-	pub permission_user: String,
+	pub permission_people: String,
 }
 
 #[cfg(feature = "ssr")]
@@ -32,7 +32,7 @@ impl From<UserSQL> for User {
 			id: val.id,
 			username: val.username,
 			permission_equipment: Permission::parse(val.permission_equipment).expect("Invalid permission string"),
-			permission_user: Permission::parse(val.permission_user).expect("Invalid permission string"),
+			permission_people: Permission::parse(val.permission_people).expect("Invalid permission string"),
 		}
 	}
 }
@@ -55,7 +55,7 @@ impl Default for User {
 				write: Permission::Write(vec![Scope::Equipment(-1)]),
 				create: Permission::Create(false),
 			},
-			permission_user: Permissions::ReadWrite {
+			permission_people: Permissions::ReadWrite {
 				read: Permission::Read(vec![Scope::Equipment(-1)]),
 				write: Permission::Write(vec![Scope::Equipment(-1)]),
 				create: Permission::Create(false),
@@ -84,7 +84,7 @@ pub mod ssr {
 	impl User {
 		pub async fn get_from_id_with_passhash(id: i32, pool: &PgPool) -> Option<(Self, UserPasshash)> {
 			let sqluser = sqlx::query_as::<_, UserSQL>(
-				"SELECT id, username, password, permission_equipment, permission_user FROM people WHERE id = $1",
+				"SELECT id, username, password, permission_equipment, permission_people FROM people WHERE id = $1",
 			)
 			.bind(id)
 			.fetch_one(pool)
@@ -100,7 +100,7 @@ pub mod ssr {
 
 		pub async fn get_from_username_with_passhash(name: String, pool: &PgPool) -> Option<(Self, UserPasshash)> {
 			let sqluser = sqlx::query_as::<_, UserSQL>(
-				"SELECT id, username, password, permission_equipment, permission_user FROM people WHERE username = $1",
+				"SELECT id, username, password, permission_equipment, permission_people FROM people WHERE username = $1",
 			)
 			.bind(name)
 			.fetch_one(pool)
@@ -190,8 +190,21 @@ pub async fn signup(
 
 	let pool = use_context::<PgPool>().expect("Database not initialized");
 	let auth = use_context::<AuthSession>().expect("No session found");
+	let user = get_user().await?;
 
-	// TODO: check for permissions
+	match user {
+		Some(user) => {
+			let Permissions::ReadWrite {
+				read: _,
+				write: _,
+				create: perm,
+			} = user.permission_people;
+			if perm != Permission::Create(true) {
+				return Err(ServerFnError::Request(String::from("User not authenticated")));
+			}
+		},
+		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
+	};
 
 	if password != password_confirmation {
 		return Err(ServerFnError::ServerError("Passwords did not match.".to_string()));
@@ -206,7 +219,7 @@ pub async fn signup(
 
 	sqlx::query(
 		"INSERT INTO people
-		(username, password, permission_equipment, permission_user)
+		(username, password, permission_equipment, permission_people)
 		VALUES
 		($1, $2, 'READ(-1)|WRITE(-1)|CREATE(false)', 'READ(-1)|WRITE(-1)|CREATE(false)')",
 	)
