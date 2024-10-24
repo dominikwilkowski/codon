@@ -35,7 +35,7 @@ pub fn Login(#[prop(optional, default = "/")] redirect: &'static str) -> impl In
 					match responds {
 						Ok(_) => view! {}.into_view(),
 						Err(error) => {
-							view! { <span>{error.to_string().replace("error running server function: ", "")}</span> }
+							view! { <span>{error.to_string().replace("Error running server function: ", "")}</span> }
 								.into_view()
 						}
 					}

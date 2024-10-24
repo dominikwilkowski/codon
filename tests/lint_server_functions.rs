@@ -100,7 +100,8 @@ fn all_server_functions_call_get_user() {
 
 	if !server_functions_missing_get_user.is_empty() {
 		panic!(
-			"The following server functions do not call `get_user()`:\n{}",
+			"The following server functions ({}) do not call `get_user()` and have not opted out explicitly:\n{}",
+			server_functions_missing_get_user.len(),
 			server_functions_missing_get_user.join("\n")
 		);
 	}

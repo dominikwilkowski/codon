@@ -160,6 +160,7 @@ pub fn SampleItem(
 	}
 }
 
+/// ![allow_no_get_user]
 #[server(prefix = "/api")]
 pub async fn get_samples() -> Result<Vec<SampleData>, ServerFnError> {
 	use sqlx::PgPool;
@@ -177,6 +178,7 @@ pub async fn get_samples() -> Result<Vec<SampleData>, ServerFnError> {
 		.map_err(|error| ServerFnError::ServerError(error.to_string()))
 }
 
+/// ![allow_no_get_user]
 #[server(prefix = "/api")]
 pub async fn add_sample(sample_type: String, analyst: String) -> Result<(), ServerFnError> {
 	use sqlx::PgPool;
@@ -194,6 +196,7 @@ pub async fn add_sample(sample_type: String, analyst: String) -> Result<(), Serv
 	)
 }
 
+/// ![allow_no_get_user]
 #[server(prefix = "/api")]
 pub async fn edit_sample(id: i32, sample_type: String, analyst: String) -> Result<(), ServerFnError> {
 	use sqlx::PgPool;
@@ -208,6 +211,7 @@ pub async fn edit_sample(id: i32, sample_type: String, analyst: String) -> Resul
 	)
 }
 
+/// ![allow_no_get_user]
 #[server(prefix = "/api")]
 pub async fn delete_sample(id: i32) -> Result<(), ServerFnError> {
 	use sqlx::PgPool;
