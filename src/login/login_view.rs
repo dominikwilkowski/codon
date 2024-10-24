@@ -5,12 +5,14 @@ use crate::{
 
 use leptos::*;
 use leptos_router::*;
+use std::borrow::Cow;
 
 stylance::import_style!(css, "login.module.css");
 
 #[component]
-pub fn Login(#[prop(optional, default = "/")] redirect: &'static str) -> impl IntoView {
+pub fn Login(redirect: impl Into<Cow<'static, str>>) -> impl IntoView {
 	let login_action = use_context::<LoginAction>().expect("No login action found in context");
+	let redirect: Cow<'static, str> = redirect.into();
 
 	view! {
 		<div>

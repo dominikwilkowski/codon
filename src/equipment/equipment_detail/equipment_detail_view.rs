@@ -1,4 +1,5 @@
 use crate::{
+	app::LoginAction,
 	components::{
 		button::{Button, ButtonVariant},
 		datepicker::DatePicker,
@@ -13,6 +14,7 @@ use crate::{
 	},
 	error_template::ErrorTemplate,
 	icons::{FlaskLogo, IncubationCabinetLogo, VesselLogo},
+	login::Login,
 };
 
 use leptos::*;
@@ -88,6 +90,8 @@ pub fn EquipmentDetail() -> impl IntoView {
 		}
 	});
 
+	let login_action = use_context::<LoginAction>().expect("No login action found in context");
+
 	let name_action = create_server_action::<EditName>();
 	let equipment_type_action = create_server_action::<EditType>();
 	let status_action = create_action(|data: &FormData| edit_status(data.clone().into()));
@@ -102,6 +106,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 	let equipment_data = create_resource(
 		move || {
 			(
+				login_action.version().get(),
 				id.get(),
 				name_action.version().get(),
 				equipment_type_action.version().get(),
@@ -148,8 +153,13 @@ pub fn EquipmentDetail() -> impl IntoView {
 							if equipment_data.get().is_some() {
 								match equipment_data.get().unwrap() {
 									Err(error) => {
-										go_to_listing.set(true);
-										view! { <pre class="error">Server Error: {error.to_string()}</pre> }.into_view()
+										let error = error.to_string();
+										if error.contains("User not authenticated") {
+											view! { <Login redirect=format!("/equipment/{}", id.get()) /> }
+										} else {
+											go_to_listing.set(true);
+											view! { <pre class="error">Server Error: {error}</pre> }.into_view()
+										}
 									}
 									Ok(equipment) => {
 										let is_archived = equipment.status == EquipmentStatus::Archived;
@@ -976,13 +986,33 @@ pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 
 #[server(prefix = "/api")]
 pub async fn edit_manufacturer(id: String, manufacturer: String, note: String) -> Result<(), ServerFnError> {
+	use crate::{auth::get_user, permission::Permissions};
+
 	use sqlx::PgPool;
 
 	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
+	};
+
+	let user_id;
+	match user {
+		Some(user) => {
+			let Permissions::ReadWrite {
+				read: _,
+				write: perm,
+				create: _,
+			} = user.permission_equipment;
+			user_id = user.id;
+
+			if !perm.can_write(id, user_id) {
+				return Err(ServerFnError::Request(String::from("User not authenticated")));
+			}
+		},
+		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
 	};
 
 	let old_value: String =
@@ -995,7 +1025,7 @@ pub async fn edit_manufacturer(id: String, manufacturer: String, note: String) -
 		($1, $2, $3, $4, $5, $6, $7)"#,
 		"edit",
 		id,
-		14, // TODO
+		user_id,
 		note,
 		"manufacturer",
 		old_value,
@@ -1020,14 +1050,34 @@ pub async fn edit_purchase_date(
 	timezone_offset: i32,
 	note: String,
 ) -> Result<(), ServerFnError> {
+	use crate::{auth::get_user, permission::Permissions};
+
 	use chrono::prelude::*;
 	use sqlx::PgPool;
 
 	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
+	};
+
+	let user_id;
+	match user {
+		Some(user) => {
+			let Permissions::ReadWrite {
+				read: _,
+				write: perm,
+				create: _,
+			} = user.permission_equipment;
+			user_id = user.id;
+
+			if !perm.can_write(id, user_id) {
+				return Err(ServerFnError::Request(String::from("User not authenticated")));
+			}
+		},
+		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
 	};
 
 	let hours = timezone_offset / 60;
@@ -1051,7 +1101,7 @@ pub async fn edit_purchase_date(
 		($1, $2, $3, $4, $5, $6, $7)"#,
 		"edit",
 		id,
-		14, // TODO
+		user_id,
 		note,
 		"purchase_date",
 		old_value.unwrap_or_default().format("%d %b %Y").to_string(),
@@ -1071,13 +1121,33 @@ pub async fn edit_purchase_date(
 
 #[server(prefix = "/api")]
 pub async fn edit_vendor(id: String, vendor: String, note: String) -> Result<(), ServerFnError> {
+	use crate::{auth::get_user, permission::Permissions};
+
 	use sqlx::PgPool;
 
 	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
+	};
+
+	let user_id;
+	match user {
+		Some(user) => {
+			let Permissions::ReadWrite {
+				read: _,
+				write: perm,
+				create: _,
+			} = user.permission_equipment;
+			user_id = user.id;
+
+			if !perm.can_write(id, user_id) {
+				return Err(ServerFnError::Request(String::from("User not authenticated")));
+			}
+		},
+		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
 	};
 
 	let old_value: String =
@@ -1090,7 +1160,7 @@ pub async fn edit_vendor(id: String, vendor: String, note: String) -> Result<(),
 		($1, $2, $3, $4, $5, $6, $7)"#,
 		"edit",
 		id,
-		14, // TODO
+		user_id,
 		note,
 		"vendor",
 		old_value,
@@ -1107,13 +1177,33 @@ pub async fn edit_vendor(id: String, vendor: String, note: String) -> Result<(),
 
 #[server(prefix = "/api")]
 pub async fn edit_cost_in_cent(id: String, cost_in_cent: f32, note: String) -> Result<(), ServerFnError> {
+	use crate::{auth::get_user, permission::Permissions};
+
 	use sqlx::PgPool;
 
 	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
+	};
+
+	let user_id;
+	match user {
+		Some(user) => {
+			let Permissions::ReadWrite {
+				read: _,
+				write: perm,
+				create: _,
+			} = user.permission_equipment;
+			user_id = user.id;
+
+			if !perm.can_write(id, user_id) {
+				return Err(ServerFnError::Request(String::from("User not authenticated")));
+			}
+		},
+		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
 	};
 
 	let cost_in_cent = (cost_in_cent * 100.0) as i32;
@@ -1129,7 +1219,7 @@ pub async fn edit_cost_in_cent(id: String, cost_in_cent: f32, note: String) -> R
 		($1, $2, $3, $4, $5, $6, $7)"#,
 		"edit",
 		id,
-		14, // TODO
+		user_id,
 		note,
 		"cost_in_cent",
 		old_value,
@@ -1154,14 +1244,34 @@ pub async fn edit_warranty_expiration_date(
 	timezone_offset: i32,
 	note: String,
 ) -> Result<(), ServerFnError> {
+	use crate::{auth::get_user, permission::Permissions};
+
 	use chrono::prelude::*;
 	use sqlx::PgPool;
 
 	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
+	};
+
+	let user_id;
+	match user {
+		Some(user) => {
+			let Permissions::ReadWrite {
+				read: _,
+				write: perm,
+				create: _,
+			} = user.permission_equipment;
+			user_id = user.id;
+
+			if !perm.can_write(id, user_id) {
+				return Err(ServerFnError::Request(String::from("User not authenticated")));
+			}
+		},
+		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
 	};
 
 	let hours = timezone_offset / 60;
@@ -1189,7 +1299,7 @@ pub async fn edit_warranty_expiration_date(
 		($1, $2, $3, $4, $5, $6, $7)"#,
 		"edit",
 		id,
-		14, // TODO
+		user_id,
 		note,
 		"warranty_expiration_date",
 		old_value.unwrap_or_default().format("%d %b %Y").to_string(),
@@ -1209,13 +1319,33 @@ pub async fn edit_warranty_expiration_date(
 
 #[server(prefix = "/api")]
 pub async fn edit_location(id: String, location: String, note: String) -> Result<(), ServerFnError> {
+	use crate::{auth::get_user, permission::Permissions};
+
 	use sqlx::PgPool;
 
 	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
+	};
+
+	let user_id;
+	match user {
+		Some(user) => {
+			let Permissions::ReadWrite {
+				read: _,
+				write: perm,
+				create: _,
+			} = user.permission_equipment;
+			user_id = user.id;
+
+			if !perm.can_write(id, user_id) {
+				return Err(ServerFnError::Request(String::from("User not authenticated")));
+			}
+		},
+		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
 	};
 
 	let old_value: String =
@@ -1228,7 +1358,7 @@ pub async fn edit_location(id: String, location: String, note: String) -> Result
 		($1, $2, $3, $4, $5, $6, $7)"#,
 		"edit",
 		id,
-		14, // TODO
+		user_id,
 		note,
 		"location",
 		old_value,
@@ -1245,13 +1375,33 @@ pub async fn edit_location(id: String, location: String, note: String) -> Result
 
 #[server(prefix = "/api")]
 pub async fn edit_notes(id: String, notes: String, note: String) -> Result<(), ServerFnError> {
+	use crate::{auth::get_user, permission::Permissions};
+
 	use sqlx::PgPool;
 
 	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
+	};
+
+	let user_id;
+	match user {
+		Some(user) => {
+			let Permissions::ReadWrite {
+				read: _,
+				write: perm,
+				create: _,
+			} = user.permission_equipment;
+			user_id = user.id;
+
+			if !perm.can_write(id, user_id) {
+				return Err(ServerFnError::Request(String::from("User not authenticated")));
+			}
+		},
+		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
 	};
 
 	let old_value: String =
@@ -1264,7 +1414,7 @@ pub async fn edit_notes(id: String, notes: String, note: String) -> Result<(), S
 		($1, $2, $3, $4, $5, $6, $7)"#,
 		"edit",
 		id,
-		14, // TODO
+		user_id,
 		note,
 		"notes",
 		old_value,
@@ -1281,22 +1431,37 @@ pub async fn edit_notes(id: String, notes: String, note: String) -> Result<(), S
 
 #[server(prefix = "/api")]
 pub async fn get_equipment_data_by_id(id: String) -> Result<EquipmentData, ServerFnError> {
-	use crate::equipment::EquipmentSQLData;
+	use crate::{auth::get_user, equipment::EquipmentSQLData, permission::Permissions};
 
 	use sqlx::PgPool;
 
 	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
 	};
 
-	let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLData>("SELECT * FROM equipment WHERE id = $1")
-		.bind(id)
-		.fetch_one(&pool)
-		.await
-		.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+	let auth_query;
+	match user {
+		Some(user) => {
+			let Permissions::ReadWrite {
+				read: perm,
+				write: _,
+				create: _,
+			} = user.permission_equipment;
+			auth_query = perm.get_query_select("id");
+		},
+		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
+	};
+
+	let equipment_sql_data =
+		sqlx::query_as::<_, EquipmentSQLData>(&format!("SELECT * FROM equipment WHERE id = $1 {auth_query}"))
+			.bind(id)
+			.fetch_one(&pool)
+			.await
+			.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	Ok(equipment_sql_data.into())
 }
