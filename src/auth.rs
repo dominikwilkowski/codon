@@ -136,6 +136,7 @@ pub mod ssr {
 	}
 }
 
+/// ![allow_no_get_user]
 #[server(prefix = "/api")]
 pub async fn get_user() -> Result<Option<User>, ServerFnError> {
 	use crate::auth::ssr::AuthSession;
@@ -145,6 +146,7 @@ pub async fn get_user() -> Result<Option<User>, ServerFnError> {
 	Ok(auth.current_user)
 }
 
+/// ![allow_no_get_user]
 #[server(prefix = "/api")]
 pub async fn login(
 	username: String,
@@ -225,6 +227,7 @@ pub async fn signup(
 	Ok(())
 }
 
+/// ![allow_no_get_user]
 #[server(prefix = "/api")]
 pub async fn logout() -> Result<(), ServerFnError> {
 	use self::ssr::*;
