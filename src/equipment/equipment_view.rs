@@ -285,15 +285,31 @@ pub async fn get_equipment_data(
 
 #[server(prefix = "/api")]
 pub async fn delete_equipment(id: i32) -> Result<(), ServerFnError> {
-	use sqlx::PgPool;
-
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	use crate::{auth::get_user, permission::Permissions};
 
 	use server_fn::error::NoCustomError;
+	use sqlx::PgPool;
 	use std::{fs, path::PathBuf};
 
-	let qrcode_path: String =
-		sqlx::query_scalar("SELECT qrcode FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
+	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let user = get_user().await?;
+
+	let auth_query = match user {
+		Some(user) => {
+			let Permissions::ReadWrite {
+				read: _,
+				write: perm,
+				create: _,
+			} = user.permission_equipment;
+			perm.get_query_select("id")
+		},
+		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
+	};
+
+	let qrcode_path: String = sqlx::query_scalar(&format!("SELECT qrcode FROM equipment WHERE id = $1 {auth_query}"))
+		.bind(id)
+		.fetch_one(&pool)
+		.await?;
 	// TODO: delete all logs and notes as well
 
 	let file_path = PathBuf::from(format!("{}/public/qrcodes/{}", env!("CARGO_MANIFEST_DIR"), qrcode_path));
@@ -302,5 +318,11 @@ pub async fn delete_equipment(id: i32) -> Result<(), ServerFnError> {
 		fs::remove_file(&file_path).map_err(|error| ServerFnError::<NoCustomError>::ServerError(error.to_string()))?;
 	}
 
-	Ok(sqlx::query!("DELETE FROM equipment WHERE id = $1", id).execute(&pool).await.map(|_| ())?)
+	Ok(
+		sqlx::query(&format!("DELETE FROM equipment WHERE id = $1 {auth_query}"))
+			.bind(id)
+			.execute(&pool)
+			.await
+			.map(|_| ())?,
+	)
 }
