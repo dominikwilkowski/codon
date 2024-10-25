@@ -20,7 +20,7 @@ pub enum Permission {
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Permissions {
-	ReadWrite {
+	All {
 		read: Permission,
 		write: Permission,
 		create: Permission,
@@ -102,7 +102,7 @@ impl Permission {
 				(Permission::Read(read_scopes), Permission::Write(write_scopes))
 			};
 
-			Ok(Permissions::ReadWrite {
+			Ok(Permissions::All {
 				read,
 				write,
 				create: Permission::Create(create_scope.unwrap()),
@@ -191,7 +191,7 @@ mod tests {
 	fn permission_parse_test() {
 		assert_eq!(
 			Permission::parse(String::from("READ(*)|WRITE(*)|CREATE(false)")),
-			Ok(Permissions::ReadWrite {
+			Ok(Permissions::All {
 				read: Permission::ReadAny,
 				write: Permission::WriteAny,
 				create: Permission::Create(false),
@@ -199,7 +199,7 @@ mod tests {
 		);
 		assert_eq!(
 			Permission::parse(String::from("READ(equipment[1])|WRITE(equipment[1])|CREATE(true)")),
-			Ok(Permissions::ReadWrite {
+			Ok(Permissions::All {
 				read: Permission::Read(vec![Scope::Equipment(1)]),
 				write: Permission::Write(vec![Scope::Equipment(1)]),
 				create: Permission::Create(true),
@@ -207,7 +207,7 @@ mod tests {
 		);
 		assert_eq!(
 			Permission::parse(String::from("READ(equipment[1])|WRITE(equipment[1])|CREATE(false)")),
-			Ok(Permissions::ReadWrite {
+			Ok(Permissions::All {
 				read: Permission::Read(vec![Scope::Equipment(1)]),
 				write: Permission::Write(vec![Scope::Equipment(1)]),
 				create: Permission::Create(false),
@@ -215,7 +215,7 @@ mod tests {
 		);
 		assert_eq!(
 			Permission::parse(String::from("READ(person[1])|WRITE(person[1])|CREATE(false)")),
-			Ok(Permissions::ReadWrite {
+			Ok(Permissions::All {
 				read: Permission::Read(vec![Scope::Person(1)]),
 				write: Permission::Write(vec![Scope::Person(1)]),
 				create: Permission::Create(false),
@@ -223,7 +223,7 @@ mod tests {
 		);
 		assert_eq!(
 			Permission::parse(String::from("READ(*)|WRITE(equipment[1],equipment[5],person[7])|CREATE(false)")),
-			Ok(Permissions::ReadWrite {
+			Ok(Permissions::All {
 				read: Permission::ReadAny,
 				write: Permission::Write(vec![Scope::Equipment(1), Scope::Equipment(5), Scope::Person(7)]),
 				create: Permission::Create(false),
@@ -232,7 +232,7 @@ mod tests {
 
 		assert_eq!(
 			Permission::parse(String::from("WriTE(*)|REad(*)|CREATE(true)")),
-			Ok(Permissions::ReadWrite {
+			Ok(Permissions::All {
 				read: Permission::ReadAny,
 				write: Permission::WriteAny,
 				create: Permission::Create(true),
@@ -240,7 +240,7 @@ mod tests {
 		);
 		assert_eq!(
 			Permission::parse(String::from("READ( * )|WRITE(* )|CREATE( true )")),
-			Ok(Permissions::ReadWrite {
+			Ok(Permissions::All {
 				read: Permission::ReadAny,
 				write: Permission::WriteAny,
 				create: Permission::Create(true),
@@ -248,7 +248,7 @@ mod tests {
 		);
 		assert_eq!(
 			Permission::parse(String::from("READ (*) | WRITE( *)| CREATE(false )")),
-			Ok(Permissions::ReadWrite {
+			Ok(Permissions::All {
 				read: Permission::ReadAny,
 				write: Permission::WriteAny,
 				create: Permission::Create(false),
@@ -256,7 +256,7 @@ mod tests {
 		);
 		assert_eq!(
 			Permission::parse(String::from("read(*)|write(*)|create(FALSE)")),
-			Ok(Permissions::ReadWrite {
+			Ok(Permissions::All {
 				read: Permission::ReadAny,
 				write: Permission::WriteAny,
 				create: Permission::Create(false),
@@ -264,7 +264,7 @@ mod tests {
 		);
 		assert_eq!(
 			Permission::parse(String::from("READ(equipment[1],equipment[2],equipment[4564],equipment[789])|WRITE(equipment[1],equipment[2],equipment[3],equipment[4])|CREATE(false)")),
-			Ok(Permissions::ReadWrite {
+			Ok(Permissions::All {
 				read: Permission::Read(vec![
 					Scope::Equipment(1),
 					Scope::Equipment(2),
@@ -281,7 +281,7 @@ mod tests {
 			Permission::parse(String::from(
 				"READ(equipment[5], equipment[99], equipment[0]) | WRITE(equipment[5], equipment[99]   , equipment[0] )| CREATE( true  )"
 			)),
-			Ok(Permissions::ReadWrite {
+			Ok(Permissions::All {
 				read: Permission::Read(vec![Scope::Equipment(5), Scope::Equipment(99), Scope::Equipment(0)]),
 				write: Permission::Write(vec![Scope::Equipment(5), Scope::Equipment(99), Scope::Equipment(0)]),
 				create: Permission::Create(true),
@@ -292,7 +292,7 @@ mod tests {
 			Permission::parse(String::from(
 				"READ(equipment[1],equipment[2])|WRITE(equipment[1],equipment[2],equipment[3])|CREATE(false)"
 			)),
-			Ok(Permissions::ReadWrite {
+			Ok(Permissions::All {
 				read: Permission::Read(vec![Scope::Equipment(1), Scope::Equipment(2), Scope::Equipment(3)]),
 				write: Permission::Write(vec![Scope::Equipment(1), Scope::Equipment(2), Scope::Equipment(3)]),
 				create: Permission::Create(false),
@@ -302,7 +302,7 @@ mod tests {
 			Permission::parse(String::from(
 				"READ(equipment[1],equipment[2],equipment[3])|WRITE(equipment[1],equipment[2])|CREATE(false)"
 			)),
-			Ok(Permissions::ReadWrite {
+			Ok(Permissions::All {
 				read: Permission::Read(vec![Scope::Equipment(1), Scope::Equipment(2), Scope::Equipment(3)]),
 				write: Permission::Write(vec![Scope::Equipment(1), Scope::Equipment(2)]),
 				create: Permission::Create(false),
@@ -310,7 +310,7 @@ mod tests {
 		);
 		assert_eq!(
 			Permission::parse(String::from("READ(*)|WRITE(equipment[1],equipment[2])|CREATE(FALSE)")),
-			Ok(Permissions::ReadWrite {
+			Ok(Permissions::All {
 				read: Permission::ReadAny,
 				write: Permission::Write(vec![Scope::Equipment(1), Scope::Equipment(2)]),
 				create: Permission::Create(false),
@@ -318,7 +318,7 @@ mod tests {
 		);
 		assert_eq!(
 			Permission::parse(String::from("READ(equipment[1],equipment[2])|WRITE(*)|CREATE(true)")),
-			Ok(Permissions::ReadWrite {
+			Ok(Permissions::All {
 				read: Permission::ReadAny,
 				write: Permission::WriteAny,
 				create: Permission::Create(true),

@@ -51,6 +51,6 @@ pub fn THead(
 				}
 			})
 			.collect_view()}
-		<th colspan="2" class=format!("empty {}", css::th)></th>
+		<th colspan="1" class=format!("empty {}", css::th)></th>
 	}
 }

@@ -1,6 +1,6 @@
 use crate::{
-	components::button::{Button, ButtonVariant},
-	equipment::{DeleteEquipment, EquipmentCell, EquipmentData},
+	// components::button::{Button, ButtonVariant},
+	equipment::{/*DeleteEquipment,*/ EquipmentCell, EquipmentData},
 };
 
 use leptos::*;
@@ -11,7 +11,7 @@ stylance::import_style!(css, "row.module.css");
 #[component]
 pub fn Row(
 	equipment: Vec<EquipmentData>,
-	delete_equipment: Action<DeleteEquipment, Result<(), ServerFnError>>,
+	// delete_equipment: Action<DeleteEquipment, Result<(), ServerFnError>>,
 	field_filter: RwSignal<Vec<String>>,
 ) -> impl IntoView {
 	equipment
@@ -92,25 +92,25 @@ pub fn Row(
 					<td class="equipment_listing_details_link">
 						<A href=format!("/equipment/{}", equipment.id)>Details</A>
 					</td>
-					<td class="equipment_listing_delete_link">
-						<Button
-							variant=ButtonVariant::Text
-							on:click=move |_| {
-								if web_sys::window()
-									.unwrap()
-									.confirm_with_message("Are you sure you want to delete this item?")
-									.unwrap_or(false)
-								{
-									delete_equipment
-										.dispatch(DeleteEquipment {
-											id: equipment.id,
-										});
-								}
-							}
-						>
-							Delete
-						</Button>
-					</td>
+				// <td class="equipment_listing_delete_link">
+				// <Button
+				// variant=ButtonVariant::Text
+				// on:click=move |_| {
+				// if web_sys::window()
+				// .unwrap()
+				// .confirm_with_message("Are you sure you want to delete this item?")
+				// .unwrap_or(false)
+				// {
+				// delete_equipment
+				// .dispatch(DeleteEquipment {
+				// id: equipment.id,
+				// });
+				// }
+				// }
+				// >
+				// Delete
+				// </Button>
+				// </td>
 				</tr>
 			}
 		})

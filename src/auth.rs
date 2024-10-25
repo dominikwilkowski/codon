@@ -50,12 +50,12 @@ impl Default for User {
 		Self {
 			id: -1,
 			username: "Guest".into(),
-			permission_equipment: Permissions::ReadWrite {
+			permission_equipment: Permissions::All {
 				read: Permission::Read(vec![Scope::Equipment(-1)]),
 				write: Permission::Write(vec![Scope::Equipment(-1)]),
 				create: Permission::Create(false),
 			},
-			permission_people: Permissions::ReadWrite {
+			permission_people: Permissions::All {
 				read: Permission::Read(vec![Scope::Equipment(-1)]),
 				write: Permission::Write(vec![Scope::Equipment(-1)]),
 				create: Permission::Create(false),
@@ -194,7 +194,7 @@ pub async fn signup(
 
 	match user {
 		Some(user) => {
-			let Permissions::ReadWrite {
+			let Permissions::All {
 				read: _,
 				write: _,
 				create: perm,

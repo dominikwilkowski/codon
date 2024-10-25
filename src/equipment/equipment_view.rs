@@ -18,7 +18,7 @@ stylance::import_style!(css, "equipment.module.css");
 
 #[component]
 pub fn Equipment() -> impl IntoView {
-	let delete_equipment = create_server_action::<DeleteEquipment>();
+	// let delete_equipment = create_server_action::<DeleteEquipment>();
 
 	let query = use_query_map();
 	let query_field = create_rw_signal(query.with(|p| p.get("field").cloned().unwrap_or(String::from("id"))));
@@ -56,7 +56,7 @@ pub fn Equipment() -> impl IntoView {
 	let login_action = use_context::<LoginAction>().expect("No login action found in context");
 
 	let equipment_data = create_resource(
-		move || (delete_equipment.version().get(), login_action.version().get()),
+		move || (/*delete_equipment.version().get(),*/login_action.version().get()),
 		move |_| {
 			get_equipment_data(query_field.get(), query_order.get(), query_page.get(), query_ipp.get(), query_archived.get())
 		},
@@ -180,8 +180,7 @@ pub fn Equipment() -> impl IntoView {
 														}
 															.into_view()
 													} else {
-														view! { <Row equipment delete_equipment field_filter /> }
-															.into_view()
+														view! { <Row equipment field_filter /> }.into_view()
 													}}
 												</tbody>
 											</table>
@@ -224,7 +223,7 @@ pub async fn get_equipment_data(
 
 	let auth_query = match user {
 		Some(user) => {
-			let Permissions::ReadWrite {
+			let Permissions::All {
 				read: perm,
 				write: _,
 				create: _,
@@ -303,42 +302,42 @@ pub async fn get_equipment_data(
 	Ok((equipment_data, row_count))
 }
 
-#[server(prefix = "/api")]
-pub async fn delete_equipment(id: i32) -> Result<(), ServerFnError> {
-	use crate::{auth::get_user, permission::Permissions};
+// #[server(prefix = "/api")]
+// pub async fn delete_equipment(id: i32) -> Result<(), ServerFnError> {
+// 	use crate::{auth::get_user, permission::Permissions};
 
-	use server_fn::error::NoCustomError;
-	use sqlx::PgPool;
-	use std::{fs, path::PathBuf};
+// 	use server_fn::error::NoCustomError;
+// 	use sqlx::PgPool;
+// 	use std::{fs, path::PathBuf};
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
-	let user = get_user().await?;
+// 	let pool = use_context::<PgPool>().expect("Database not initialized");
+// 	let user = get_user().await?;
 
-	match user {
-		Some(user) => {
-			let Permissions::ReadWrite {
-				read: _,
-				write: perm,
-				create: _,
-			} = user.permission_equipment;
-			let person: i32 =
-				sqlx::query_scalar("SELECT person FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
-			if !perm.has_permission("read", id, person) {
-				return Err(ServerFnError::Request(String::from("User not authenticated")));
-			}
-		},
-		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
-	};
+// 	match user {
+// 		Some(user) => {
+// 			let Permissions::All {
+// 				read: _,
+// 				write: perm,
+// 				create: _,
+// 			} = user.permission_equipment;
+// 			let person: i32 =
+// 				sqlx::query_scalar("SELECT person FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
+// 			if !perm.has_permission("read", id, person) {
+// 				return Err(ServerFnError::Request(String::from("User not authenticated")));
+// 			}
+// 		},
+// 		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
+// 	};
 
-	let qrcode_path: String =
-		sqlx::query_scalar("SELECT qrcode FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
-	// TODO: delete all logs and notes as well
+// 	let qrcode_path: String =
+// 		sqlx::query_scalar("SELECT qrcode FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
+// 	// TODO: delete all logs and notes as well
 
-	let file_path = PathBuf::from(format!("{}/public/qrcodes/{}", env!("CARGO_MANIFEST_DIR"), qrcode_path));
+// 	let file_path = PathBuf::from(format!("{}/public/qrcodes/{}", env!("CARGO_MANIFEST_DIR"), qrcode_path));
 
-	if file_path.exists() {
-		fs::remove_file(&file_path).map_err(|error| ServerFnError::<NoCustomError>::ServerError(error.to_string()))?;
-	}
+// 	if file_path.exists() {
+// 		fs::remove_file(&file_path).map_err(|error| ServerFnError::<NoCustomError>::ServerError(error.to_string()))?;
+// 	}
 
-	Ok(sqlx::query("DELETE FROM equipment WHERE id = $1").bind(id).execute(&pool).await.map(|_| ())?)
-}
+// 	Ok(sqlx::query("DELETE FROM equipment WHERE id = $1").bind(id).execute(&pool).await.map(|_| ())?)
+// }

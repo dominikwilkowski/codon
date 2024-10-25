@@ -748,7 +748,7 @@ pub async fn edit_name(id: String, name: String, note: String) -> Result<(), Ser
 	let user_id;
 	match user {
 		Some(user) => {
-			let Permissions::ReadWrite {
+			let Permissions::All {
 				read: _,
 				write: perm,
 				create: _,
@@ -807,7 +807,7 @@ pub async fn edit_type(id: String, equipment_type: String, note: String) -> Resu
 	let user_id;
 	match user {
 		Some(user) => {
-			let Permissions::ReadWrite {
+			let Permissions::All {
 				read: _,
 				write: perm,
 				create: _,
@@ -873,7 +873,7 @@ pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 	let user_id;
 	match user {
 		Some(user) => {
-			let Permissions::ReadWrite {
+			let Permissions::All {
 				read: _,
 				write: perm,
 				create: _,
@@ -1012,7 +1012,7 @@ pub async fn edit_manufacturer(id: String, manufacturer: String, note: String) -
 	let user_id;
 	match user {
 		Some(user) => {
-			let Permissions::ReadWrite {
+			let Permissions::All {
 				read: _,
 				write: perm,
 				create: _,
@@ -1079,7 +1079,7 @@ pub async fn edit_purchase_date(
 	let user_id;
 	match user {
 		Some(user) => {
-			let Permissions::ReadWrite {
+			let Permissions::All {
 				read: _,
 				write: perm,
 				create: _,
@@ -1151,7 +1151,7 @@ pub async fn edit_vendor(id: String, vendor: String, note: String) -> Result<(),
 	let user_id;
 	match user {
 		Some(user) => {
-			let Permissions::ReadWrite {
+			let Permissions::All {
 				read: _,
 				write: perm,
 				create: _,
@@ -1209,7 +1209,7 @@ pub async fn edit_cost_in_cent(id: String, cost_in_cent: f32, note: String) -> R
 	let user_id;
 	match user {
 		Some(user) => {
-			let Permissions::ReadWrite {
+			let Permissions::All {
 				read: _,
 				write: perm,
 				create: _,
@@ -1279,7 +1279,7 @@ pub async fn edit_warranty_expiration_date(
 	let user_id;
 	match user {
 		Some(user) => {
-			let Permissions::ReadWrite {
+			let Permissions::All {
 				read: _,
 				write: perm,
 				create: _,
@@ -1355,7 +1355,7 @@ pub async fn edit_location(id: String, location: String, note: String) -> Result
 	let user_id;
 	match user {
 		Some(user) => {
-			let Permissions::ReadWrite {
+			let Permissions::All {
 				read: _,
 				write: perm,
 				create: _,
@@ -1413,7 +1413,7 @@ pub async fn edit_notes(id: String, notes: String, note: String) -> Result<(), S
 	let user_id;
 	match user {
 		Some(user) => {
-			let Permissions::ReadWrite {
+			let Permissions::All {
 				read: _,
 				write: perm,
 				create: _,
@@ -1470,7 +1470,7 @@ pub async fn get_equipment_data_by_id(id: String) -> Result<EquipmentData, Serve
 
 	match user {
 		Some(user) => {
-			let Permissions::ReadWrite {
+			let Permissions::All {
 				read: perm,
 				write: _,
 				create: _,

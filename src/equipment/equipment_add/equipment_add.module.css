@@ -21,8 +21,12 @@
 	width: 100%;
 }
 
-.form > button {
+.form > .btn_row {
 	margin-top: 2rem;
+}
+
+.form > .btn_row .error {
+	margin-right: 1rem;
 }
 
 @media (min-width: 32rem) {
@@ -46,7 +50,7 @@
 		grid-column: 2;
 	}
 
-	.form > button {
+	.form > .btn_row {
 		grid-column: 2;
 		justify-self: end;
 	}

@@ -134,7 +134,7 @@ pub async fn get_log_for_equipment(
 
 	let auth_query = match user {
 		Some(user) => {
-			let Permissions::ReadWrite {
+			let Permissions::All {
 				read: perm,
 				write: _,
 				create: _,
