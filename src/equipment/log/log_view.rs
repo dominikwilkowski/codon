@@ -1,6 +1,6 @@
 use crate::{
 	components::{avatar::Avatar, img_attachment::ImgAttachment, multiline::MultiLine, pagination::Pagination},
-	equipment::{EquipmentLogType, LogAction, LogPerson},
+	equipment::{EquipmentLogData, EquipmentLogType, LogAction},
 	error_template::ErrorTemplate,
 };
 
@@ -69,28 +69,28 @@ pub fn Log(
 }
 
 #[component]
-pub fn LogItem(log: LogPerson) -> impl IntoView {
+pub fn LogItem(log: EquipmentLogData) -> impl IntoView {
 	view! {
 		<div class=css::log>
 			<Avatar data=log.person />
 			<div class=css::log_content>
 				<small>
-					{log.log.create_date.format("%d %b %Y %I:%M:%S %P").to_string()} {" "}
+					{log.create_date.format("%d %b %Y %I:%M:%S %P").to_string()} {" "}
 					<span class=format!(
 						"{} type_{}",
 						css::log_type,
-						log.log.log_type.to_string().to_lowercase(),
-					)>{log.log.log_type.to_string()}</span>
+						log.log_type.to_string().to_lowercase(),
+					)>{log.log_type.to_string()}</span>
 				</small>
-				<MultiLine text=log.log.notes.unwrap_or_default() />
+				<MultiLine text=log.notes.unwrap_or_default() />
 				<br />
-				{if log.log.log_type == EquipmentLogType::Edit {
+				{if log.log_type == EquipmentLogType::Edit {
 					view! {
 						<span class=css::log_edit>
-							<h2>"Old value for \""{log.log.field.clone()}"\""</h2>
-							<p class=css::diff>{log.log.old_value}</p>
-							<h2>"New value for \""{log.log.field}"\""</h2>
-							<p class=css::diff>{log.log.new_value}</p>
+							<h2>"Old value for \""{log.field.clone()}"\""</h2>
+							<p class=css::diff>{log.old_value}</p>
+							<h2>"New value for \""{log.field}"\""</h2>
+							<p class=css::diff>{log.new_value}</p>
 						</span>
 					}
 						.into_view()
@@ -98,16 +98,16 @@ pub fn LogItem(log: LogPerson) -> impl IntoView {
 					view! {}.into_view()
 				}}
 				<div class="codon_img_attachment">
-					<ImgAttachment file_path=log.log.media1 />
-					<ImgAttachment file_path=log.log.media2 />
-					<ImgAttachment file_path=log.log.media3 />
-					<ImgAttachment file_path=log.log.media4 />
-					<ImgAttachment file_path=log.log.media5 />
-					<ImgAttachment file_path=log.log.media6 />
-					<ImgAttachment file_path=log.log.media7 />
-					<ImgAttachment file_path=log.log.media8 />
-					<ImgAttachment file_path=log.log.media9 />
-					<ImgAttachment file_path=log.log.media10 />
+					<ImgAttachment file_path=log.media1 />
+					<ImgAttachment file_path=log.media2 />
+					<ImgAttachment file_path=log.media3 />
+					<ImgAttachment file_path=log.media4 />
+					<ImgAttachment file_path=log.media5 />
+					<ImgAttachment file_path=log.media6 />
+					<ImgAttachment file_path=log.media7 />
+					<ImgAttachment file_path=log.media8 />
+					<ImgAttachment file_path=log.media9 />
+					<ImgAttachment file_path=log.media10 />
 				</div>
 			</div>
 		</div>
@@ -119,8 +119,8 @@ pub async fn get_log_for_equipment(
 	id: String,
 	page: u16,
 	items_per_page: u8,
-) -> Result<(Vec<LogPerson>, i64), ServerFnError> {
-	use crate::{auth::get_user, equipment::LogPersonSQL, permission::Permissions};
+) -> Result<(Vec<EquipmentLogData>, i64), ServerFnError> {
+	use crate::{auth::get_user, equipment::EquipmentLogSQLData, permission::Permissions};
 
 	use sqlx::PgPool;
 
@@ -139,7 +139,7 @@ pub async fn get_log_for_equipment(
 				write: _,
 				create: _,
 			} = user.permission_equipment;
-			perm.get_query_select_without_where("equipment")
+			perm.get_query_select_without_where("equipment_log.equipment")
 		},
 		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
 	};
@@ -147,28 +147,9 @@ pub async fn get_log_for_equipment(
 	let limit = items_per_page as i64;
 	let offset = (page as i64 - 1) * items_per_page as i64;
 
-	let notes_sql_data = sqlx::query_as::<_, LogPersonSQL>(&format!(
+	let notes_sql_data = sqlx::query_as::<_, EquipmentLogSQLData>(&format!(
 		r#"SELECT
-			equipment_log.id AS log_id,
-			equipment_log.log_type AS log_log_type,
-			equipment_log.equipment AS log_equipment,
-			equipment_log.create_date AS log_create_date,
-			equipment_log.person AS log_person,
-			equipment_log.notes AS log_notes,
-			equipment_log.field AS log_field,
-			equipment_log.old_value AS log_old_value,
-			equipment_log.new_value AS log_new_value,
-			equipment_log.media1 AS log_media1,
-			equipment_log.media2 AS log_media2,
-			equipment_log.media3 AS log_media3,
-			equipment_log.media4 AS log_media4,
-			equipment_log.media5 AS log_media5,
-			equipment_log.media6 AS log_media6,
-			equipment_log.media7 AS log_media7,
-			equipment_log.media8 AS log_media8,
-			equipment_log.media9 AS log_media9,
-			equipment_log.media10 AS log_media10,
-
+			equipment_log.*,
 			people.id AS person_id,
 			people.status AS person_status,
 			people.preferred_name AS person_preferred_name,
@@ -190,7 +171,7 @@ pub async fn get_log_for_equipment(
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
-	let notes_data: Vec<LogPerson> = notes_sql_data.into_iter().map(Into::into).collect();
+	let notes_data: Vec<EquipmentLogData> = notes_sql_data.into_iter().map(Into::into).collect();
 
 	let row_count: i64 = sqlx::query_scalar(&format!(
 		"SELECT COUNT(*) FROM equipment_log WHERE equipment = $1 {auth_query} AND equipment = $1"

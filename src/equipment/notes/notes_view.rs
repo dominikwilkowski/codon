@@ -9,7 +9,7 @@ use crate::{
 		multiline::MultiLine,
 		pagination::Pagination,
 	},
-	equipment::{save_notes, NotesForm, NotesPerson},
+	equipment::{save_notes, EquipmentNotesData, NotesForm},
 	error_template::ErrorTemplate,
 };
 
@@ -103,7 +103,7 @@ pub fn Notes(
 
 #[component]
 pub fn NotesItem(
-	note: NotesPerson,
+	note: EquipmentNotesData,
 	edit_note_action: Action<FormData, Result<(), ServerFnError>>,
 	delete_note_action: Action<DeleteNote, Result<(), ServerFnError>>,
 ) -> impl IntoView {
@@ -133,13 +133,13 @@ pub fn NotesItem(
 
 #[component]
 pub fn Note(
-	note: NotesPerson,
+	note: EquipmentNotesData,
 	is_editing: RwSignal<bool>,
 	delete_note_action: Action<DeleteNote, Result<(), ServerFnError>>,
 ) -> impl IntoView {
 	view! {
 		<small>
-			{note.note.create_date.format("%d %b %Y %I:%M:%S %P").to_string()}
+			{note.create_date.format("%d %b %Y %I:%M:%S %P").to_string()}
 			<Dropdown
 				placement=DropdownPlacement::BottomEnd
 				on_select=move |link: String| {
@@ -164,7 +164,7 @@ pub fn Note(
 							.confirm_with_message("Are you sure you want to delete this Note?")
 							.unwrap_or(false)
 						{
-							delete_note_action.dispatch(DeleteNote { id: note.note.id });
+							delete_note_action.dispatch(DeleteNote { id: note.id });
 						}
 					}
 				>
@@ -172,25 +172,25 @@ pub fn Note(
 				</button>
 			</Dropdown>
 		</small>
-		<MultiLine text=note.note.notes />
+		<MultiLine text=note.notes />
 		<div class="codon_img_attachment">
-			<ImgAttachment file_path=note.note.media1 />
-			<ImgAttachment file_path=note.note.media2 />
-			<ImgAttachment file_path=note.note.media3 />
-			<ImgAttachment file_path=note.note.media4 />
-			<ImgAttachment file_path=note.note.media5 />
-			<ImgAttachment file_path=note.note.media6 />
-			<ImgAttachment file_path=note.note.media7 />
-			<ImgAttachment file_path=note.note.media8 />
-			<ImgAttachment file_path=note.note.media9 />
-			<ImgAttachment file_path=note.note.media10 />
+			<ImgAttachment file_path=note.media1 />
+			<ImgAttachment file_path=note.media2 />
+			<ImgAttachment file_path=note.media3 />
+			<ImgAttachment file_path=note.media4 />
+			<ImgAttachment file_path=note.media5 />
+			<ImgAttachment file_path=note.media6 />
+			<ImgAttachment file_path=note.media7 />
+			<ImgAttachment file_path=note.media8 />
+			<ImgAttachment file_path=note.media9 />
+			<ImgAttachment file_path=note.media10 />
 		</div>
 	}
 }
 
 #[component]
 pub fn NoteEdit(
-	note: NotesPerson,
+	note: EquipmentNotesData,
 	is_editing: RwSignal<bool>,
 	edit_note_action: Action<FormData, Result<(), ServerFnError>>,
 ) -> impl IntoView {
@@ -208,16 +208,16 @@ pub fn NoteEdit(
 	let media10 = create_rw_signal(String::from(""));
 	let loading = create_rw_signal(false);
 	let empty_fields = create_rw_signal(
-		(note.note.media1.is_none() as usize)
-			+ (note.note.media2.is_none() as usize)
-			+ (note.note.media3.is_none() as usize)
-			+ (note.note.media4.is_none() as usize)
-			+ (note.note.media5.is_none() as usize)
-			+ (note.note.media6.is_none() as usize)
-			+ (note.note.media7.is_none() as usize)
-			+ (note.note.media8.is_none() as usize)
-			+ (note.note.media9.is_none() as usize)
-			+ (note.note.media10.is_none() as usize),
+		(note.media1.is_none() as usize)
+			+ (note.media2.is_none() as usize)
+			+ (note.media3.is_none() as usize)
+			+ (note.media4.is_none() as usize)
+			+ (note.media5.is_none() as usize)
+			+ (note.media6.is_none() as usize)
+			+ (note.media7.is_none() as usize)
+			+ (note.media8.is_none() as usize)
+			+ (note.media9.is_none() as usize)
+			+ (note.media10.is_none() as usize),
 	);
 
 	view! {
@@ -241,20 +241,20 @@ pub fn NoteEdit(
 				edit_note_action.dispatch(form_data);
 			}
 		>
-			<input type="hidden" name="id" value=note.note.equipment />
-			<input type="hidden" name="note_id" value=note.note.id />
-			<TextArea value=create_rw_signal(note.note.notes) name="notes" placeholder="Your note" />
+			<input type="hidden" name="id" value=note.equipment />
+			<input type="hidden" name="note_id" value=note.id />
+			<TextArea value=create_rw_signal(note.notes) name="notes" placeholder="Your note" />
 			<div class="codon_img_attachment">
-				<MediaRemoveToggle media=note.note.media1 name="remove_media1" empty_fields=empty_fields />
-				<MediaRemoveToggle media=note.note.media2 name="remove_media2" empty_fields=empty_fields />
-				<MediaRemoveToggle media=note.note.media3 name="remove_media3" empty_fields=empty_fields />
-				<MediaRemoveToggle media=note.note.media4 name="remove_media4" empty_fields=empty_fields />
-				<MediaRemoveToggle media=note.note.media5 name="remove_media5" empty_fields=empty_fields />
-				<MediaRemoveToggle media=note.note.media6 name="remove_media6" empty_fields=empty_fields />
-				<MediaRemoveToggle media=note.note.media7 name="remove_media7" empty_fields=empty_fields />
-				<MediaRemoveToggle media=note.note.media8 name="remove_media8" empty_fields=empty_fields />
-				<MediaRemoveToggle media=note.note.media9 name="remove_media9" empty_fields=empty_fields />
-				<MediaRemoveToggle media=note.note.media10 name="remove_media10" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.media1 name="remove_media1" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.media2 name="remove_media2" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.media3 name="remove_media3" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.media4 name="remove_media4" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.media5 name="remove_media5" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.media6 name="remove_media6" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.media7 name="remove_media7" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.media8 name="remove_media8" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.media9 name="remove_media9" empty_fields=empty_fields />
+				<MediaRemoveToggle media=note.media10 name="remove_media10" empty_fields=empty_fields />
 			</div>
 			<div class=css::file_inputs>
 				<Show when=move || (empty_fields.get() >= 1)>
@@ -565,8 +565,8 @@ pub async fn get_notes_for_equipment(
 	id: String,
 	page: u16,
 	items_per_page: u8,
-) -> Result<(Vec<NotesPerson>, i64), ServerFnError> {
-	use crate::equipment::NotesPersonSQL;
+) -> Result<(Vec<EquipmentNotesData>, i64), ServerFnError> {
+	use crate::equipment::EquipmentNotesSQLData;
 
 	use sqlx::PgPool;
 
@@ -580,28 +580,13 @@ pub async fn get_notes_for_equipment(
 	let limit = items_per_page as i64;
 	let offset = (page as i64 - 1) * items_per_page as i64;
 
-	let notes_sql_data = sqlx::query_as::<_, NotesPersonSQL>(
+	let notes_sql_data = sqlx::query_as::<_, EquipmentNotesSQLData>(
 		r#"SELECT
-			equipment_notes.id AS note_id,
-			equipment_notes.equipment AS note_equipment,
-			equipment_notes.create_date AS note_create_date,
-			equipment_notes.person AS note_person,
-			equipment_notes.notes AS note_notes,
-			equipment_notes.media1 AS note_media1,
-			equipment_notes.media2 AS note_media2,
-			equipment_notes.media3 AS note_media3,
-			equipment_notes.media4 AS note_media4,
-			equipment_notes.media5 AS note_media5,
-			equipment_notes.media6 AS note_media6,
-			equipment_notes.media7 AS note_media7,
-			equipment_notes.media8 AS note_media8,
-			equipment_notes.media9 AS note_media9,
-			equipment_notes.media10 AS note_media10,
-
-			people.id AS person_id,
-			people.status AS person_status,
-			people.preferred_name AS person_preferred_name,
-			people.picture AS person_picture
+		equipment_notes.*,
+		people.id AS person_id,
+		people.status AS person_status,
+		people.preferred_name AS person_preferred_name,
+		people.picture AS person_picture
 		FROM
 			equipment_notes
 		JOIN people ON equipment_notes.person = people.id
@@ -617,7 +602,7 @@ pub async fn get_notes_for_equipment(
 	.await
 	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
-	let notes_data: Vec<NotesPerson> = notes_sql_data.into_iter().map(Into::into).collect();
+	let notes_data: Vec<EquipmentNotesData> = notes_sql_data.into_iter().map(Into::into).collect();
 
 	let row_count: i64 =
 		sqlx::query_scalar("SELECT COUNT(*) FROM equipment_notes WHERE equipment = $1").bind(id).fetch_one(&pool).await?;

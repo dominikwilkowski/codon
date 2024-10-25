@@ -9,8 +9,8 @@ use crate::{
 		timezone_offset::Timezone,
 	},
 	equipment::{
-		get_log_for_equipment, EquipmentCell, EquipmentCellView, EquipmentData, EquipmentStatus, EquipmentType, Heading,
-		Log, LogPerson, Notes,
+		get_log_for_equipment, EquipmentCell, EquipmentCellView, EquipmentData, EquipmentLogData, EquipmentStatus,
+		EquipmentType, Heading, Log, Notes,
 	},
 	error_template::ErrorTemplate,
 	icons::{FlaskLogo, IncubationCabinetLogo, VesselLogo},
@@ -26,7 +26,7 @@ stylance::import_style!(css, "equipment_details.module.css");
 
 pub type LogAction = Resource<
 	(String, usize, usize, usize, usize, usize, usize, usize, usize, usize, usize),
-	Result<(Vec<LogPerson>, i64), ServerFnError>,
+	Result<(Vec<EquipmentLogData>, i64), ServerFnError>,
 >;
 
 #[component]
@@ -157,18 +157,14 @@ pub fn EquipmentDetail() -> impl IntoView {
 										if error.contains("User not authenticated") {
 											view! { <Login redirect=format!("/equipment/{}", id.get()) /> }
 										} else {
-											view! {
-												go_to_listing.set(true);
-												<pre class="error">Server Error: {error}</pre>
-											}
-												.into_view()
+											go_to_listing.set(true);
+											view! { <pre class="error">Server Error: {error}</pre> }.into_view()
 										}
 									}
 									Ok(equipment) => {
 										let is_archived = equipment.status == EquipmentStatus::Archived;
 										let title = equipment.name.clone();
 										view! {
-											// go_to_listing.set(true);
 											<div class=css::details>
 												<Heading>
 													{match equipment.equipment_type {
@@ -632,12 +628,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 									}
 								}
 							} else {
-								view! {
-									// go_to_listing.set(true);
-
-									<div>Nothing found</div>
-								}
-									.into_view()
+								view! { <div>Nothing found</div> }.into_view()
 							}
 						}
 					};
@@ -648,8 +639,6 @@ pub fn EquipmentDetail() -> impl IntoView {
 					let log_query_ipp_clone = log_query_ipp;
 					let tab_query_clone = tab_query;
 					view! {
-						// go_to_listing.set(true);
-
 						<div>
 							{equipment} <div id="equipment_tab" class=css::tab>
 								<form

@@ -3,15 +3,14 @@ use crate::equipment::{AvatarData, AvatarSQLData};
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
-use sqlx::{FromRow, Row};
+use sqlx::Row;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[cfg_attr(feature = "ssr", derive(FromRow))]
 pub struct EquipmentNotesSQLData {
 	pub id: i32,
 	pub equipment: i32,
 	pub create_date: DateTime<Utc>,
-	pub person: i32,
+	pub person: AvatarSQLData,
 	pub notes: String,
 	pub media1: Option<String>,
 	pub media2: Option<String>,
@@ -25,12 +24,40 @@ pub struct EquipmentNotesSQLData {
 	pub media10: Option<String>,
 }
 
+#[cfg(feature = "ssr")]
+impl sqlx::FromRow<'_, sqlx::postgres::PgRow> for EquipmentNotesSQLData {
+	fn from_row(row: &sqlx::postgres::PgRow) -> Result<Self, sqlx::Error> {
+		Ok(EquipmentNotesSQLData {
+			id: row.try_get("id")?,
+			equipment: row.try_get("equipment")?,
+			create_date: row.try_get("create_date")?,
+			person: AvatarSQLData {
+				id: row.try_get("person_id")?,
+				status: row.try_get("person_status")?,
+				preferred_name: row.try_get("person_preferred_name")?,
+				picture: row.try_get("person_picture")?,
+			},
+			notes: row.try_get("notes")?,
+			media1: row.try_get("media1")?,
+			media2: row.try_get("media2")?,
+			media3: row.try_get("media3")?,
+			media4: row.try_get("media4")?,
+			media5: row.try_get("media5")?,
+			media6: row.try_get("media6")?,
+			media7: row.try_get("media7")?,
+			media8: row.try_get("media8")?,
+			media9: row.try_get("media9")?,
+			media10: row.try_get("media10")?,
+		})
+	}
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EquipmentNotesData {
 	pub id: i32,
 	pub equipment: i32,
 	pub create_date: DateTime<Utc>,
-	pub person: i32,
+	pub person: AvatarData,
 	pub notes: String,
 	pub media1: Option<String>,
 	pub media2: Option<String>,
@@ -94,7 +121,7 @@ impl From<EquipmentNotesSQLData> for EquipmentNotesData {
 			id: val.id,
 			equipment: val.equipment,
 			create_date: val.create_date,
-			person: val.person,
+			person: val.person.into(),
 			notes: val.notes,
 			media1: val.media1,
 			media2: val.media2,
@@ -106,58 +133,6 @@ impl From<EquipmentNotesSQLData> for EquipmentNotesData {
 			media8: val.media8,
 			media9: val.media9,
 			media10: val.media10,
-		}
-	}
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct NotesPersonSQL {
-	pub note: EquipmentNotesSQLData,
-	pub person: AvatarSQLData,
-}
-
-#[cfg(feature = "ssr")]
-impl sqlx::FromRow<'_, sqlx::postgres::PgRow> for NotesPersonSQL {
-	fn from_row(row: &sqlx::postgres::PgRow) -> Result<Self, sqlx::Error> {
-		Ok(NotesPersonSQL {
-			note: EquipmentNotesSQLData {
-				id: row.try_get("note_id")?,
-				equipment: row.try_get("note_equipment")?,
-				create_date: row.try_get("note_create_date")?,
-				person: row.try_get("note_person")?,
-				notes: row.try_get("note_notes")?,
-				media1: row.try_get("note_media1")?,
-				media2: row.try_get("note_media2")?,
-				media3: row.try_get("note_media3")?,
-				media4: row.try_get("note_media4")?,
-				media5: row.try_get("note_media5")?,
-				media6: row.try_get("note_media6")?,
-				media7: row.try_get("note_media7")?,
-				media8: row.try_get("note_media8")?,
-				media9: row.try_get("note_media9")?,
-				media10: row.try_get("note_media10")?,
-			},
-			person: AvatarSQLData {
-				id: row.try_get("person_id")?,
-				status: row.try_get("person_status")?,
-				preferred_name: row.try_get("person_preferred_name")?,
-				picture: row.try_get("person_picture")?,
-			},
-		})
-	}
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct NotesPerson {
-	pub note: EquipmentNotesData,
-	pub person: AvatarData,
-}
-
-impl From<NotesPersonSQL> for NotesPerson {
-	fn from(val: NotesPersonSQL) -> Self {
-		NotesPerson {
-			note: val.note.into(),
-			person: val.person.into(),
 		}
 	}
 }

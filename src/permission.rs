@@ -411,7 +411,7 @@ mod tests {
 
 		assert_eq!(
 			Permission::Read(vec![Scope::Equipment(1), Scope::Equipment(2), Scope::Equipment(3)]).get_query_select("foo"),
-			String::from(" WHERE id IN (1,2,3)")
+			String::from(" WHERE foo IN (1,2,3)")
 		);
 
 		assert_eq!(
