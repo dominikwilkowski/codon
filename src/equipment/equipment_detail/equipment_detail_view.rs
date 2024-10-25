@@ -750,7 +750,9 @@ pub async fn edit_name(id: String, name: String, note: String) -> Result<(), Ser
 			} = user.permission_equipment;
 			user_id = user.id;
 
-			if !perm.can_write(id, user_id) {
+			let person: i32 =
+				sqlx::query_scalar("SELECT person FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
+			if !perm.has_permission("write", id, person) {
 				return Err(ServerFnError::Request(String::from("User not authenticated")));
 			}
 		},
@@ -807,7 +809,9 @@ pub async fn edit_type(id: String, equipment_type: String, note: String) -> Resu
 			} = user.permission_equipment;
 			user_id = user.id;
 
-			if !perm.can_write(id, user_id) {
+			let person: i32 =
+				sqlx::query_scalar("SELECT person FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
+			if !perm.has_permission("write", id, person) {
 				return Err(ServerFnError::Request(String::from("User not authenticated")));
 			}
 		},
@@ -871,7 +875,9 @@ pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 			} = user.permission_equipment;
 			user_id = user.id;
 
-			if !perm.can_write(result.id, user_id) {
+			let person: i32 =
+				sqlx::query_scalar("SELECT person FROM equipment WHERE id = $1").bind(result.id).fetch_one(&pool).await?;
+			if !perm.has_permission("write", result.id, person) {
 				remove_temp_files(result).await?;
 				return Err(ServerFnError::Request(String::from("User not authenticated")));
 			}
@@ -1008,7 +1014,9 @@ pub async fn edit_manufacturer(id: String, manufacturer: String, note: String) -
 			} = user.permission_equipment;
 			user_id = user.id;
 
-			if !perm.can_write(id, user_id) {
+			let person: i32 =
+				sqlx::query_scalar("SELECT person FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
+			if !perm.has_permission("write", id, person) {
 				return Err(ServerFnError::Request(String::from("User not authenticated")));
 			}
 		},
@@ -1073,7 +1081,9 @@ pub async fn edit_purchase_date(
 			} = user.permission_equipment;
 			user_id = user.id;
 
-			if !perm.can_write(id, user_id) {
+			let person: i32 =
+				sqlx::query_scalar("SELECT person FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
+			if !perm.has_permission("write", id, person) {
 				return Err(ServerFnError::Request(String::from("User not authenticated")));
 			}
 		},
@@ -1143,7 +1153,9 @@ pub async fn edit_vendor(id: String, vendor: String, note: String) -> Result<(),
 			} = user.permission_equipment;
 			user_id = user.id;
 
-			if !perm.can_write(id, user_id) {
+			let person: i32 =
+				sqlx::query_scalar("SELECT person FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
+			if !perm.has_permission("write", id, person) {
 				return Err(ServerFnError::Request(String::from("User not authenticated")));
 			}
 		},
@@ -1199,7 +1211,9 @@ pub async fn edit_cost_in_cent(id: String, cost_in_cent: f32, note: String) -> R
 			} = user.permission_equipment;
 			user_id = user.id;
 
-			if !perm.can_write(id, user_id) {
+			let person: i32 =
+				sqlx::query_scalar("SELECT person FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
+			if !perm.has_permission("write", id, person) {
 				return Err(ServerFnError::Request(String::from("User not authenticated")));
 			}
 		},
@@ -1267,7 +1281,9 @@ pub async fn edit_warranty_expiration_date(
 			} = user.permission_equipment;
 			user_id = user.id;
 
-			if !perm.can_write(id, user_id) {
+			let person: i32 =
+				sqlx::query_scalar("SELECT person FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
+			if !perm.has_permission("write", id, person) {
 				return Err(ServerFnError::Request(String::from("User not authenticated")));
 			}
 		},
@@ -1341,7 +1357,9 @@ pub async fn edit_location(id: String, location: String, note: String) -> Result
 			} = user.permission_equipment;
 			user_id = user.id;
 
-			if !perm.can_write(id, user_id) {
+			let person: i32 =
+				sqlx::query_scalar("SELECT person FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
+			if !perm.has_permission("write", id, person) {
 				return Err(ServerFnError::Request(String::from("User not authenticated")));
 			}
 		},
@@ -1397,7 +1415,9 @@ pub async fn edit_notes(id: String, notes: String, note: String) -> Result<(), S
 			} = user.permission_equipment;
 			user_id = user.id;
 
-			if !perm.can_write(id, user_id) {
+			let person: i32 =
+				sqlx::query_scalar("SELECT person FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
+			if !perm.has_permission("write", id, person) {
 				return Err(ServerFnError::Request(String::from("User not authenticated")));
 			}
 		},
@@ -1443,7 +1463,6 @@ pub async fn get_equipment_data_by_id(id: String) -> Result<EquipmentData, Serve
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
 	};
 
-	let auth_query;
 	match user {
 		Some(user) => {
 			let Permissions::ReadWrite {
@@ -1451,17 +1470,20 @@ pub async fn get_equipment_data_by_id(id: String) -> Result<EquipmentData, Serve
 				write: _,
 				create: _,
 			} = user.permission_equipment;
-			auth_query = perm.get_query_select("id");
+			let person: i32 =
+				sqlx::query_scalar("SELECT person FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
+			if !perm.has_permission("read", id, person) {
+				return Err(ServerFnError::Request(String::from("User not authenticated")));
+			}
 		},
 		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
 	};
 
-	let equipment_sql_data =
-		sqlx::query_as::<_, EquipmentSQLData>(&format!("SELECT * FROM equipment WHERE id = $1 {auth_query}"))
-			.bind(id)
-			.fetch_one(&pool)
-			.await
-			.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+	let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLData>("SELECT * FROM equipment WHERE id = $1")
+		.bind(id)
+		.fetch_one(&pool)
+		.await
+		.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	Ok(equipment_sql_data.into())
 }

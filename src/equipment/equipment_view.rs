@@ -229,7 +229,7 @@ pub async fn get_equipment_data(
 				write: _,
 				create: _,
 			} = user.permission_equipment;
-			perm.get_query_select("id")
+			perm.get_query_select_without_where("id")
 		},
 		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
 	};
@@ -262,12 +262,11 @@ pub async fn get_equipment_data(
 	let status_where = if show_archived {
 		""
 	} else {
-		"WHERE status IS DISTINCT FROM 'Archived'"
+		"AND status IS DISTINCT FROM 'Archived'"
 	};
 
 	let query =
-		format!("SELECT * FROM equipment {status_where} ORDER BY {field_sanitized} {order_sanitized} LIMIT $1 OFFSET $2 {auth_query}",);
-
+		format!("SELECT * FROM equipment WHERE id IS NOT NULL {status_where} {auth_query} ORDER BY {field_sanitized} {order_sanitized} LIMIT $1 OFFSET $2",);
 	let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLData>(&query)
 		.bind(limit)
 		.bind(offset)
@@ -278,7 +277,9 @@ pub async fn get_equipment_data(
 	let equipment_data: Vec<EquipmentData> = equipment_sql_data.into_iter().map(Into::into).collect();
 
 	let row_count: i64 =
-		sqlx::query_scalar(&format!("SELECT COUNT(*) FROM equipment {status_where}")).fetch_one(&pool).await?;
+		sqlx::query_scalar(&format!("SELECT COUNT(*) FROM equipment WHERE id IS NOT NULL {status_where}"))
+			.fetch_one(&pool)
+			.await?;
 
 	Ok((equipment_data, row_count))
 }
@@ -294,22 +295,24 @@ pub async fn delete_equipment(id: i32) -> Result<(), ServerFnError> {
 	let pool = use_context::<PgPool>().expect("Database not initialized");
 	let user = get_user().await?;
 
-	let auth_query = match user {
+	match user {
 		Some(user) => {
 			let Permissions::ReadWrite {
 				read: _,
 				write: perm,
 				create: _,
 			} = user.permission_equipment;
-			perm.get_query_select("id")
+			let person: i32 =
+				sqlx::query_scalar("SELECT person FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
+			if !perm.has_permission("read", id, person) {
+				return Err(ServerFnError::Request(String::from("User not authenticated")));
+			}
 		},
 		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
 	};
 
-	let qrcode_path: String = sqlx::query_scalar(&format!("SELECT qrcode FROM equipment WHERE id = $1 {auth_query}"))
-		.bind(id)
-		.fetch_one(&pool)
-		.await?;
+	let qrcode_path: String =
+		sqlx::query_scalar("SELECT qrcode FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
 	// TODO: delete all logs and notes as well
 
 	let file_path = PathBuf::from(format!("{}/public/qrcodes/{}", env!("CARGO_MANIFEST_DIR"), qrcode_path));
@@ -318,11 +321,5 @@ pub async fn delete_equipment(id: i32) -> Result<(), ServerFnError> {
 		fs::remove_file(&file_path).map_err(|error| ServerFnError::<NoCustomError>::ServerError(error.to_string()))?;
 	}
 
-	Ok(
-		sqlx::query(&format!("DELETE FROM equipment WHERE id = $1 {auth_query}"))
-			.bind(id)
-			.execute(&pool)
-			.await
-			.map(|_| ())?,
-	)
+	Ok(sqlx::query("DELETE FROM equipment WHERE id = $1").bind(id).execute(&pool).await.map(|_| ())?)
 }

@@ -166,31 +166,25 @@ impl Permission {
 		self.get_query_select(field).replace("WHERE", "AND")
 	}
 
-	pub fn can_write(&self, equipment_id: i32, person: i32) -> bool {
-		match self {
-			Permission::ReadAny | Permission::Read(_) | Permission::Create(_) => false,
-			Permission::WriteAny => true,
-			Permission::Write(scope) => {
-				let mut writable = false;
-				for item in scope.iter() {
-					match item {
-						Scope::Equipment(scope_id) => {
-							if *scope_id == equipment_id {
-								writable = true;
-								break;
-							}
-						},
-						Scope::Person(scope_id) => {
-							if *scope_id == person {
-								writable = true;
-								break;
-							}
-						},
-						Scope::Any => {},
-					}
-				}
-				writable
+	fn check_scope(&self, scope: &[Scope], equipment_id: i32, person: i32) -> bool {
+		for item in scope {
+			match item {
+				Scope::Equipment(scope_id) if *scope_id == equipment_id => return true,
+				Scope::Person(scope_id) if *scope_id == person => return true,
+				Scope::Any => return true,
+				_ => {},
+			}
+		}
+		false
+	}
+
+	pub fn has_permission(&self, action: &str, equipment_id: i32, person: i32) -> bool {
+		match (action, self) {
+			("read", Permission::ReadAny) | ("write", Permission::WriteAny) => true,
+			("read", Permission::Read(scope)) | ("write", Permission::Write(scope)) => {
+				self.check_scope(scope, equipment_id, person)
 			},
+			_ => false,
 		}
 	}
 }
@@ -473,34 +467,44 @@ mod tests {
 	}
 
 	#[test]
-	fn can_write_test() {
-		assert_eq!(Permission::Write(vec![Scope::Equipment(1)]).can_write(1, -1), true);
-		assert_eq!(Permission::WriteAny.can_write(2, -1), true);
-		assert_eq!(Permission::Write(vec![Scope::Equipment(1), Scope::Equipment(2)]).can_write(1, -1), true);
-		assert_eq!(Permission::Write(vec![Scope::Equipment(1), Scope::Equipment(2)]).can_write(2, -1), true);
-		assert_eq!(Permission::Write(vec![Scope::Equipment(1), Scope::Equipment(3)]).can_write(3, -1), true);
-		assert_eq!(Permission::Write(vec![Scope::Equipment(1), Scope::Equipment(2)]).can_write(4, -1), false);
-		assert_eq!(Permission::Write(vec![Scope::Equipment(1), Scope::Equipment(3)]).can_write(2, -1), false);
-		assert_eq!(Permission::Write(vec![Scope::Person(2)]).can_write(2, -1), false);
-		assert_eq!(Permission::ReadAny.can_write(2, -1), false);
-		assert_eq!(Permission::Read(vec![Scope::Equipment(2)]).can_write(2, -1), false);
-		assert_eq!(Permission::Create(true).can_write(2, -1), false);
+	fn has_permission_test() {
+		assert_eq!(Permission::Write(vec![Scope::Equipment(1)]).has_permission("write", 1, -1), true);
+		assert_eq!(Permission::WriteAny.has_permission("write", 2, -1), true);
+		assert_eq!(Permission::Write(vec![Scope::Equipment(1), Scope::Equipment(2)]).has_permission("write", 1, -1), true);
+		assert_eq!(Permission::Write(vec![Scope::Equipment(1), Scope::Equipment(2)]).has_permission("write", 2, -1), true);
+		assert_eq!(Permission::Write(vec![Scope::Equipment(1), Scope::Equipment(3)]).has_permission("write", 3, -1), true);
+		assert_eq!(Permission::Write(vec![Scope::Equipment(1), Scope::Equipment(2)]).has_permission("write", 4, -1), false);
+		assert_eq!(Permission::Write(vec![Scope::Equipment(1), Scope::Equipment(3)]).has_permission("write", 2, -1), false);
+		assert_eq!(Permission::Write(vec![Scope::Person(2)]).has_permission("write", 2, -1), false);
+		assert_eq!(Permission::ReadAny.has_permission("write", 2, -1), false);
+		assert_eq!(Permission::Read(vec![Scope::Equipment(2)]).has_permission("write", 2, -1), false);
+		assert_eq!(Permission::Create(true).has_permission("write", 2, -1), false);
 
-		assert_eq!(Permission::Write(vec![Scope::Person(1)]).can_write(-1, 1), true);
-		assert_eq!(Permission::WriteAny.can_write(-1, 2), true);
-		assert_eq!(Permission::Write(vec![Scope::Person(1), Scope::Person(2)]).can_write(-1, 1), true);
-		assert_eq!(Permission::Write(vec![Scope::Person(1), Scope::Person(2)]).can_write(-1, 2), true);
-		assert_eq!(Permission::Write(vec![Scope::Person(1), Scope::Person(3)]).can_write(-1, 3), true);
-		assert_eq!(Permission::Write(vec![Scope::Person(1), Scope::Person(2)]).can_write(-1, 4), false);
-		assert_eq!(Permission::Write(vec![Scope::Person(1), Scope::Person(3)]).can_write(-1, 2), false);
-		assert_eq!(Permission::Write(vec![Scope::Equipment(2)]).can_write(-1, 2), false);
-		assert_eq!(Permission::ReadAny.can_write(-1, 2), false);
-		assert_eq!(Permission::Read(vec![Scope::Person(2)]).can_write(-1, 2), false);
-		assert_eq!(Permission::Create(true).can_write(-1, 2), false);
-		assert_eq!(Permission::Read(vec![Scope::Person(5), Scope::Equipment(20)]).can_write(20, 55), false);
-		assert_eq!(Permission::Read(vec![Scope::Person(5), Scope::Equipment(20)]).can_write(2, 5), false);
+		assert_eq!(Permission::Write(vec![Scope::Person(1)]).has_permission("write", -1, 1), true);
+		assert_eq!(Permission::WriteAny.has_permission("write", -1, 2), true);
+		assert_eq!(Permission::Write(vec![Scope::Person(1), Scope::Person(2)]).has_permission("write", -1, 1), true);
+		assert_eq!(Permission::Write(vec![Scope::Person(1), Scope::Person(2)]).has_permission("write", -1, 2), true);
+		assert_eq!(Permission::Write(vec![Scope::Person(1), Scope::Person(3)]).has_permission("write", -1, 3), true);
+		assert_eq!(Permission::Write(vec![Scope::Person(1), Scope::Person(2)]).has_permission("write", -1, 4), false);
+		assert_eq!(Permission::Write(vec![Scope::Person(1), Scope::Person(3)]).has_permission("write", -1, 2), false);
+		assert_eq!(Permission::Write(vec![Scope::Equipment(2)]).has_permission("write", -1, 2), false);
+		assert_eq!(Permission::ReadAny.has_permission("write", -1, 2), false);
+		assert_eq!(Permission::Read(vec![Scope::Person(2)]).has_permission("write", -1, 2), false);
+		assert_eq!(Permission::Create(true).has_permission("write", -1, 2), false);
+		assert_eq!(Permission::Read(vec![Scope::Person(5), Scope::Equipment(20)]).has_permission("write", 20, 55), false);
+		assert_eq!(Permission::Read(vec![Scope::Person(5), Scope::Equipment(20)]).has_permission("write", 2, 5), false);
 
-		assert_eq!(Permission::Write(vec![Scope::Person(5), Scope::Equipment(20)]).can_write(20, 55), true);
-		assert_eq!(Permission::Write(vec![Scope::Person(5), Scope::Equipment(20)]).can_write(2, 5), true);
+		assert_eq!(Permission::Write(vec![Scope::Person(5), Scope::Equipment(20)]).has_permission("write", 20, 55), true);
+		assert_eq!(Permission::Write(vec![Scope::Person(5), Scope::Equipment(20)]).has_permission("write", 2, 5), true);
+
+		assert_eq!(Permission::Read(vec![Scope::Equipment(1)]).has_permission("read", 1, -1), true);
+		assert_eq!(Permission::Read(vec![Scope::Equipment(1)]).has_permission("read", 2, -1), false);
+		assert_eq!(Permission::Read(vec![Scope::Person(1)]).has_permission("read", 2, 1), true);
+
+		// User has write access to all equipment that has id 5,6,7 and all equipment that was created by user 12,13
+		// WRITE(equipment[5],equipment[6],equipment[7],person[12],person[13])
+		// =>
+		// Permission::Write(vec![Scope::Equipment(5), Scope::Equipment(6), Scope::Equipment(7), Scope::Person(12), Scope::Person(13)]
+		// has_permission needs to see if the equipment is either within the allowed ids or person within the allowed person
 	}
 }

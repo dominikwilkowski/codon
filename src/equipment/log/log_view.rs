@@ -120,21 +120,34 @@ pub async fn get_log_for_equipment(
 	page: u16,
 	items_per_page: u8,
 ) -> Result<(Vec<LogPerson>, i64), ServerFnError> {
-	use crate::equipment::LogPersonSQL;
+	use crate::{auth::get_user, equipment::LogPersonSQL, permission::Permissions};
 
 	use sqlx::PgPool;
 
 	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
 	};
 
+	let auth_query = match user {
+		Some(user) => {
+			let Permissions::ReadWrite {
+				read: perm,
+				write: _,
+				create: _,
+			} = user.permission_equipment;
+			perm.get_query_select_without_where("equipment")
+		},
+		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
+	};
+
 	let limit = items_per_page as i64;
 	let offset = (page as i64 - 1) * items_per_page as i64;
 
-	let notes_sql_data = sqlx::query_as::<_, LogPersonSQL>(
+	let notes_sql_data = sqlx::query_as::<_, LogPersonSQL>(&format!(
 		r#"SELECT
 			equipment_log.id AS log_id,
 			equipment_log.log_type AS log_log_type,
@@ -178,9 +191,10 @@ pub async fn get_log_for_equipment(
 			JOIN people ON equipment_log.person = people.id
 		WHERE
 			equipment_log.equipment = $1
-			ORDER BY equipment_log.id DESC
-		LIMIT $2 OFFSET $3"#,
-	)
+			{auth_query}
+		ORDER BY equipment_log.id DESC
+		LIMIT $2 OFFSET $3"#
+	))
 	.bind(id)
 	.bind(limit)
 	.bind(offset)
@@ -191,7 +205,10 @@ pub async fn get_log_for_equipment(
 	let notes_data: Vec<LogPerson> = notes_sql_data.into_iter().map(Into::into).collect();
 
 	let row_count: i64 =
-		sqlx::query_scalar("SELECT COUNT(*) FROM equipment_log WHERE equipment = $1").bind(id).fetch_one(&pool).await?;
+		sqlx::query_scalar(&format!("SELECT COUNT(*) FROM equipment_log WHERE equipment = $1 {auth_query}"))
+			.bind(id)
+			.fetch_one(&pool)
+			.await?;
 
 	Ok((notes_data, row_count))
 }
