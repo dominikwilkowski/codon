@@ -1,4 +1,4 @@
-use crate::equipment::{PeopleData, PeopleSQLData};
+use crate::equipment::{AvatarData, AvatarSQLData};
 
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -188,7 +188,7 @@ impl From<EquipmentLogSQLData> for EquipmentLogData {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct LogPersonSQL {
 	pub log: EquipmentLogSQLData,
-	pub person: PeopleSQLData,
+	pub person: AvatarSQLData,
 }
 
 #[cfg(feature = "ssr")]
@@ -216,24 +216,11 @@ impl sqlx::FromRow<'_, sqlx::postgres::PgRow> for LogPersonSQL {
 				media9: row.try_get("log_media9")?,
 				media10: row.try_get("log_media10")?,
 			},
-			person: PeopleSQLData {
+			person: AvatarSQLData {
 				id: row.try_get("person_id")?,
-				employee_id: row.try_get("person_employee_id")?,
 				status: row.try_get("person_status")?,
-				first_name: row.try_get("person_first_name")?,
-				last_name: row.try_get("person_last_name")?,
 				preferred_name: row.try_get("person_preferred_name")?,
-				email: row.try_get("person_email")?,
-				phone_number: row.try_get("person_phone_number")?,
-				department: row.try_get("person_department")?,
-				role: row.try_get("person_role")?,
-				hire_date: row.try_get("person_hire_date")?,
-				emergency_contact: row.try_get("person_emergency_contact")?,
-				certifications: row.try_get("person_certifications")?,
-				specializations: row.try_get("person_specializations")?,
 				picture: row.try_get("person_picture")?,
-				bio: row.try_get("person_bio")?,
-				create_date: row.try_get("person_create_date")?,
 			},
 		})
 	}
@@ -242,7 +229,7 @@ impl sqlx::FromRow<'_, sqlx::postgres::PgRow> for LogPersonSQL {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct LogPerson {
 	pub log: EquipmentLogData,
-	pub person: PeopleData,
+	pub person: AvatarData,
 }
 
 impl From<LogPersonSQL> for LogPerson {

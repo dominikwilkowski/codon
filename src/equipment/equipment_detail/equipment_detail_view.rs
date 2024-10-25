@@ -157,14 +157,18 @@ pub fn EquipmentDetail() -> impl IntoView {
 										if error.contains("User not authenticated") {
 											view! { <Login redirect=format!("/equipment/{}", id.get()) /> }
 										} else {
-											go_to_listing.set(true);
-											view! { <pre class="error">Server Error: {error}</pre> }.into_view()
+											view! {
+												go_to_listing.set(true);
+												<pre class="error">Server Error: {error}</pre>
+											}
+												.into_view()
 										}
 									}
 									Ok(equipment) => {
 										let is_archived = equipment.status == EquipmentStatus::Archived;
 										let title = equipment.name.clone();
 										view! {
+											// go_to_listing.set(true);
 											<div class=css::details>
 												<Heading>
 													{match equipment.equipment_type {
@@ -259,6 +263,11 @@ pub fn EquipmentDetail() -> impl IntoView {
 																}
 															}
 														</EquipmentFormToggle>
+													</dd>
+
+													<dt>Created By</dt>
+													<dd>
+														<EquipmentCell cell=equipment.person />
 													</dd>
 
 													<dt>Qrcode</dt>
@@ -623,7 +632,12 @@ pub fn EquipmentDetail() -> impl IntoView {
 									}
 								}
 							} else {
-								view! { <div>Nothing found</div> }.into_view()
+								view! {
+									// go_to_listing.set(true);
+
+									<div>Nothing found</div>
+								}
+									.into_view()
 							}
 						}
 					};
@@ -634,6 +648,8 @@ pub fn EquipmentDetail() -> impl IntoView {
 					let log_query_ipp_clone = log_query_ipp;
 					let tab_query_clone = tab_query;
 					view! {
+						// go_to_listing.set(true);
+
 						<div>
 							{equipment} <div id="equipment_tab" class=css::tab>
 								<form
@@ -1479,11 +1495,23 @@ pub async fn get_equipment_data_by_id(id: String) -> Result<EquipmentData, Serve
 		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
 	};
 
-	let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLData>("SELECT * FROM equipment WHERE id = $1")
-		.bind(id)
-		.fetch_one(&pool)
-		.await
-		.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
+	let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLData>(
+		r#"
+		SELECT
+			equipment.*,
+			people.id AS person_id,
+			people.status AS person_status,
+			people.preferred_name AS person_preferred_name,
+			people.picture AS person_picture
+		FROM
+			equipment
+			JOIN people ON equipment.person = people.id
+		WHERE equipment.id = $1"#,
+	)
+	.bind(id)
+	.fetch_one(&pool)
+	.await
+	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
 
 	Ok(equipment_sql_data.into())
 }

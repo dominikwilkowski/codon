@@ -1,6 +1,6 @@
 use crate::{
-	components::multiline::MultiLine,
-	equipment::{Cost, EquipmentStatus, EquipmentType, Notes, QRCode},
+	components::{avatar::Avatar, multiline::MultiLine},
+	equipment::{AvatarData, Cost, EquipmentStatus, EquipmentType, Notes, QRCode},
 	icons::{Flask, IncubationCabinet, Vessel},
 };
 
@@ -45,6 +45,12 @@ impl EquipmentCellView for EquipmentType {
 				}}
 			</div>
 		}
+	}
+}
+
+impl EquipmentCellView for AvatarData {
+	fn view(self, _: bool) -> impl IntoView {
+		view! { <Avatar data=self /> }
 	}
 }
 

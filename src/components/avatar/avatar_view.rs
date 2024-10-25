@@ -1,11 +1,11 @@
-use crate::equipment::PeopleData;
+use crate::equipment::AvatarData;
 
 use leptos::*;
 
 stylance::import_style!(css, "avatar.module.css");
 
 #[component]
-pub fn Avatar(data: PeopleData) -> impl IntoView {
+pub fn Avatar(data: AvatarData) -> impl IntoView {
 	view! {
 		<figure class=format!(
 			"avata-status-{} {}",

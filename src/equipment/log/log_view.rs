@@ -170,28 +170,16 @@ pub async fn get_log_for_equipment(
 			equipment_log.media10 AS log_media10,
 
 			people.id AS person_id,
-			people.employee_id AS person_employee_id,
 			people.status AS person_status,
-			people.first_name AS person_first_name,
-			people.last_name AS person_last_name,
 			people.preferred_name AS person_preferred_name,
-			people.email AS person_email,
-			people.phone_number AS person_phone_number,
-			people.department AS person_department,
-			people.role AS person_role,
-			people.hire_date AS person_hire_date,
-			people.emergency_contact AS person_emergency_contact,
-			people.certifications AS person_certifications,
-			people.specializations AS person_specializations,
-			people.picture AS person_picture,
-			people.bio AS person_bio,
-			people.create_date AS person_create_date
+			people.picture AS person_picture
 		FROM
 			equipment_log
 			JOIN people ON equipment_log.person = people.id
 		WHERE
 			equipment_log.equipment = $1
 			{auth_query}
+			AND equipment_log.equipment = $1
 		ORDER BY equipment_log.id DESC
 		LIMIT $2 OFFSET $3"#
 	))
@@ -204,11 +192,12 @@ pub async fn get_log_for_equipment(
 
 	let notes_data: Vec<LogPerson> = notes_sql_data.into_iter().map(Into::into).collect();
 
-	let row_count: i64 =
-		sqlx::query_scalar(&format!("SELECT COUNT(*) FROM equipment_log WHERE equipment = $1 {auth_query}"))
-			.bind(id)
-			.fetch_one(&pool)
-			.await?;
+	let row_count: i64 = sqlx::query_scalar(&format!(
+		"SELECT COUNT(*) FROM equipment_log WHERE equipment = $1 {auth_query} AND equipment = $1"
+	))
+	.bind(id)
+	.fetch_one(&pool)
+	.await?;
 
 	Ok((notes_data, row_count))
 }

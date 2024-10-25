@@ -229,7 +229,7 @@ pub async fn get_equipment_data(
 				write: _,
 				create: _,
 			} = user.permission_equipment;
-			perm.get_query_select_without_where("id")
+			perm.get_query_select_without_where("equipment.id")
 		},
 		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
 	};
@@ -243,6 +243,7 @@ pub async fn get_equipment_data(
 	let field_sanitized = match field.to_lowercase().as_str() {
 		f @ "id"
 		| f @ "equipment_type"
+		| f @ "person"
 		| f @ "qrcode"
 		| f @ "create_date"
 		| f @ "name"
@@ -262,11 +263,29 @@ pub async fn get_equipment_data(
 	let status_where = if show_archived {
 		""
 	} else {
-		"AND status IS DISTINCT FROM 'Archived'"
+		"AND equipment.status IS DISTINCT FROM 'Archived'"
 	};
 
-	let query =
-		format!("SELECT * FROM equipment WHERE id IS NOT NULL {status_where} {auth_query} ORDER BY {field_sanitized} {order_sanitized} LIMIT $1 OFFSET $2",);
+	let query = format!(
+		r#"
+			SELECT
+				equipment.*,
+				people.id AS person_id,
+				people.status AS person_status,
+				people.preferred_name AS person_preferred_name,
+				people.picture AS person_picture
+			FROM
+				equipment
+				JOIN people ON equipment.person = people.id
+			WHERE
+				equipment.id IS NOT NULL
+				{status_where}
+				{auth_query}
+				{status_where}
+			ORDER BY {field_sanitized} {order_sanitized}
+			LIMIT $1 OFFSET $2
+			"#
+	);
 	let equipment_sql_data = sqlx::query_as::<_, EquipmentSQLData>(&query)
 		.bind(limit)
 		.bind(offset)

@@ -14,6 +14,10 @@
 	font-size: 60%;
 }
 
+:global(.equipment_listing_person) {
+	text-align: center;
+}
+
 .qrcode {
 	max-width: 5rem;
 	display: inline-block;

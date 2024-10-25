@@ -111,12 +111,6 @@ impl Permission {
 	}
 
 	pub fn get_query_select(&self, field: &str) -> String {
-		let field_sanitized = match field {
-			"id" => "id",
-			"equipment" => "equipment",
-			_ => "id",
-		};
-
 		let mut query = String::new();
 		match self {
 			Permission::ReadAny | Permission::WriteAny | Permission::Write(_) | Permission::Create(_) => {},
@@ -147,12 +141,12 @@ impl Permission {
 					write!(&mut query, " WHERE ").unwrap();
 				}
 				if !equipment_ids.is_empty() {
-					write!(&mut query, "{field_sanitized} IN ({equipment_ids})").unwrap();
+					write!(&mut query, "{field} IN ({equipment_ids})").unwrap();
 					first_clause = false;
 				}
 				if !person_ids.is_empty() {
 					if !first_clause {
-						write!(&mut query, " AND ").unwrap();
+						write!(&mut query, " OR ").unwrap();
 					}
 					write!(&mut query, "person IN ({person_ids})").unwrap();
 				}
@@ -428,7 +422,7 @@ mod tests {
 				Scope::Person(42)
 			])
 			.get_query_select("id"),
-			String::from(" WHERE id IN (1,2) AND person IN (666,42)")
+			String::from(" WHERE id IN (1,2) OR person IN (666,42)")
 		);
 		assert_eq!(
 			Permission::Read(vec![
@@ -438,11 +432,11 @@ mod tests {
 				Scope::Equipment(2)
 			])
 			.get_query_select("equipment"),
-			String::from(" WHERE equipment IN (1,2) AND person IN (666,42)")
+			String::from(" WHERE equipment IN (1,2) OR person IN (666,42)")
 		);
 		assert_eq!(
 			Permission::Read(vec![Scope::Person(1), Scope::Equipment(1),]).get_query_select("id"),
-			String::from(" WHERE id IN (1) AND person IN (1)")
+			String::from(" WHERE id IN (1) OR person IN (1)")
 		);
 
 		assert_eq!(
@@ -453,7 +447,7 @@ mod tests {
 				Scope::Equipment(2)
 			])
 			.get_query_select("id"),
-			String::from(" WHERE id IN (1,2) AND person IN (1,2)")
+			String::from(" WHERE id IN (1,2) OR person IN (1,2)")
 		);
 	}
 

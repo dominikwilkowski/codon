@@ -29,6 +29,11 @@ pub fn Row(
 							<EquipmentCell cell=equipment.equipment_type table_view=true />
 						</td>
 					</Show>
+					<Show when=move || { field_filter.get().contains(&String::from("person")) }>
+						<td class="equipment_listing_person">
+							<EquipmentCell cell=equipment.person.clone() table_view=true />
+						</td>
+					</Show>
 					<Show when=move || { field_filter.get().contains(&String::from("qrcode")) }>
 						<td class="equipment_listing_qrcode">
 							<EquipmentCell cell=equipment.qrcode.clone() table_view=true />

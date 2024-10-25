@@ -599,22 +599,9 @@ pub async fn get_notes_for_equipment(
 			equipment_notes.media10 AS note_media10,
 
 			people.id AS person_id,
-			people.employee_id AS person_employee_id,
 			people.status AS person_status,
-			people.first_name AS person_first_name,
-			people.last_name AS person_last_name,
 			people.preferred_name AS person_preferred_name,
-			people.email AS person_email,
-			people.phone_number AS person_phone_number,
-			people.department AS person_department,
-			people.role AS person_role,
-			people.hire_date AS person_hire_date,
-			people.emergency_contact AS person_emergency_contact,
-			people.certifications AS person_certifications,
-			people.specializations AS person_specializations,
-			people.picture AS person_picture,
-			people.bio AS person_bio,
-			people.create_date AS person_create_date
+			people.picture AS person_picture
 		FROM
 			equipment_notes
 		JOIN people ON equipment_notes.person = people.id

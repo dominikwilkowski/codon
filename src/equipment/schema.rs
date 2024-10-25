@@ -1,9 +1,9 @@
-use crate::equipment::EquipmentLogType;
+use crate::equipment::{AvatarData, AvatarSQLData, EquipmentLogType};
 
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
-use sqlx::FromRow;
+use sqlx::Row;
 
 #[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 pub enum EquipmentType {
@@ -150,10 +150,10 @@ pub struct Notes(String);
 display_default_for_string_struct!(Notes);
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[cfg_attr(feature = "ssr", derive(FromRow))]
 pub struct EquipmentSQLData {
 	pub id: i32,
 	pub equipment_type: String,
+	pub person: AvatarSQLData,
 	pub qrcode: String,
 	pub create_date: DateTime<Utc>,
 	pub name: String,
@@ -167,10 +167,38 @@ pub struct EquipmentSQLData {
 	pub notes: Option<String>,
 }
 
+#[cfg(feature = "ssr")]
+impl sqlx::FromRow<'_, sqlx::postgres::PgRow> for EquipmentSQLData {
+	fn from_row(row: &sqlx::postgres::PgRow) -> Result<Self, sqlx::Error> {
+		Ok(EquipmentSQLData {
+			id: row.try_get("id")?,
+			equipment_type: row.try_get("equipment_type")?,
+			person: AvatarSQLData {
+				id: row.try_get("person_id")?,
+				status: row.try_get("person_status")?,
+				preferred_name: row.try_get("person_preferred_name")?,
+				picture: row.try_get("person_picture")?,
+			},
+			qrcode: row.try_get("qrcode")?,
+			create_date: row.try_get("create_date")?,
+			name: row.try_get("name")?,
+			status: row.try_get("status")?,
+			manufacturer: row.try_get("manufacturer")?,
+			purchase_date: row.try_get("purchase_date")?,
+			vendor: row.try_get("vendor")?,
+			cost_in_cent: row.try_get("cost_in_cent")?,
+			warranty_expiration_date: row.try_get("warranty_expiration_date")?,
+			location: row.try_get("location")?,
+			notes: row.try_get("notes")?,
+		})
+	}
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EquipmentData {
 	pub id: i32,
 	pub equipment_type: EquipmentType,
+	pub person: AvatarData,
 	pub qrcode: QRCode,
 	pub create_date: DateTime<Utc>,
 	pub name: String,
@@ -189,6 +217,7 @@ impl EquipmentData {
 		vec![
 			(String::from("id"), String::from("ID")),
 			(String::from("equipment_type"), String::from("Type")),
+			(String::from("person"), String::from("Person")),
 			(String::from("qrcode"), String::from("QRCode")),
 			(String::from("create_date"), String::from("Create")),
 			(String::from("name"), String::from("Name")),
@@ -209,6 +238,7 @@ impl std::default::Default for EquipmentData {
 		EquipmentData {
 			id: Default::default(),
 			equipment_type: Default::default(),
+			person: Default::default(),
 			qrcode: Default::default(),
 			create_date: Utc::now(),
 			name: Default::default(),
@@ -229,6 +259,7 @@ impl From<EquipmentSQLData> for EquipmentData {
 		EquipmentData {
 			id: val.id,
 			equipment_type: EquipmentType::parse(val.equipment_type),
+			person: val.person.into(),
 			qrcode: QRCode(val.qrcode),
 			create_date: val.create_date,
 			name: val.name,
