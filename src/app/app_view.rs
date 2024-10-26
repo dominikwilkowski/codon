@@ -1,5 +1,5 @@
 use crate::{
-	auth::{Login, Logout},
+	auth::{get_user, Login, Logout, User},
 	ds::Ds,
 	equipment::{Equipment, EquipmentAdd, EquipmentDetail},
 	error_template::{AppError, ErrorTemplate},
@@ -20,6 +20,7 @@ stylance::import_style!(css, "app.module.css");
 pub type ScrollableBody = RwSignal<bool>;
 pub type LoginAction = Action<Login, Result<(), ServerFnError>>;
 pub type LogoutAction = Action<Logout, Result<(), ServerFnError>>;
+pub type UserSignal = RwSignal<Option<User>>;
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -59,6 +60,14 @@ pub fn App() -> impl IntoView {
 
 	let logout = create_server_action::<Logout>();
 	provide_context::<LogoutAction>(logout);
+
+	let user_signal: UserSignal = create_rw_signal(None);
+	let user = create_resource(move || (login.version().get(), logout.version().get()), move |_| get_user());
+	create_effect(move |_| match user.get() {
+		Some(Ok(Some(user))) => user_signal.set(Some(user)),
+		_ => user_signal.set(None),
+	});
+	provide_context::<UserSignal>(user_signal);
 
 	view! {
 		<Body class=move || { if is_body_scrollable.get() { "" } else { "not_scrollable" } } />

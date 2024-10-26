@@ -110,13 +110,30 @@ pub fn NotesForm(id: String, notes_upload_action: Action<FormData, Result<(), Se
 #[server(input = MultipartFormData, prefix = "/api")]
 pub async fn save_notes(data: MultipartData) -> Result<(), ServerFnError> {
 	use crate::{
+		auth::get_user,
 		components::file_upload::file_upload,
+		permission::{Permission, Permissions},
 		utils::{get_equipment_base_folder, get_equipment_notes_folder, move_file},
 	};
 
 	use sqlx::PgPool;
 
 	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let user = get_user().await?;
+
+	match user {
+		Some(user) => {
+			let Permissions::All {
+				read: _,
+				write: _,
+				create: perm,
+			} = user.permission_equipment;
+			if perm != Permission::Create(true) {
+				return Err(ServerFnError::Request(String::from("User not authenticated")));
+			}
+		},
+		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
+	};
 
 	let result = file_upload(data, |id| format!("{}temp/", get_equipment_base_folder(id))).await?;
 

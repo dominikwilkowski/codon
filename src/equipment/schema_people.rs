@@ -162,23 +162,12 @@ pub struct AvatarSQLData {
 	pub picture: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct AvatarData {
 	pub id: i32,
 	pub status: PeopleStatus,
 	pub preferred_name: String,
 	pub picture: Option<String>,
-}
-
-impl std::default::Default for AvatarData {
-	fn default() -> Self {
-		AvatarData {
-			id: Default::default(),
-			status: Default::default(),
-			preferred_name: Default::default(),
-			picture: None,
-		}
-	}
 }
 
 impl From<PeopleSQLData> for AvatarData {
