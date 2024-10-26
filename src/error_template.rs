@@ -35,7 +35,7 @@ pub fn ErrorTemplate(
 
 	// Downcast lets us take a type that implements `std::error::Error`
 	let errors: Vec<AppError> = errors.into_iter().filter_map(|(_k, v)| v.downcast_ref::<AppError>().cloned()).collect();
-	println!("Errors: {errors:#?}");
+	eprintln!("Errors: {errors:#?}");
 
 	// Only the response code for the first error is actually sent from the server
 	// this may be customized by the specific application

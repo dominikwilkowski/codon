@@ -23,6 +23,7 @@ pub async fn file_and_error_handler(
 	if res.status() == StatusCode::OK {
 		res.into_response()
 	} else {
+		eprintln!("Unable to serve static file: {}", uri.path());
 		let handler = leptos_axum::render_app_to_stream(options.to_owned(), App);
 		handler(req).await.into_response()
 	}
