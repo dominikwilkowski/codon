@@ -23,22 +23,26 @@ pub fn Nav() -> impl IntoView {
 					<A href="/equipment">Equipment</A>
 				</li>
 				<li>
-					{move || {
-						match user_signal.get() {
-							None => view! { <A href="/login">"Login"</A> }.into_view(),
-							Some(user) => {
-								view! {
-									<ActionForm action=logout_action>
-										<button type="submit" class="button">
-											"Log Out"
-										</button>
-									</ActionForm>
-									<span>{format!("Logged in as: {}", user.username)}</span>
+					<Suspense fallback=move || {
+						view! { <A href="/login">"Login"</A> }
+					}>
+						{move || {
+							match user_signal.get() {
+								None => view! { <A href="/login">"Login"</A> }.into_view(),
+								Some(user) => {
+									view! {
+										<ActionForm action=logout_action>
+											<button type="submit" class="button">
+												"Log Out"
+											</button>
+										</ActionForm>
+										<span>{format!("Logged in as: {}", user.username)}</span>
+									}
+										.into_view()
 								}
-									.into_view()
 							}
-						}
-					}}
+						}}
+					</Suspense>
 				</li>
 			</ul>
 		</nav>

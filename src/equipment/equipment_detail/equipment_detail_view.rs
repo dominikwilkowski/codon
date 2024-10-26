@@ -143,7 +143,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 	);
 
 	view! {
-		<Transition fallback=move || view! { <p>Loading equipment...</p> }>
+		<Suspense fallback=move || view! { <p>Loading equipment...</p> }>
 			<ErrorBoundary fallback=|errors| {
 				view! { <ErrorTemplate errors=errors /> }
 			}>
@@ -695,7 +695,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 					}
 				}}
 			</ErrorBoundary>
-		</Transition>
+		</Suspense>
 	}
 }
 
@@ -737,7 +737,8 @@ pub async fn edit_name(id: String, name: String, note: String) -> Result<(), Ser
 
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
@@ -796,7 +797,8 @@ pub async fn edit_type(id: String, equipment_type: String, note: String) -> Resu
 
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
@@ -865,7 +867,8 @@ pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
 	let result = file_upload(data, |id| format!("{}temp/", get_equipment_base_folder(id))).await?;
@@ -1001,7 +1004,8 @@ pub async fn edit_manufacturer(id: String, manufacturer: String, note: String) -
 
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
@@ -1068,7 +1072,8 @@ pub async fn edit_purchase_date(
 	use chrono::prelude::*;
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
@@ -1140,7 +1145,8 @@ pub async fn edit_vendor(id: String, vendor: String, note: String) -> Result<(),
 
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
@@ -1198,7 +1204,8 @@ pub async fn edit_cost_in_cent(id: String, cost_in_cent: f32, note: String) -> R
 
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
@@ -1268,7 +1275,8 @@ pub async fn edit_warranty_expiration_date(
 	use chrono::prelude::*;
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
@@ -1344,7 +1352,8 @@ pub async fn edit_location(id: String, location: String, note: String) -> Result
 
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
@@ -1402,7 +1411,8 @@ pub async fn edit_notes(id: String, notes: String, note: String) -> Result<(), S
 
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
@@ -1460,7 +1470,8 @@ pub async fn get_equipment_data_by_id(id: String) -> Result<EquipmentData, Serve
 
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {

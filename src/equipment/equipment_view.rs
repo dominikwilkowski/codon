@@ -67,7 +67,7 @@ pub fn Equipment() -> impl IntoView {
 			<EquipmentLogo />
 			" Equipment"
 		</Heading>
-		<Transition fallback=move || view! { <p>Loading equipment...</p> }>
+		<Suspense fallback=move || view! { <p>Loading equipment...</p> }>
 			<ErrorBoundary fallback=|errors| {
 				view! { <ErrorTemplate errors /> }
 			}>
@@ -202,7 +202,7 @@ pub fn Equipment() -> impl IntoView {
 					}
 				}}
 			</ErrorBoundary>
-		</Transition>
+		</Suspense>
 	}
 }
 
@@ -218,7 +218,8 @@ pub async fn get_equipment_data(
 
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
 	let auth_query = match user {
@@ -310,7 +311,7 @@ pub async fn get_equipment_data(
 // 	use sqlx::PgPool;
 // 	use std::{fs, path::PathBuf};
 
-// 	let pool = use_context::<PgPool>().expect("Database not initialized");
+// 	let pool = use_context::<PgPool>().ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 // 	let user = get_user().await?;
 
 // 	match user {

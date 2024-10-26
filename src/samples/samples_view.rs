@@ -49,7 +49,7 @@ pub fn Samples() -> impl IntoView {
 				</button>
 			</ActionForm>
 
-			<Transition fallback=move || view! { <p>"Loading samples..."</p> }>
+			<Suspense fallback=move || view! { <p>"Loading samples..."</p> }>
 				<ErrorBoundary fallback=|errors| {
 					view! { <ErrorTemplate errors /> }
 				}>
@@ -92,7 +92,7 @@ pub fn Samples() -> impl IntoView {
 						view! { <ul class=css::outer_ul>{existing_todos}</ul> }
 					}}
 				</ErrorBoundary>
-			</Transition>
+			</Suspense>
 		</div>
 	}
 }
@@ -165,7 +165,8 @@ pub fn SampleItem(
 pub async fn get_samples() -> Result<Vec<SampleData>, ServerFnError> {
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 
 	sqlx::query!("SELECT * FROM samples ORDER BY id")
 		.map(|data| SampleData {
@@ -183,7 +184,8 @@ pub async fn get_samples() -> Result<Vec<SampleData>, ServerFnError> {
 pub async fn add_sample(sample_type: String, analyst: String) -> Result<(), ServerFnError> {
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 
 	// fake API delay
 	std::thread::sleep(std::time::Duration::from_millis(1250));
@@ -201,7 +203,8 @@ pub async fn add_sample(sample_type: String, analyst: String) -> Result<(), Serv
 pub async fn edit_sample(id: i32, sample_type: String, analyst: String) -> Result<(), ServerFnError> {
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 
 	Ok(
 		sqlx::query!("UPDATE samples SET sample_type = $1,analyst = $2 WHERE id = $3", sample_type, analyst, id)
@@ -216,7 +219,8 @@ pub async fn edit_sample(id: i32, sample_type: String, analyst: String) -> Resul
 pub async fn delete_sample(id: i32) -> Result<(), ServerFnError> {
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 
 	Ok(sqlx::query!("DELETE FROM samples WHERE id = $1", id).execute(&pool).await.map(|_| ())?)
 }

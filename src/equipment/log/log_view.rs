@@ -19,7 +19,7 @@ pub fn Log(
 	log_data: LogAction,
 ) -> impl IntoView {
 	view! {
-		<Transition fallback=move || view! { <p>Loading notes...</p> }>
+		<Suspense fallback=move || view! { <p>Loading notes...</p> }>
 			<ErrorBoundary fallback=|errors| {
 				view! { <ErrorTemplate errors=errors /> }
 			}>
@@ -64,7 +64,7 @@ pub fn Log(
 					}
 				}}
 			</ErrorBoundary>
-		</Transition>
+		</Suspense>
 	}
 }
 
@@ -124,7 +124,8 @@ pub async fn get_log_for_equipment(
 
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {

@@ -27,8 +27,8 @@ pub enum Permissions {
 	},
 }
 
-#[cfg(feature = "ssr")]
 impl Permission {
+	#[cfg(feature = "ssr")]
 	pub fn parse(perm: String) -> Result<Permissions, &'static str> {
 		let perms: String = perm.chars().filter(|&c| c != ' ' && c != ')').map(|c| c.to_ascii_uppercase()).collect();
 
@@ -110,6 +110,7 @@ impl Permission {
 		}
 	}
 
+	#[cfg(feature = "ssr")]
 	pub fn get_query_select(&self, field: &str) -> String {
 		let mut query = String::new();
 		match self {
@@ -156,6 +157,7 @@ impl Permission {
 		query
 	}
 
+	#[cfg(feature = "ssr")]
 	pub fn get_query_select_without_where(&self, field: &str) -> String {
 		self.get_query_select(field).replace("WHERE", "AND")
 	}

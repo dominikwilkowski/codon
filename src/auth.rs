@@ -141,7 +141,10 @@ pub mod ssr {
 pub async fn get_user() -> Result<Option<User>, ServerFnError> {
 	use crate::auth::ssr::AuthSession;
 
-	let auth = use_context::<AuthSession>().expect("No session found");
+	let auth = match use_context::<AuthSession>() {
+		Some(auth) => auth,
+		None => return Ok(None),
+	};
 
 	Ok(auth.current_user)
 }

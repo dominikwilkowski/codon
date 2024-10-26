@@ -118,7 +118,8 @@ pub async fn save_notes(data: MultipartData) -> Result<(), ServerFnError> {
 
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
 	match user {

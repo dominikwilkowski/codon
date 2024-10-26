@@ -1,4 +1,5 @@
 use crate::{
+	app::UserSignal,
 	components::{
 		avatar::Avatar,
 		button::{Button, ButtonVariant},
@@ -11,6 +12,7 @@ use crate::{
 	},
 	equipment::{save_notes, EquipmentNotesData, NotesForm},
 	error_template::ErrorTemplate,
+	permission::Permissions,
 };
 
 use leptos::*;
@@ -47,7 +49,7 @@ pub fn Notes(
 	);
 
 	view! {
-		<Transition fallback=move || view! { <p>Loading notes...</p> }>
+		<Suspense fallback=move || view! { <p>Loading notes...</p> }>
 			<ErrorBoundary fallback=|errors| {
 				view! { <ErrorTemplate errors=errors /> }
 			}>
@@ -97,7 +99,7 @@ pub fn Notes(
 					}
 				}}
 			</ErrorBoundary>
-		</Transition>
+		</Suspense>
 	}
 }
 
@@ -137,40 +139,63 @@ pub fn Note(
 	is_editing: RwSignal<bool>,
 	delete_note_action: Action<DeleteNote, Result<(), ServerFnError>>,
 ) -> impl IntoView {
+	let user_signal = use_context::<UserSignal>().expect("No user signal found in context");
+
 	view! {
 		<small>
 			{note.create_date.format("%d %b %Y %I:%M:%S %P").to_string()}
-			<Dropdown
-				placement=DropdownPlacement::BottomEnd
-				on_select=move |link: String| {
-					if link.as_str() == "edit" {
-						is_editing.set(true);
-					}
-				}
-			>
-				<DropdownTrigger slot>
-					<button class=css::dropdown_btn>
-						<svg class=css::menu xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-							<path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-						</svg>
-					</button>
-				</DropdownTrigger>
-				<DropdownItem key="edit" label="Edit" />
-				<button
-					class=css::text_btn
-					on:click=move |_| {
-						if web_sys::window()
-							.unwrap()
-							.confirm_with_message("Are you sure you want to delete this Note?")
-							.unwrap_or(false)
-						{
-							delete_note_action.dispatch(DeleteNote { id: note.id });
+			<Suspense fallback=move || {
+				view! { <span /> }
+			}>
+				{move || {
+					match user_signal.get() {
+						None => view! { <span /> }.into_view(),
+						Some(user) => {
+							let Permissions::All { read: _, write: perm, create: _ } = user.permission_equipment;
+							view! {
+								<Show when=move || perm.has_permission("write", -1, note.person.id)>
+									<Dropdown
+										placement=DropdownPlacement::BottomEnd
+										on_select=move |link: String| {
+											if link.as_str() == "edit" {
+												is_editing.set(true);
+											}
+										}
+									>
+										<DropdownTrigger slot>
+											<button class=css::dropdown_btn>
+												<svg
+													class=css::menu
+													xmlns="http://www.w3.org/2000/svg"
+													viewBox="0 0 24 24"
+													fill="currentColor"
+												>
+													<path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+												</svg>
+											</button>
+										</DropdownTrigger>
+										<DropdownItem key="edit" label="Edit" />
+										<button
+											class=css::text_btn
+											on:click=move |_| {
+												if web_sys::window()
+													.unwrap()
+													.confirm_with_message("Are you sure you want to delete this Note?")
+													.unwrap_or(false)
+												{
+													delete_note_action.dispatch(DeleteNote { id: note.id });
+												}
+											}
+										>
+											Delete
+										</button>
+									</Dropdown>
+								</Show>
+							}
 						}
 					}
-				>
-					Delete
-				</button>
-			</Dropdown>
+				}}
+			</Suspense>
 		</small>
 		<MultiLine text=note.notes />
 		<div class="codon_img_attachment">
@@ -370,7 +395,7 @@ pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 	use crate::{
 		auth::get_user,
 		components::file_upload::{file_upload, remove_temp_files},
-		permission::Permissions,
+		permission::{Permission, Permissions},
 		utils::{get_equipment_base_folder, get_equipment_notes_folder},
 	};
 
@@ -378,7 +403,8 @@ pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 	use std::{fs, path::PathBuf};
 	use tokio::fs::rename;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
 	let result = file_upload(data, |id| format!("{}temp", get_equipment_base_folder(id))).await?;
@@ -429,7 +455,7 @@ pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 			} = user.permission_equipment;
 			let person: i32 =
 				sqlx::query_scalar("SELECT person FROM equipment_notes WHERE id = $1").bind(note_id).fetch_one(&pool).await?;
-			if !perm.has_permission("write", result.id, person) {
+			if !perm.has_permission("write", -1, person) && perm != Permission::WriteAny {
 				remove_temp_files(result).await?;
 				return Err(ServerFnError::Request(String::from("User not authenticated")));
 			}
@@ -547,12 +573,16 @@ pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 
 #[server(prefix = "/api")]
 pub async fn delete_note(id: i32) -> Result<(), ServerFnError> {
-	use crate::{auth::get_user, permission::Permissions};
+	use crate::{
+		auth::get_user,
+		permission::{Permission, Permissions},
+	};
 
 	use sqlx::PgPool;
 	use std::{fs, path::PathBuf};
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
 	match user {
@@ -564,7 +594,7 @@ pub async fn delete_note(id: i32) -> Result<(), ServerFnError> {
 			} = user.permission_equipment;
 			let person: i32 =
 				sqlx::query_scalar("SELECT person FROM equipment_notes WHERE id = $1").bind(id).fetch_one(&pool).await?;
-			if !perm.has_permission("write", id, person) {
+			if !perm.has_permission("write", -1, person) && perm != Permission::WriteAny {
 				return Err(ServerFnError::Request(String::from("User not authenticated")));
 			}
 		},
@@ -612,7 +642,8 @@ pub async fn get_notes_for_equipment(
 
 	use sqlx::PgPool;
 
-	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let pool = use_context::<PgPool>()
+		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
