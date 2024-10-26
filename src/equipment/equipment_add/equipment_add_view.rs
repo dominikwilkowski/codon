@@ -11,6 +11,7 @@ use crate::{
 	equipment::{EquipmentType, Heading},
 	icons::EquipmentLogo,
 	login::Login,
+	permission::{Permission, Permissions},
 };
 
 use leptos::*;
@@ -63,113 +64,122 @@ pub fn EquipmentAdd() -> impl IntoView {
 								.into_view()
 						}
 						Ok(None) => view! { <Login redirect="/equipment/add" /> }.into_view(),
-						Ok(Some(_)) => {
-							view! {
-								<ActionForm
-									action=add_equipment_action
-									class=css::form
-									on:submit=move |_| loading.set(true)
-								>
-									<Timezone />
+						Ok(Some(user)) => {
+							let Permissions::All { read: _, write: _, create: perm } = user.permission_equipment;
+							if perm != Permission::Create(true) {
+								view! { <span>"You don't have permission to create new Equipment"</span> }.into_view()
+							} else {
+								view! {
+									<ActionForm
+										action=add_equipment_action
+										class=css::form
+										on:submit=move |_| loading.set(true)
+									>
+										<Timezone />
 
-									<label class=css::label>
-										<span class=css::text>Equipment Type:</span>
-										<span class=css::input>
-											<Select name="equipment_type" required=true>
-												{EquipmentType::get_fields()
-													.iter()
-													.map(|name| view! { <option value=name>{name}</option> })
-													.collect_view()}
-											</Select>
-										</span>
-									</label>
+										<label class=css::label>
+											<span class=css::text>Equipment Type:</span>
+											<span class=css::input>
+												<Select name="equipment_type" required=true>
+													{EquipmentType::get_fields()
+														.iter()
+														.map(|name| view! { <option value=name>{name}</option> })
+														.collect_view()}
+												</Select>
+											</span>
+										</label>
 
-									<label class=css::label>
-										<span class=css::text>Name:</span>
-										<span class=css::input>
-											<Input name="name" placeholder="Name" required=true />
-										</span>
-									</label>
+										<label class=css::label>
+											<span class=css::text>Name:</span>
+											<span class=css::input>
+												<Input name="name" placeholder="Name" required=true />
+											</span>
+										</label>
 
-									<label class=css::label>
-										<span class=css::text>Manufacturer:</span>
-										<span class=css::input>
-											<Input name="manufacturer" placeholder="Manufacturer" />
-										</span>
-									</label>
+										<label class=css::label>
+											<span class=css::text>Manufacturer:</span>
+											<span class=css::input>
+												<Input name="manufacturer" placeholder="Manufacturer" />
+											</span>
+										</label>
 
-									<label class=css::label>
-										<span class=css::text>Purchase Date:</span>
-										<span class=css::input>
-											<DatePicker attr:name="purchase_date" attr:placeholder="Purchase Date" />
-										</span>
-									</label>
+										<label class=css::label>
+											<span class=css::text>Purchase Date:</span>
+											<span class=css::input>
+												<DatePicker
+													attr:name="purchase_date"
+													attr:placeholder="Purchase Date"
+												/>
+											</span>
+										</label>
 
-									<label class=css::label>
-										<span class=css::text>Vendor:</span>
-										<span class=css::input>
-											<Input name="vendor" placeholder="Vendor" />
-										</span>
-									</label>
+										<label class=css::label>
+											<span class=css::text>Vendor:</span>
+											<span class=css::input>
+												<Input name="vendor" placeholder="Vendor" />
+											</span>
+										</label>
 
-									<label class=css::label>
-										<span class=css::text>Cost:</span>
-										<span class=css::input>
-											<MoneyInput name="cost_in_cent" placeholder="Cost" />
-										</span>
-									</label>
+										<label class=css::label>
+											<span class=css::text>Cost:</span>
+											<span class=css::input>
+												<MoneyInput name="cost_in_cent" placeholder="Cost" />
+											</span>
+										</label>
 
-									<label class=css::label>
-										<span class=css::text>Warranty Expiration:</span>
-										<span class=css::input>
-											<DatePicker
-												attr:name="warranty_expiration_date"
-												attr:placeholder="Warranty Expiration"
-											/>
-										</span>
-									</label>
+										<label class=css::label>
+											<span class=css::text>Warranty Expiration:</span>
+											<span class=css::input>
+												<DatePicker
+													attr:name="warranty_expiration_date"
+													attr:placeholder="Warranty Expiration"
+												/>
+											</span>
+										</label>
 
-									<label class=css::label>
-										<span class=css::text>Location:</span>
-										<span class=css::input>
-											<Input name="location" placeholder="Location" />
-										</span>
-									</label>
+										<label class=css::label>
+											<span class=css::text>Location:</span>
+											<span class=css::input>
+												<Input name="location" placeholder="Location" />
+											</span>
+										</label>
 
-									<label class=css::label>
-										<span class=css::text>Notes:</span>
-										<span class=css::input>
-											<TextArea name="notes" placeholder="Notes" />
-										</span>
-									</label>
+										<label class=css::label>
+											<span class=css::text>Notes:</span>
+											<span class=css::input>
+												<TextArea name="notes" placeholder="Notes" />
+											</span>
+										</label>
 
-									<div class=css::btn_row>
-										{move || {
-											if let Some(responds) = add_equipment_action.value().get() {
-												match responds {
-													Ok(_) => view! {}.into_view(),
-													Err(error) => {
-														view! {
-															<span class=css::error>
-																{error
-																	.to_string()
-																	.replace(
-																		"error reaching server to call server function: ",
-																		"",
-																	)}
-															</span>
+										<div class=css::btn_row>
+											{move || {
+												if let Some(responds) = add_equipment_action.value().get() {
+													match responds {
+														Ok(_) => view! {}.into_view(),
+														Err(error) => {
+															view! {
+																<span class=css::error>
+																	{error
+																		.to_string()
+																		.replace(
+																			"error reaching server to call server function: ",
+																			"",
+																		)}
+																</span>
+															}
+																.into_view()
 														}
-															.into_view()
 													}
+												} else {
+													view! {}.into_view()
 												}
-											} else {
-												view! {}.into_view()
-											}
-										}} <Button kind="submit" loading=loading>
-											Add
-										</Button>
-									</div>
-								</ActionForm>
+											}} <Button kind="submit" loading=loading>
+												Add
+											</Button>
+										</div>
+									</ActionForm>
+								}
+									.into_view()
 							}
 						}
 					})
