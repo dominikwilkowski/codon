@@ -202,8 +202,9 @@ pub async fn remove_temp_files(result: FileUploadResult) -> Result<(), ServerFnE
 			Some(result.media10)
 		},
 	];
+
 	for media in media_fields.into_iter().flatten() {
-		let file_path = PathBuf::from(format!("{}/public/{}", env!("CARGO_MANIFEST_DIR"), media));
+		let file_path = PathBuf::from(format!("{}/public{media}", env!("CARGO_MANIFEST_DIR")));
 		if file_path.exists() {
 			match fs::remove_file(&file_path) {
 				Ok(_) => {},

@@ -368,7 +368,9 @@ struct MediasSQL {
 #[server(input = MultipartFormData, prefix = "/api")]
 pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 	use crate::{
-		components::file_upload::file_upload,
+		auth::get_user,
+		components::file_upload::{file_upload, remove_temp_files},
+		permission::Permissions,
 		utils::{get_equipment_base_folder, get_equipment_notes_folder},
 	};
 
@@ -377,6 +379,7 @@ pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 	use tokio::fs::rename;
 
 	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let user = get_user().await?;
 
 	let result = file_upload(data, |id| format!("{}temp", get_equipment_base_folder(id))).await?;
 
@@ -416,6 +419,26 @@ pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 		return Err(ServerFnError::Request(String::from("No note ID was passed")));
 	}
 	let note_id = note_id.unwrap();
+
+	match user {
+		Some(user) => {
+			let Permissions::All {
+				read: _,
+				write: perm,
+				create: _,
+			} = user.permission_equipment;
+			let person: i32 =
+				sqlx::query_scalar("SELECT person FROM equipment_notes WHERE id = $1").bind(note_id).fetch_one(&pool).await?;
+			if !perm.has_permission("write", result.id, person) {
+				remove_temp_files(result).await?;
+				return Err(ServerFnError::Request(String::from("User not authenticated")));
+			}
+		},
+		None => {
+			remove_temp_files(result).await?;
+			return Err(ServerFnError::Request(String::from("User not authenticated")));
+		},
+	};
 
 	let notes_folder = get_equipment_notes_folder(note_id);
 
@@ -524,10 +547,29 @@ pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 
 #[server(prefix = "/api")]
 pub async fn delete_note(id: i32) -> Result<(), ServerFnError> {
+	use crate::{auth::get_user, permission::Permissions};
+
 	use sqlx::PgPool;
 	use std::{fs, path::PathBuf};
 
 	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let user = get_user().await?;
+
+	match user {
+		Some(user) => {
+			let Permissions::All {
+				read: _,
+				write: perm,
+				create: _,
+			} = user.permission_equipment;
+			let person: i32 =
+				sqlx::query_scalar("SELECT person FROM equipment_notes WHERE id = $1").bind(id).fetch_one(&pool).await?;
+			if !perm.has_permission("write", id, person) {
+				return Err(ServerFnError::Request(String::from("User not authenticated")));
+			}
+		},
+		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
+	};
 
 	let medias = sqlx::query_as::<_, MediasSQL>("SELECT media1, media2, media3, media4, media5, media6, media7, media8, media9, media10 FROM equipment_notes WHERE id = $1")
 		.bind(id)
@@ -566,21 +608,34 @@ pub async fn get_notes_for_equipment(
 	page: u16,
 	items_per_page: u8,
 ) -> Result<(Vec<EquipmentNotesData>, i64), ServerFnError> {
-	use crate::equipment::EquipmentNotesSQLData;
+	use crate::{auth::get_user, equipment::EquipmentNotesSQLData, permission::Permissions};
 
 	use sqlx::PgPool;
 
 	let pool = use_context::<PgPool>().expect("Database not initialized");
+	let user = get_user().await?;
 
 	let id = match id.parse::<i32>() {
 		Ok(value) => value,
 		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
 	};
 
+	let auth_query = match user {
+		Some(user) => {
+			let Permissions::All {
+				read: perm,
+				write: _,
+				create: _,
+			} = user.permission_equipment;
+			perm.get_query_select_without_where("equipment_notes.equipment")
+		},
+		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
+	};
+
 	let limit = items_per_page as i64;
 	let offset = (page as i64 - 1) * items_per_page as i64;
 
-	let notes_sql_data = sqlx::query_as::<_, EquipmentNotesSQLData>(
+	let notes_sql_data = sqlx::query_as::<_, EquipmentNotesSQLData>(&format!(
 		r#"SELECT
 		equipment_notes.*,
 		people.id AS person_id,
@@ -592,9 +647,11 @@ pub async fn get_notes_for_equipment(
 		JOIN people ON equipment_notes.person = people.id
 		WHERE
 			equipment_notes.equipment = $1
+			{auth_query}
+			AND equipment_notes.equipment = $1
 		ORDER BY equipment_notes.id DESC
 		LIMIT $2 OFFSET $3"#,
-	)
+	))
 	.bind(id)
 	.bind(limit)
 	.bind(offset)
@@ -605,7 +662,10 @@ pub async fn get_notes_for_equipment(
 	let notes_data: Vec<EquipmentNotesData> = notes_sql_data.into_iter().map(Into::into).collect();
 
 	let row_count: i64 =
-		sqlx::query_scalar("SELECT COUNT(*) FROM equipment_notes WHERE equipment = $1").bind(id).fetch_one(&pool).await?;
+		sqlx::query_scalar(&format!("SELECT COUNT(*) FROM equipment_notes WHERE equipment = $1 {auth_query}"))
+			.bind(id)
+			.fetch_one(&pool)
+			.await?;
 
 	Ok((notes_data, row_count))
 }
