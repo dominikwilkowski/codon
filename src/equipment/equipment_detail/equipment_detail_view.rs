@@ -676,57 +676,108 @@ pub fn EquipmentDetail() -> impl IntoView {
 					let tab_query_clone = tab_query;
 					view! {
 						<div>
-							{equipment} <div id="equipment_tab" class=css::tab>
-								<form
-									class=if tab_query.get() == *"notes" { "is-selected" } else { "" }
-									action=format!("/equipment/{}#equipment_tab", id.get())
-									method="GET"
-								>
-									<input type="hidden" name="notes_page" value=notes_query_page_clone />
-									<input type="hidden" name="notes_items_per_page" value=notes_query_ipp_clone />
-									<input type="hidden" name="log_page" value=log_query_page_clone />
-									<input type="hidden" name="log_items_per_page" value=log_query_ipp_clone />
-									<input type="hidden" name="tab" value="notes" />
-									<button class=css::btn>Notes</button>
-								</form>
-								<form
-									class=if tab_query.get() == *"log" { "is-selected" } else { "" }
-									action=format!("/equipment/{}#equipment_tab", id.get())
-									method="GET"
-								>
-									<input type="hidden" name="notes_page" value=notes_query_page_clone />
-									<input type="hidden" name="notes_items_per_page" value=notes_query_ipp_clone />
-									<input type="hidden" name="log_page" value=log_query_page_clone />
-									<input type="hidden" name="log_items_per_page" value=log_query_ipp_clone />
-									<input type="hidden" name="tab" value="log" />
-									<button class=css::btn>Log</button>
-								</form>
-							</div>
-							<Show
-								when=move || tab_query.get().as_str() == "log"
-								fallback=move || {
-									view! {
-										<Notes
-											id=id_clone
-											notes_query_page=notes_query_page_clone
-											notes_query_ipp=notes_query_ipp_clone
-											log_query_page=log_query_page_clone
-											log_query_ipp=log_query_ipp_clone
-											tab_query=tab_query_clone
-										/>
+							{equipment}
+							<Suspense fallback=move || {
+								view! { <A href="/login">"Login"</A> }
+							}>
+								{move || {
+									match user_signal.get() {
+										None => view! { <span /> }.into_view(),
+										Some(_) => {
+											view! {
+												<div id="equipment_tab" class=css::tab>
+													<form
+														class=if tab_query.get() == *"notes" {
+															"is-selected"
+														} else {
+															""
+														}
+														action=format!("/equipment/{}#equipment_tab", id.get())
+														method="GET"
+													>
+														<input
+															type="hidden"
+															name="notes_page"
+															value=notes_query_page_clone
+														/>
+														<input
+															type="hidden"
+															name="notes_items_per_page"
+															value=notes_query_ipp_clone
+														/>
+														<input
+															type="hidden"
+															name="log_page"
+															value=log_query_page_clone
+														/>
+														<input
+															type="hidden"
+															name="log_items_per_page"
+															value=log_query_ipp_clone
+														/>
+														<input type="hidden" name="tab" value="notes" />
+														<button class=css::btn>Notes</button>
+													</form>
+													<form
+														class=if tab_query.get() == *"log" { "is-selected" } else { "" }
+														action=format!("/equipment/{}#equipment_tab", id.get())
+														method="GET"
+													>
+														<input
+															type="hidden"
+															name="notes_page"
+															value=notes_query_page_clone
+														/>
+														<input
+															type="hidden"
+															name="notes_items_per_page"
+															value=notes_query_ipp_clone
+														/>
+														<input
+															type="hidden"
+															name="log_page"
+															value=log_query_page_clone
+														/>
+														<input
+															type="hidden"
+															name="log_items_per_page"
+															value=log_query_ipp_clone
+														/>
+														<input type="hidden" name="tab" value="log" />
+														<button class=css::btn>Log</button>
+													</form>
+												</div>
+												<Show
+													when=move || tab_query.get().as_str() == "log"
+													fallback=move || {
+														view! {
+															<Notes
+																id=id_clone
+																notes_query_page=notes_query_page_clone
+																notes_query_ipp=notes_query_ipp_clone
+																log_query_page=log_query_page_clone
+																log_query_ipp=log_query_ipp_clone
+																tab_query=tab_query_clone
+															/>
+														}
+													}
+												>
+													<Log
+														id=id
+														notes_query_page=notes_query_page
+														notes_query_ipp=notes_query_ipp
+														log_query_page=log_query_page
+														log_query_ipp=log_query_ipp
+														tab_query=tab_query
+														log_data=log_data
+													/>
+												</Show>
+											}
+												.into_view()
+										}
 									}
-								}
-							>
-								<Log
-									id=id
-									notes_query_page=notes_query_page
-									notes_query_ipp=notes_query_ipp
-									log_query_page=log_query_page
-									log_query_ipp=log_query_ipp
-									tab_query=tab_query
-									log_data=log_data
-								/>
-							</Show>
+								}}
+							</Suspense>
 						</div>
 					}
 				}}
