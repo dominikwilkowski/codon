@@ -1,5 +1,5 @@
 use crate::{
-	app::LoginAction,
+	app::{LoginAction, UserSignal},
 	components::{
 		button::{Button, ButtonVariant},
 		datepicker::DatePicker,
@@ -15,6 +15,7 @@ use crate::{
 	error_template::ErrorTemplate,
 	icons::{FlaskLogo, IncubationCabinetLogo, VesselLogo},
 	login::Login,
+	permission::Permissions,
 };
 
 use leptos::*;
@@ -91,6 +92,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 	});
 
 	let login_action = use_context::<LoginAction>().expect("No login action found in context");
+	let user_signal = use_context::<UserSignal>().expect("No user signal found in context");
 
 	let name_action = create_server_action::<EditName>();
 	let equipment_type_action = create_server_action::<EditType>();
@@ -184,9 +186,12 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Name</dt>
 													<dd class=css::edit>
-														<EquipmentFormToggle item=equipment
-															.name
-															.clone()>
+														<EquipmentFormToggle
+															user_id=equipment.person.id
+															id=equipment.id
+															user_signal=user_signal
+															item=equipment.name.clone()
+														>
 															{
 																let name_clone = equipment.name.clone();
 																view! {
@@ -225,8 +230,12 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Equipment Type</dt>
 													<dd class=css::edit>
-														<EquipmentFormToggle item=equipment
-															.equipment_type>
+														<EquipmentFormToggle
+															user_id=equipment.person.id
+															id=equipment.id
+															user_signal=user_signal
+															item=equipment.equipment_type
+														>
 															{
 																view! {
 																	<ActionForm
@@ -263,7 +272,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Created By</dt>
 													<dd>
-														<EquipmentCell cell=equipment.person />
+														<EquipmentCell cell=equipment.person.clone() />
 													</dd>
 
 													<dt>Qrcode</dt>
@@ -278,8 +287,12 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Status</dt>
 													<dd class=css::edit>
-														<EquipmentFormToggle item=equipment
-															.status>
+														<EquipmentFormToggle
+															user_id=equipment.person.clone().id
+															id=equipment.id
+															user_signal=user_signal
+															item=equipment.status
+														>
 															{
 																let form_ref = create_node_ref::<html::Form>();
 																let action_ref = create_node_ref::<html::Input>();
@@ -427,9 +440,12 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Manufacturer</dt>
 													<dd class=css::edit>
-														<EquipmentFormToggle item=equipment
-															.manufacturer
-															.clone()>
+														<EquipmentFormToggle
+															user_id=equipment.person.id
+															id=equipment.id
+															user_signal=user_signal
+															item=equipment.manufacturer.clone()
+														>
 															{
 																let manufacturer_clone = equipment.manufacturer.clone();
 																view! {
@@ -454,8 +470,12 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Purchase Date</dt>
 													<dd class=css::edit>
-														<EquipmentFormToggle item=equipment
-															.purchase_date>
+														<EquipmentFormToggle
+															user_id=equipment.person.id
+															id=equipment.id
+															user_signal=user_signal
+															item=equipment.purchase_date
+														>
 															{
 																let purchase_date_clone = equipment.purchase_date;
 																view! {
@@ -484,9 +504,12 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Vendor</dt>
 													<dd class=css::edit>
-														<EquipmentFormToggle item=equipment
-															.vendor
-															.clone()>
+														<EquipmentFormToggle
+															user_id=equipment.person.id
+															id=equipment.id
+															user_signal=user_signal
+															item=equipment.vendor.clone()
+														>
 															{
 																let vendor_clone = equipment.vendor.clone();
 																view! {
@@ -509,9 +532,12 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Cost</dt>
 													<dd class=css::edit>
-														<EquipmentFormToggle item=equipment
-															.cost_in_cent
-															.clone()>
+														<EquipmentFormToggle
+															user_id=equipment.person.id
+															id=equipment.id
+															user_signal=user_signal
+															item=equipment.cost_in_cent.clone()
+														>
 															{
 																let cost_in_cent_clone = equipment.cost_in_cent.clone();
 																view! {
@@ -536,8 +562,12 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Warranty Expiration Date</dt>
 													<dd class=css::edit>
-														<EquipmentFormToggle item=equipment
-															.warranty_expiration_date>
+														<EquipmentFormToggle
+															user_id=equipment.person.id
+															id=equipment.id
+															user_signal=user_signal
+															item=equipment.warranty_expiration_date
+														>
 															{
 																let warranty_expiration_date_clone = equipment
 																	.warranty_expiration_date;
@@ -571,9 +601,12 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Location</dt>
 													<dd class=css::edit>
-														<EquipmentFormToggle item=equipment
-															.location
-															.clone()>
+														<EquipmentFormToggle
+															user_id=equipment.person.id
+															id=equipment.id
+															user_signal=user_signal
+															item=equipment.location.clone()
+														>
 															{
 																let location_clone = equipment.location.clone();
 																view! {
@@ -596,9 +629,12 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Notes</dt>
 													<dd class=css::edit>
-														<EquipmentFormToggle item=equipment
-															.notes
-															.clone()>
+														<EquipmentFormToggle
+															user_id=equipment.person.id
+															id=equipment.id
+															user_signal=user_signal
+															item=equipment.notes.clone()
+														>
 															{
 																let notes_clone = equipment.notes.clone();
 																view! {
@@ -700,7 +736,13 @@ pub fn EquipmentDetail() -> impl IntoView {
 }
 
 #[component]
-pub fn EquipmentFormToggle<T: EquipmentCellView + Clone + 'static>(item: T, children: ChildrenFn) -> impl IntoView {
+pub fn EquipmentFormToggle<T: EquipmentCellView + Clone + 'static>(
+	user_signal: UserSignal,
+	user_id: i32,
+	id: i32,
+	item: T,
+	children: ChildrenFn,
+) -> impl IntoView {
 	let toggle = create_rw_signal(false);
 
 	// TODO: toggel only when request was successful and enable loading while waiting
@@ -725,9 +767,29 @@ pub fn EquipmentFormToggle<T: EquipmentCellView + Clone + 'static>(item: T, chil
 			{children()}
 		</Show>
 
-		<Button variant=ButtonVariant::Text on_click=move |_| toggle.update(|toggle| *toggle = !*toggle)>
-			{move || if toggle.get() { "Cancel" } else { "Edit" }}
-		</Button>
+		<Suspense fallback=move || {
+			view! { <A href="/login">"Login"</A> }
+		}>
+			{move || {
+				match user_signal.get() {
+					None => view! { <span /> }.into_view(),
+					Some(user) => {
+						let Permissions::All { read: _, write: perm, create: _ } = user.permission_equipment;
+						view! {
+							<Show when=move || perm.has_permission("write", id, user_id)>
+								<Button
+									variant=ButtonVariant::Text
+									on_click=move |_| toggle.update(|toggle| *toggle = !*toggle)
+								>
+									{move || if toggle.get() { "Cancel" } else { "Edit" }}
+								</Button>
+							</Show>
+						}
+							.into_view()
+					}
+				}
+			}}
+		</Suspense>
 	}
 }
 

@@ -1,5 +1,5 @@
 use crate::{
-	app::UserSignal,
+	app::{LoginAction, UserSignal},
 	components::{
 		avatar::Avatar,
 		button::{Button, ButtonVariant},
@@ -32,6 +32,8 @@ pub fn Notes(
 	log_query_ipp: RwSignal<u8>,
 	tab_query: RwSignal<String>,
 ) -> impl IntoView {
+	let login_action = use_context::<LoginAction>().expect("No login action found in context");
+
 	let notes_upload_action = create_action(|data: &FormData| save_notes(data.clone().into()));
 	let edit_note_action = create_action(|data: &FormData| edit_note(data.clone().into()));
 	let delete_note_action = create_server_action::<DeleteNote>();
@@ -39,6 +41,7 @@ pub fn Notes(
 	let notes_data = create_resource(
 		move || {
 			(
+				login_action.version().get(),
 				notes_upload_action.version().get(),
 				id.get(),
 				edit_note_action.version().get(),
