@@ -51,7 +51,7 @@ async fn get_static_file(uri: Uri, root: &str) -> Result<Response<Body>, (Status
 					Some(ext) if ext.eq_ignore_ascii_case("svg") => "image/svg+xml",
 					Some(ext) if ext.eq_ignore_ascii_case("woff") => "font/woff",
 					Some(ext) if ext.eq_ignore_ascii_case("woff2") => "font/woff2",
-					_ => "application/octet-stream",
+					_ => "application/wasm",
 				};
 
 				let response = Response::builder()
