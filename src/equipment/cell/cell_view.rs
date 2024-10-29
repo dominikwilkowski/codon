@@ -27,7 +27,7 @@ impl EquipmentCellView for EquipmentType {
 					EquipmentType::Flask => {
 						view! {
 							<Flask />
-							<span>" Fask"</span>
+							<span>" Flask"</span>
 						}
 					}
 					EquipmentType::Vessel => {
