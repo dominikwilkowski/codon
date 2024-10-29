@@ -1,4 +1,7 @@
-use crate::app::{LogoutAction, UserSignal};
+use crate::{
+	app::{LogoutAction, UserSignal},
+	components::avatar::Avatar,
+};
 
 use leptos::*;
 use leptos_router::*;
@@ -22,7 +25,7 @@ pub fn Nav() -> impl IntoView {
 				<li>
 					<A href="/equipment">Equipment</A>
 				</li>
-				<li>
+				<li class=css::person>
 					<Suspense fallback=move || {
 						view! { <A href="/login">"Login"</A> }
 					}>
@@ -31,12 +34,12 @@ pub fn Nav() -> impl IntoView {
 								None => view! { <A href="/login">"Login"</A> }.into_view(),
 								Some(user) => {
 									view! {
+										<Avatar data=user.into() tiny=true />
 										<ActionForm action=logout_action>
 											<button type="submit" class="button">
 												"Log Out"
 											</button>
 										</ActionForm>
-										<span>{format!("Logged in as: {}", user.username)}</span>
 									}
 										.into_view()
 								}

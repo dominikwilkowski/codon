@@ -1,9 +1,11 @@
+use crate::auth::User;
+
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
 use sqlx::FromRow;
 
-#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub enum PeopleStatus {
 	#[default]
 	Active,
@@ -186,6 +188,17 @@ impl From<AvatarSQLData> for AvatarData {
 		AvatarData {
 			id: val.id,
 			status: PeopleStatus::parse(val.status),
+			preferred_name: val.preferred_name,
+			picture: val.picture,
+		}
+	}
+}
+
+impl From<User> for AvatarData {
+	fn from(val: User) -> Self {
+		AvatarData {
+			id: val.id,
+			status: val.status,
 			preferred_name: val.preferred_name,
 			picture: val.picture,
 		}

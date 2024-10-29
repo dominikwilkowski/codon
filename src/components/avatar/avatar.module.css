@@ -47,3 +47,15 @@
 .avatar figcaption {
 	font-size: 70%;
 }
+
+.avatar.tiny div {
+	width: 2.5rem;
+	height: 2.5rem;
+	border-width: 1px;
+}
+
+.avatar.tiny:global(.avata-status-left):after {
+	font-size: 50%;
+	top: 0.75rem;
+	padding: 3px 0.75rem;
+}

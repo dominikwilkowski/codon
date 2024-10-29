@@ -50,7 +50,7 @@ impl EquipmentCellView for EquipmentType {
 
 impl EquipmentCellView for AvatarData {
 	fn view(self, _: bool) -> impl IntoView {
-		view! { <Avatar data=self /> }
+		view! { <Avatar data=self tiny=true /> }
 	}
 }
 

@@ -9,6 +9,7 @@
 }
 
 .nav ul {
+	display: flex;
 	list-style: none;
 	margin: 0;
 	padding: 0;
@@ -16,9 +17,33 @@
 }
 
 .nav li {
-	display: inline-block;
+	display: inline-flex;
+	align-items: end;
 }
 
 .nav li + li {
 	margin-left: 1.5rem;
+}
+
+.nav li.person {
+	display: inline-flex;
+	gap: 1.5rem;
+	align-items: end;
+}
+
+.nav li.person button {
+	appearance: none;
+	padding: 0;
+	margin: 0;
+	border: none;
+	box-shadow: none;
+	background: transparent;
+	color: var(--action);
+	line-height: 1.15;
+	text-decoration: underline;
+}
+
+.nav li.person button:focus-visible {
+	border-radius: var(--border-radius-sm);
+	outline-offset: 6px;
 }

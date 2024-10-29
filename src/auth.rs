@@ -1,7 +1,10 @@
+use crate::{
+	equipment::PeopleStatus,
+	permission::{Permission, Permissions, Scope},
+};
+
 use leptos::*;
 use serde::{Deserialize, Serialize};
-
-use crate::permission::{Permission, Permissions, Scope};
 
 // Explicitly not Serialize/Deserialize
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -10,6 +13,9 @@ pub struct UserPasshash(String);
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct User {
 	pub id: i32,
+	pub status: PeopleStatus,
+	pub preferred_name: String,
+	pub picture: Option<String>,
 	pub username: String,
 	pub permission_equipment: Permissions,
 	pub permission_people: Permissions,
@@ -19,6 +25,9 @@ pub struct User {
 #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
 pub struct UserSQL {
 	pub id: i32,
+	pub status: String,
+	pub preferred_name: String,
+	pub picture: Option<String>,
 	pub username: String,
 	pub password: String,
 	pub permission_equipment: String,
@@ -30,6 +39,9 @@ impl From<UserSQL> for User {
 	fn from(val: UserSQL) -> Self {
 		User {
 			id: val.id,
+			status: PeopleStatus::parse(val.status),
+			preferred_name: val.preferred_name,
+			picture: val.picture,
 			username: val.username,
 			permission_equipment: Permission::parse(val.permission_equipment).expect("Invalid permission string"),
 			permission_people: Permission::parse(val.permission_people).expect("Invalid permission string"),
@@ -49,6 +61,9 @@ impl Default for User {
 	fn default() -> Self {
 		Self {
 			id: -1,
+			status: Default::default(),
+			preferred_name: Default::default(),
+			picture: None,
 			username: "Guest".into(),
 			permission_equipment: Permissions::All {
 				read: Permission::Read(vec![Scope::Equipment(-1)]),
@@ -84,7 +99,7 @@ pub mod ssr {
 	impl User {
 		pub async fn get_from_id_with_passhash(id: i32, pool: &PgPool) -> Option<(Self, UserPasshash)> {
 			let sqluser = sqlx::query_as::<_, UserSQL>(
-				"SELECT id, username, password, permission_equipment, permission_people FROM people WHERE id = $1",
+				"SELECT id, status, preferred_name, picture, username, password, permission_equipment, permission_people FROM people WHERE id = $1",
 			)
 			.bind(id)
 			.fetch_one(pool)
@@ -100,7 +115,7 @@ pub mod ssr {
 
 		pub async fn get_from_username_with_passhash(name: String, pool: &PgPool) -> Option<(Self, UserPasshash)> {
 			let sqluser = sqlx::query_as::<_, UserSQL>(
-				"SELECT id, username, password, permission_equipment, permission_people FROM people WHERE username = $1",
+				"SELECT id, status, preferred_name, picture, username, password, permission_equipment, permission_people FROM people WHERE username = $1",
 			)
 			.bind(name)
 			.fetch_one(pool)

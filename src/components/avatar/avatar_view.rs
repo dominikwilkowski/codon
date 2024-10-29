@@ -5,11 +5,12 @@ use leptos::*;
 stylance::import_style!(css, "avatar.module.css");
 
 #[component]
-pub fn Avatar(data: AvatarData) -> impl IntoView {
+pub fn Avatar(data: AvatarData, #[prop(optional)] tiny: bool) -> impl IntoView {
 	view! {
 		<figure class=format!(
-			"avata-status-{} {}",
+			"avata-status-{} {} {}",
 			data.status.to_string().replace(" ", "").to_lowercase(),
+			if tiny { css::tiny } else { "" },
 			css::avatar,
 		)>
 			<div>
