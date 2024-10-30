@@ -18,14 +18,14 @@ pub fn Login(redirect: impl Into<Cow<'static, str>>) -> impl IntoView {
 		<div>
 			<ActionForm action=login_action class=css::login_form>
 				<h1>Login</h1>
-				<input type="hidden" name="redirect" value=redirect />
+				<input type="hidden" name="redirect" value=redirect/>
 				<label class=css::label>
 					<span>User:</span>
-					<Input name="username" placeholder="Username" value=create_rw_signal(String::new()) />
+					<Input name="username" placeholder="Username" value=create_rw_signal(String::new())/>
 				</label>
 				<label class=css::label>
 					<span>Password:</span>
-					<Input name="password" placeholder="Password" value=create_rw_signal(String::new()) />
+					<Input name="password" placeholder="Password" value=create_rw_signal(String::new())/>
 				</label>
 				<div class=css::footer>
 					<Checkbox attr::name="remember">Remember me</Checkbox>
@@ -45,6 +45,7 @@ pub fn Login(redirect: impl Into<Cow<'static, str>>) -> impl IntoView {
 					view! {}.into_view()
 				}
 			}}
+
 		</div>
 	}
 }

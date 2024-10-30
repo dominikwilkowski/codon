@@ -19,29 +19,32 @@ stylance::import_style!(css, "equipment.module.css");
 #[component]
 pub fn Equipment() -> impl IntoView {
 	// let delete_equipment = create_server_action::<DeleteEquipment>();
-
 	let query = use_query_map();
-	let query_field = create_rw_signal(query.with(|p| p.get("field").cloned().unwrap_or(String::from("id"))));
-	let query_order = create_rw_signal(query.with(|p| p.get("order").cloned().unwrap_or(String::from("asc"))));
-	let query_page = create_rw_signal({
-		let page = query.with(|p| p.get("page").cloned().unwrap_or(String::from("1"))).parse::<u16>().unwrap_or(1);
-		if page > 0 {
-			page
-		} else {
-			1
-		}
-	});
-	let query_ipp = create_rw_signal({
-		let ipp =
-			query.with(|p| p.get("items_per_page").cloned().unwrap_or(String::from("25"))).parse::<u8>().unwrap_or(25);
-		if ipp > 0 {
-			ipp
-		} else {
-			1
-		}
-	});
-	let query_archived = create_rw_signal({
-		query.with(|p| p.get("archive").cloned().unwrap_or(String::from("false"))).parse::<bool>().unwrap_or(false)
+	
+	let query_field = create_rw_signal(String::from("id"));
+	let query_order = create_rw_signal(String::from("asc"));
+	let query_page = create_rw_signal(1_u16);
+	let query_ipp = create_rw_signal(25_u8);
+	let query_archived = create_rw_signal(false);
+
+	create_effect(move |_| {
+		//? the server does not have a router context (??), run on client side
+		let (qf_, qo_, qp_, qi_, qa_) = query.with(|pm| {
+			let f = pm.get("field").cloned().unwrap_or(String::from("id"));
+			let o = pm.get("order").cloned().unwrap_or(String::from("asc"));
+			let p = pm.get("page").cloned().unwrap_or(String::from("1")).parse::<u16>().unwrap_or(1);
+			let i = pm.get("items_per_page").cloned().unwrap_or(String::from("25")).parse::<u8>().unwrap_or(25);
+			let a = pm.get("archive").cloned().unwrap_or(String::from("false")).parse::<bool>().unwrap_or_default();
+
+			// TODO: check if p & i gt 0
+			(f, o, p, i, a)
+		});
+
+		query_field.set(qf_);
+		query_order.set(qo_);
+		query_page.set(qp_);
+		query_ipp.set(qi_);
+		query_archived.set(qa_);
 	});
 
 	let field_filter = create_rw_signal(vec![
@@ -64,12 +67,12 @@ pub fn Equipment() -> impl IntoView {
 
 	view! {
 		<Heading>
-			<EquipmentLogo />
+			<EquipmentLogo/>
 			" Equipment"
 		</Heading>
 		<Suspense fallback=move || view! { <p>Loading equipment...</p> }>
 			<ErrorBoundary fallback=|errors| {
-				view! { <ErrorTemplate errors /> }
+				view! { <ErrorTemplate errors/> }
 			}>
 				{move || {
 					view! {
@@ -78,7 +81,7 @@ pub fn Equipment() -> impl IntoView {
 							.map(move |data| match data {
 								Err(error) => {
 									if error.to_string().contains("User not authenticated") {
-										view! { <Login redirect="/equipment" /> }
+										view! { <Login redirect="/equipment"/> }
 									} else {
 										view! { <pre class="error">Server Error: {error.to_string()}</pre> }.into_view()
 									}
@@ -122,12 +125,13 @@ pub fn Equipment() -> impl IntoView {
 														);
 												}
 											>
+
 												All
 											</Button> <form action="/equipment" method="get" class=css::filter_switch>
-												<input type="hidden" name="field" value=query_field.get() />
-												<input type="hidden" name="order" value=query_order.get() />
-												<input type="hidden" name="page" value=query_page.get() />
-												<input type="hidden" name="items_per_page" value=query_ipp.get() />
+												<input type="hidden" name="field" value=query_field.get()/>
+												<input type="hidden" name="order" value=query_order.get()/>
+												<input type="hidden" name="page" value=query_page.get()/>
+												<input type="hidden" name="items_per_page" value=query_ipp.get()/>
 												<input
 													type="hidden"
 													name="archive"
@@ -140,7 +144,7 @@ pub fn Equipment() -> impl IntoView {
 														css::fake_switch,
 														query_archived.get().to_string(),
 													)>
-														<div />
+														<div></div>
 													</div>
 												</button>
 											</form>
@@ -156,7 +160,7 @@ pub fn Equipment() -> impl IntoView {
 															query_order
 															field_filter
 														>
-															<input type="hidden" name="page" value=query_page.get() />
+															<input type="hidden" name="page" value=query_page.get()/>
 															<input
 																type="hidden"
 																name="items_per_page"
@@ -180,8 +184,9 @@ pub fn Equipment() -> impl IntoView {
 														}
 															.into_view()
 													} else {
-														view! { <Row equipment field_filter /> }.into_view()
+														view! { <Row equipment field_filter/> }.into_view()
 													}}
+
 												</tbody>
 											</table>
 										</div>
@@ -201,6 +206,7 @@ pub fn Equipment() -> impl IntoView {
 							.unwrap_or_default()}
 					}
 				}}
+
 			</ErrorBoundary>
 		</Suspense>
 	}

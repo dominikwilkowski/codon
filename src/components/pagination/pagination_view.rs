@@ -19,7 +19,7 @@ pub fn PaginationPrev(
 	view! {
 		<form action=action method="get">
 			<FieldBuilder hidden_fields />
-			<input type="hidden" name=page_key value=if query_page.get() == 1 { 1 } else { query_page.get() - 1 } />
+			<input type="hidden" name=page_key value=move || if query_page.get() == 1 { 1 } else { query_page.get() - 1 } />
 			<input type="hidden" name=ipp_key value=move || query_ipp.get() />
 			<button type="submit" disabled=move || query_page.get() == 1 class=css::btn>
 				Previous
@@ -38,8 +38,7 @@ pub fn PaginationNext(
 	row_count: i64,
 	hidden_fields: Vec<(String, String)>,
 ) -> impl IntoView {
-	let max_pages = row_count as f64 / query_ipp.get() as f64;
-	let is_last_page = query_page.get() as f64 >= max_pages;
+	let is_last_page = move || query_page.get() as f64 >= (row_count as f64 / query_ipp.get() as f64);
 
 	view! {
 		<form action=action method="get">
@@ -47,10 +46,10 @@ pub fn PaginationNext(
 			<input
 				type="hidden"
 				name=page_key
-				value=move || { if !is_last_page { query_page.get() + 1 } else { query_page.get() } }
+				value=move || { if !is_last_page() { query_page.get() + 1 } else { query_page.get() } }
 			/>
 			<input type="hidden" name=ipp_key value=move || query_ipp.get() />
-			<button type="submit" disabled=move || is_last_page class=css::btn>
+			<button type="submit" disabled=move || is_last_page() class=css::btn>
 				Next
 			</button>
 		</form>
@@ -67,11 +66,26 @@ pub fn ItemsPerPage(
 	row_count: i64,
 	hidden_fields: Vec<(String, String)>,
 ) -> impl IntoView {
-	let mut to = query_page.get() as i64 * query_ipp.get() as i64;
-	let from = to - query_ipp.get() as i64;
-	if to > row_count {
-		to = row_count;
-	}
+	let to = create_rw_signal(0_i64);
+	let from = create_rw_signal(0_i64);
+	let (row_count, _) = create_signal(row_count);
+
+	create_effect(move |_| {
+		let right = query_page.get();
+		let left = query_ipp.get();
+		// i64 is greather than u16 and u8, so it's safe
+		let left_i64 = i64::from(left);
+		let to_ = i64::from(right) * left_i64;
+		let from_ = to_ * left_i64;
+		
+		let value = row_count.get();
+		if to_ > value {
+			to.set(value);
+		}
+
+		from.set(from_);
+	});
+	
 
 	view! {
 		<form action=action method="get" class=css::ipp_form>
@@ -106,13 +120,21 @@ pub fn Pages(
 	row_count: i64,
 	hidden_fields: Vec<(String, String)>,
 ) -> impl IntoView {
-	let ipp = query_ipp.get() as i64;
-	let pages = (row_count + ipp - 1) / ipp;
+	let pages = create_rw_signal(1_i64);
+
+	create_effect(move |_| {
+		let right = query_ipp.get();
+		let ipp = i64::from(right);
+		let pages_ = (row_count + ipp - 1) / ipp;
+
+		pages.set(pages_);
+	});
+
+	let get_page_range = move || get_page_range(pages.get() as i64, query_page.get() as i64);
 
 	view! {
 		<div class=css::pages>
-			{get_page_range(pages, query_page.get() as i64)
-				.map(move |page| {
+			{move || get_page_range().map(|page| {
 					view! {
 						<form
 							action=action.clone()
@@ -120,7 +142,7 @@ pub fn Pages(
 							class=if page == query_page.get() as i64 { "is_current" } else { "" }
 						>
 							<FieldBuilder hidden_fields=hidden_fields.clone() />
-							<input type="hidden" name=ipp_key value=move || query_ipp.get() />
+							<input type="hidden" name=ipp_key value=query_ipp.get() />
 							<input type="hidden" name=page_key value=page />
 							<button type="submit" class=format!("{} input_shadow", css::btn)>
 								{page}

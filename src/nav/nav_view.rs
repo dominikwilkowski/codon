@@ -34,7 +34,7 @@ pub fn Nav() -> impl IntoView {
 								None => view! { <A href="/login">"Login"</A> }.into_view(),
 								Some(user) => {
 									view! {
-										<Avatar data=user.into() tiny=true />
+										<Avatar data=user.into() tiny=true/>
 										<ActionForm action=logout_action>
 											<button type="submit" class="button">
 												"Log Out"
@@ -45,6 +45,7 @@ pub fn Nav() -> impl IntoView {
 								}
 							}
 						}}
+
 					</Suspense>
 				</li>
 			</ul>

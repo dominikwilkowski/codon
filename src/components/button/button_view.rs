@@ -23,22 +23,24 @@ pub fn Button(
 	#[prop(optional, into)] on_click: Option<Callback<ev::MouseEvent>>,
 	children: Children,
 ) -> impl IntoView {
-	let mut class = vec![css::btn.to_string()];
+	let class = create_rw_signal(vec![css::btn.to_string()]);
 
 	match variant {
 		ButtonVariant::Default => {},
-		ButtonVariant::Outlined => class.push(css::outlined.to_string()),
-		ButtonVariant::Text => class.push(css::text.to_string()),
+		ButtonVariant::Outlined => class.update(|c| c.push(css::outlined.to_string())),
+		ButtonVariant::Text => class.update(|c| c.push(css::text.to_string())),
 	};
 
-	if loading.get() {
-		class.push(css::loading.to_string())
-	}
+	create_effect(move |_| {
+		if loading.get() {
+			class.update(|c| c.push(css::loading.to_string()));
+		}
+	});
 
 	view! {
 		<button
 			type=kind
-			class=class.join(" ")
+			class=move || class.get().join(" ")
 			disabled=move || disabled.get()
 			name=name
 			value=value
