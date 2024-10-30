@@ -25,10 +25,7 @@ use web_sys::{FormData, SubmitEvent};
 
 stylance::import_style!(css, "equipment_details.module.css");
 
-pub type LogAction = Resource<
-	(String, usize, usize, usize, usize, usize, usize, usize, usize, usize, usize),
-	Result<(Vec<EquipmentLogData>, i64), ServerFnError>,
->;
+pub type LogAction = Resource<(String, usize), Result<(Vec<EquipmentLogData>, i64), ServerFnError>>;
 
 #[component]
 pub fn EquipmentDetail() -> impl IntoView {
@@ -84,6 +81,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 	let go_to_listing = create_rw_signal(false);
 	let id = create_rw_signal(params.with(|p| p.get("id").cloned().unwrap_or_default()));
+	let refetch_resources = create_rw_signal(0);
 
 	create_effect(move |_| {
 		if id.get().is_empty() || go_to_listing.get() {
@@ -106,41 +104,12 @@ pub fn EquipmentDetail() -> impl IntoView {
 	let notes_action = create_server_action::<EditNotes>();
 
 	let equipment_data = create_resource(
-		move || {
-			(
-				login_action.version().get(),
-				id.get(),
-				name_action.version().get(),
-				equipment_type_action.version().get(),
-				status_action.version().get(),
-				manufacturer_action.version().get(),
-				purchase_date_action.version().get(),
-				vendor_action.version().get(),
-				cost_in_cent_action.version().get(),
-				warranty_expiration_date_action.version().get(),
-				location_action.version().get(),
-				notes_action.version().get(),
-			)
-		},
+		move || (login_action.version().get(), id.get(), refetch_resources.get()),
 		move |_| get_equipment_data_by_id(id.get()),
 	);
 
 	let log_data: LogAction = create_resource(
-		move || {
-			(
-				id.get(),
-				name_action.version().get(),
-				equipment_type_action.version().get(),
-				status_action.version().get(),
-				manufacturer_action.version().get(),
-				purchase_date_action.version().get(),
-				vendor_action.version().get(),
-				cost_in_cent_action.version().get(),
-				warranty_expiration_date_action.version().get(),
-				location_action.version().get(),
-				notes_action.version().get(),
-			)
-		},
+		move || (id.get(), refetch_resources.get()),
 		move |_| get_log_for_equipment(id.get(), log_query_page.get(), log_query_ipp.get()),
 	);
 
@@ -202,26 +171,33 @@ pub fn EquipmentDetail() -> impl IntoView {
 																			name="note"
 																			placeholder="Add a note why you made this change"
 																		/>
-																		<Button kind="submit">Save</Button>
-																		{move || {
-																			if let Some(responds) = name_action.value().get() {
-																				match responds {
-																					Ok(_) => view! {}.into_view(),
-																					Err(error) => {
-																						view! {
-																							<span>
-																								{error
-																									.to_string()
-																									.replace("Error running server function: ", "")}
-																							</span>
+																		<div class=css::btns>
+																			{move || {
+																				if let Some(responds) = name_action.value().get() {
+																					match responds {
+																						Ok(_) => {
+																							refetch_resources.update(|version| *version += 1);
+																							view! {}.into_view()
 																						}
-																							.into_view()
+																						Err(error) => {
+																							view! {
+																								<span>
+																									{error
+																										.to_string()
+																										.replace(
+																											"error reaching server to call server function: ",
+																											"",
+																										)}
+																								</span>
+																							}
+																								.into_view()
+																						}
 																					}
+																				} else {
+																					view! {}.into_view()
 																				}
-																			} else {
-																				view! {}.into_view()
-																			}
-																		}}
+																			}} <Button kind="submit">Save</Button>
+																		</div>
 																	</ActionForm>
 																}
 															}
@@ -263,7 +239,34 @@ pub fn EquipmentDetail() -> impl IntoView {
 																			name="note"
 																			placeholder="Add a note why you made this change"
 																		/>
-																		<Button kind="submit">Save</Button>
+																		<div class=css::btns>
+																			{move || {
+																				if let Some(responds) = equipment_type_action.value().get()
+																				{
+																					match responds {
+																						Ok(_) => {
+																							refetch_resources.update(|version| *version += 1);
+																							view! {}.into_view()
+																						}
+																						Err(error) => {
+																							view! {
+																								<span>
+																									{error
+																										.to_string()
+																										.replace(
+																											"error reaching server to call server function: ",
+																											"",
+																										)}
+																								</span>
+																							}
+																								.into_view()
+																						}
+																					}
+																				} else {
+																					view! {}.into_view()
+																				}
+																			}} <Button kind="submit">Save</Button>
+																		</div>
 																	</ActionForm>
 																}
 															}
@@ -316,6 +319,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 																		enctype="multipart/form-data"
 																		on:submit=move |event: SubmitEvent| {
 																			event.prevent_default();
+																			loading.set(true);
 																			let form = form_ref.get().unwrap();
 																			let form_data = match FormData::new_with_form(&form) {
 																				Ok(fd) => fd,
@@ -372,25 +376,29 @@ pub fn EquipmentDetail() -> impl IntoView {
 																		<div class=css::btns>
 																			<span>
 																				{move || {
-																					if status_action.input().get().is_none()
-																						&& status_action.value().get().is_none()
-																					{
-																						view! {}.into_view()
-																					} else if status_action.pending().get() {
-																						loading.set(true);
-																						view! {}.into_view()
-																					} else if let Some(Ok(_)) = status_action.value().get() {
+																					if let Some(responds) = status_action.value().get() {
 																						loading.set(false);
-																						view! { <span class=css::success>Saved successfully</span> }
-																							.into_view()
-																					} else {
-																						loading.set(false);
-																						view! {
-																							<span>
-																								{format!("Error: {:?}", status_action.value().get())}
-																							</span>
+																						match responds {
+																							Ok(_) => {
+																								refetch_resources.update(|version| *version += 1);
+																								view! {}.into_view()
+																							}
+																							Err(error) => {
+																								view! {
+																									<span>
+																										{error
+																											.to_string()
+																											.replace(
+																												"error reaching server to call server function: ",
+																												"",
+																											)}
+																									</span>
+																								}
+																									.into_view()
+																							}
 																						}
-																							.into_view()
+																					} else {
+																						view! {}.into_view()
 																					}
 																				}}
 																			</span>
@@ -461,7 +469,33 @@ pub fn EquipmentDetail() -> impl IntoView {
 																			name="note"
 																			placeholder="Add a note why you made this change"
 																		/>
-																		<Button kind="submit">Save</Button>
+																		<div class=css::btns>
+																			{move || {
+																				if let Some(responds) = manufacturer_action.value().get() {
+																					match responds {
+																						Ok(_) => {
+																							refetch_resources.update(|version| *version += 1);
+																							view! {}.into_view()
+																						}
+																						Err(error) => {
+																							view! {
+																								<span>
+																									{error
+																										.to_string()
+																										.replace(
+																											"error reaching server to call server function: ",
+																											"",
+																										)}
+																								</span>
+																							}
+																								.into_view()
+																						}
+																					}
+																				} else {
+																					view! {}.into_view()
+																				}
+																			}} <Button kind="submit">Save</Button>
+																		</div>
 																	</ActionForm>
 																}
 															}
@@ -495,7 +529,33 @@ pub fn EquipmentDetail() -> impl IntoView {
 																			name="note"
 																			placeholder="Add a note why you made this change"
 																		/>
-																		<Button kind="submit">Save</Button>
+																		<div class=css::btns>
+																			{move || {
+																				if let Some(responds) = purchase_date_action.value().get() {
+																					match responds {
+																						Ok(_) => {
+																							refetch_resources.update(|version| *version += 1);
+																							view! {}.into_view()
+																						}
+																						Err(error) => {
+																							view! {
+																								<span>
+																									{error
+																										.to_string()
+																										.replace(
+																											"error reaching server to call server function: ",
+																											"",
+																										)}
+																								</span>
+																							}
+																								.into_view()
+																						}
+																					}
+																				} else {
+																					view! {}.into_view()
+																				}
+																			}} <Button kind="submit">Save</Button>
+																		</div>
 																	</ActionForm>
 																}
 															}
@@ -523,7 +583,33 @@ pub fn EquipmentDetail() -> impl IntoView {
 																			name="note"
 																			placeholder="Add a note why you made this change"
 																		/>
-																		<Button kind="submit">Save</Button>
+																		<div class=css::btns>
+																			{move || {
+																				if let Some(responds) = vendor_action.value().get() {
+																					match responds {
+																						Ok(_) => {
+																							refetch_resources.update(|version| *version += 1);
+																							view! {}.into_view()
+																						}
+																						Err(error) => {
+																							view! {
+																								<span>
+																									{error
+																										.to_string()
+																										.replace(
+																											"error reaching server to call server function: ",
+																											"",
+																										)}
+																								</span>
+																							}
+																								.into_view()
+																						}
+																					}
+																				} else {
+																					view! {}.into_view()
+																				}
+																			}} <Button kind="submit">Save</Button>
+																		</div>
 																	</ActionForm>
 																}
 															}
@@ -553,7 +639,33 @@ pub fn EquipmentDetail() -> impl IntoView {
 																			name="note"
 																			placeholder="Add a note why you made this change"
 																		/>
-																		<Button kind="submit">Save</Button>
+																		<div class=css::btns>
+																			{move || {
+																				if let Some(responds) = cost_in_cent_action.value().get() {
+																					match responds {
+																						Ok(_) => {
+																							refetch_resources.update(|version| *version += 1);
+																							view! {}.into_view()
+																						}
+																						Err(error) => {
+																							view! {
+																								<span>
+																									{error
+																										.to_string()
+																										.replace(
+																											"error reaching server to call server function: ",
+																											"",
+																										)}
+																								</span>
+																							}
+																								.into_view()
+																						}
+																					}
+																				} else {
+																					view! {}.into_view()
+																				}
+																			}} <Button kind="submit">Save</Button>
+																		</div>
 																	</ActionForm>
 																}
 															}
@@ -592,7 +704,36 @@ pub fn EquipmentDetail() -> impl IntoView {
 																			name="note"
 																			placeholder="Add a note why you made this change"
 																		/>
-																		<Button kind="submit">Save</Button>
+																		<div class=css::btns>
+																			{move || {
+																				if let Some(responds) = warranty_expiration_date_action
+																					.value()
+																					.get()
+																				{
+																					match responds {
+																						Ok(_) => {
+																							refetch_resources.update(|version| *version += 1);
+																							view! {}.into_view()
+																						}
+																						Err(error) => {
+																							view! {
+																								<span>
+																									{error
+																										.to_string()
+																										.replace(
+																											"error reaching server to call server function: ",
+																											"",
+																										)}
+																								</span>
+																							}
+																								.into_view()
+																						}
+																					}
+																				} else {
+																					view! {}.into_view()
+																				}
+																			}} <Button kind="submit">Save</Button>
+																		</div>
 																	</ActionForm>
 																}
 															}
@@ -620,7 +761,33 @@ pub fn EquipmentDetail() -> impl IntoView {
 																			name="note"
 																			placeholder="Add a note why you made this change"
 																		/>
-																		<Button kind="submit">Save</Button>
+																		<div class=css::btns>
+																			{move || {
+																				if let Some(responds) = location_action.value().get() {
+																					match responds {
+																						Ok(_) => {
+																							refetch_resources.update(|version| *version += 1);
+																							view! {}.into_view()
+																						}
+																						Err(error) => {
+																							view! {
+																								<span>
+																									{error
+																										.to_string()
+																										.replace(
+																											"error reaching server to call server function: ",
+																											"",
+																										)}
+																								</span>
+																							}
+																								.into_view()
+																						}
+																					}
+																				} else {
+																					view! {}.into_view()
+																				}
+																			}} <Button kind="submit">Save</Button>
+																		</div>
 																	</ActionForm>
 																}
 															}
@@ -651,7 +818,33 @@ pub fn EquipmentDetail() -> impl IntoView {
 																			name="note"
 																			placeholder="Add a note why you made this change"
 																		/>
-																		<Button kind="submit">Save</Button>
+																		<div class=css::btns>
+																			{move || {
+																				if let Some(responds) = notes_action.value().get() {
+																					match responds {
+																						Ok(_) => {
+																							refetch_resources.update(|version| *version += 1);
+																							view! {}.into_view()
+																						}
+																						Err(error) => {
+																							view! {
+																								<span>
+																									{error
+																										.to_string()
+																										.replace(
+																											"error reaching server to call server function: ",
+																											"",
+																										)}
+																								</span>
+																							}
+																								.into_view()
+																						}
+																					}
+																				} else {
+																					view! {}.into_view()
+																				}
+																			}} <Button kind="submit">Save</Button>
+																		</div>
 																	</ActionForm>
 																}
 															}
@@ -795,23 +988,6 @@ pub fn EquipmentFormToggle<T: EquipmentCellView + Clone + 'static>(
 	children: ChildrenFn,
 ) -> impl IntoView {
 	let toggle = create_rw_signal(false);
-
-	// TODO: toggel only when request was successful and enable loading while waiting
-
-	// TODO: add error message
-	// {move || {
-	// 	if let Some(responds) = name_action.value().get() {
-	// 		match responds {
-	// 			Ok(_) => view! {}.into_view(),
-	// 			Err(error) => {
-	// 				view! { <span>{error.to_string().replace("Error running server function: ", "")}</span> }
-	// 					.into_view()
-	// 			}
-	// 		}
-	// 	} else {
-	// 		view! {}.into_view()
-	// 	}
-	// }}
 
 	view! {
 		<Show when=move || toggle.get() fallback=move || view! { <EquipmentCell cell=item.clone() /> }>
