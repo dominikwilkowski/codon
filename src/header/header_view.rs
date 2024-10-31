@@ -10,10 +10,10 @@ pub fn Header() -> impl IntoView {
 	view! {
 		<header class=css::header>
 			<A href="/" class=css::logo_wrapper>
-				<Logo />
+				<Logo/>
 				<span class=css::logo_word>Codon</span>
 			</A>
-			<Nav />
+			<Nav/>
 		</header>
 	}
 }

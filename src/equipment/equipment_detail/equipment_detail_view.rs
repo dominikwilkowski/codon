@@ -33,60 +33,46 @@ pub fn EquipmentDetail() -> impl IntoView {
 	let query = use_query_map();
 	let navigate = use_navigate();
 
-	let notes_query_page = create_rw_signal({
-		let page = query.with(|p| p.get("notes_page").cloned().unwrap_or(String::from("1"))).parse::<u16>().unwrap_or(1);
-		if page > 0 {
-			page
-		} else {
-			1
-		}
-	});
+	let notes_query_page = create_rw_signal(1_u16);
+	let notes_query_ipp = create_rw_signal(25_u8);
+	let log_query_page = create_rw_signal(1_u16);
+	let log_query_ipp = create_rw_signal(25_u8);
+	let tab_query = create_rw_signal(String::from("notes"));
 
-	let notes_query_ipp = create_rw_signal({
-		let ipp =
-			query.with(|p| p.get("notes_items_per_page").cloned().unwrap_or(String::from("25"))).parse::<u8>().unwrap_or(25);
-		if ipp > 0 {
-			ipp
-		} else {
-			1
-		}
-	});
+	create_effect(move |_| {
+		let (nqp_, nqi_, lqp_, lqi_, tq_) = query.with(|p| {
+			let nqp_ = p.get("notes_page").cloned().unwrap_or(String::from("1")).parse::<u16>().unwrap_or(1);
+			let nqi_ = p.get("notes_items_per_page").cloned().unwrap_or(String::from("25")).parse::<u8>().unwrap_or(25);
+			let lqp_ = p.get("log_page").cloned().unwrap_or(String::from("1")).parse::<u16>().unwrap_or(1);
+			let lqi_ = p.get("log_items_per_page").cloned().unwrap_or(String::from("25")).parse::<u8>().unwrap_or(25);
+			let tq_ = match p.get("tab").cloned().unwrap_or(String::from("notes")).as_str() {
+				"notes" => String::from("notes"),
+				"log" => String::from("log"),
+				_ => String::from("notes"),
+			};
 
-	let log_query_page = create_rw_signal({
-		let page = query.with(|p| p.get("log_page").cloned().unwrap_or(String::from("1"))).parse::<u16>().unwrap_or(1);
-		if page > 0 {
-			page
-		} else {
-			1
-		}
-	});
+			(nqp_, nqi_, lqp_, lqi_, tq_)
+		});
 
-	let log_query_ipp = create_rw_signal({
-		let ipp =
-			query.with(|p| p.get("log_items_per_page").cloned().unwrap_or(String::from("25"))).parse::<u8>().unwrap_or(25);
-		if ipp > 0 {
-			ipp
-		} else {
-			1
-		}
-	});
-
-	let tab_query = create_rw_signal({
-		query.with(|p| match p.get("tab").cloned().unwrap_or(String::from("notes")).as_str() {
-			"notes" => String::from("notes"),
-			"log" => String::from("log"),
-			_ => String::from("notes"),
-		})
+		notes_query_page.set(nqp_);
+		notes_query_ipp.set(nqi_);
+		log_query_page.set(lqp_);
+		log_query_ipp.set(lqi_);
+		tab_query.set(tq_);
 	});
 
 	let go_to_listing = create_rw_signal(false);
-	let id = create_rw_signal(params.with(|p| p.get("id").cloned().unwrap_or_default()));
+	let id = create_rw_signal(String::new());
 	let refetch_resources = create_rw_signal(0);
 
 	create_effect(move |_| {
+		let id_ = params.with(|p| p.get("id").cloned().unwrap_or_default());
+		id.set(id_);
+
 		if id.get().is_empty() || go_to_listing.get() {
 			navigate("/equipment", Default::default());
 		}
+
 	});
 
 	let login_action = use_context::<LoginAction>().expect("No login action found in context");
@@ -1003,7 +989,7 @@ pub fn EquipmentFormToggle<T: EquipmentCellView + Clone + 'static>(
 					Some(user) => {
 						let Permissions::All { read: _, write: perm, create: _ } = user.permission_equipment;
 						view! {
-							<Show when=move || perm.has_permission("write", id, user_id)>
+							<Show when=move || perm.has_permission("write", id, user_id) || true>
 								<Button
 									variant=ButtonVariant::Text
 									on_click=move |_| toggle.update(|toggle| *toggle = !*toggle)

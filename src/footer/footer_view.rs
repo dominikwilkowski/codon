@@ -29,7 +29,7 @@ pub fn Footer() -> impl IntoView {
 			</div>
 
 			<div class=css::footer_logo>
-				<Logo />
+				<Logo/>
 			</div>
 		</footer>
 	}

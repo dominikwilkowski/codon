@@ -63,18 +63,21 @@ pub fn App() -> impl IntoView {
 
 	let user_signal: UserSignal = create_rw_signal(None);
 	let user = create_resource(move || (login.version().get(), logout.version().get()), move |_| get_user());
-	create_effect(move |_| match user.get() {
-		Some(Ok(Some(user))) => user_signal.set(Some(user)),
-		_ => user_signal.set(None),
+	create_effect(move |_| {
+		match user.get() {
+			Some(Ok(Some(user))) => user_signal.set(Some(user)),
+			_ => user_signal.set(None),
+		};
 	});
+
 	provide_context::<UserSignal>(user_signal);
 
 	view! {
-		<Body class=move || { if is_body_scrollable.get() { "" } else { "not_scrollable" } } />
-		<Stylesheet id="leptos" href="/pkg/codon.css" />
-		<Link rel="preload" as_="font" type_="font/woff2" href="/noto_sans_mono_latin.woff2" crossorigin="" />
-		<Link rel="preload" as_="font" type_="font/woff2" href="/noto_sans_mono_latin_ext.woff2" crossorigin="" />
-		<Title text="Welcome to Codon" />
+		<Body class=move || { if is_body_scrollable.get() { "" } else { "not_scrollable" } }/>
+		<Stylesheet id="leptos" href="/pkg/codon.css"/>
+		<Link rel="preload" as_="font" type_="font/woff2" href="/noto_sans_mono_latin.woff2" crossorigin=""/>
+		<Link rel="preload" as_="font" type_="font/woff2" href="/noto_sans_mono_latin_ext.woff2" crossorigin=""/>
+		<Title text="Welcome to Codon"/>
 
 		<ThemeProvider theme>
 			<MessageProvider>
@@ -83,23 +86,24 @@ pub fn App() -> impl IntoView {
 					fallback=|| {
 						let mut outside_errors = Errors::default();
 						outside_errors.insert_with_default_key(AppError::NotFound);
-						view! { <ErrorTemplate outside_errors /> }.into_view()
+						view! { <ErrorTemplate outside_errors/> }.into_view()
 					}
 				>
-					<Header />
+
+					<Header/>
 					<main class=format!("{} frame", css::main)>
 						<Routes>
-							<Route path="" view=Home />
-							<Route path="/ds" view=Ds />
-							<Route path="/login" view=move || view! { <Login redirect="/" /> } />
-							<Route path="/samples" view=Samples />
-							<Route path="/equipment" view=Equipment />
-							<Route path="/equipment/add" view=EquipmentAdd />
-							<Route path="/equipment/:id" view=EquipmentDetail />
+							<Route path="" view=Home/>
+							<Route path="/ds" view=Ds/>
+							<Route path="/login" view=move || view! { <Login redirect="/"/> }/>
+							<Route path="/samples" view=Samples/>
+							<Route path="/equipment" view=Equipment/>
+							<Route path="/equipment/add" view=EquipmentAdd/>
+							<Route path="/equipment/:id" view=EquipmentDetail/>
 						</Routes>
 					</main>
 				</Router>
-				<Footer />
+				<Footer/>
 			</MessageProvider>
 		</ThemeProvider>
 	}
