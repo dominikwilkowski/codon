@@ -19,7 +19,11 @@ pub fn PaginationPrev(
 	view! {
 		<form action=action method="get">
 			<FieldBuilder hidden_fields />
-			<input type="hidden" name=page_key value=move || if query_page.get() == 1 { 1 } else { query_page.get() - 1 } />
+			<input
+				type="hidden"
+				name=page_key
+				value=move || if query_page.get() == 1 { 1 } else { query_page.get() - 1 }
+			/>
 			<input type="hidden" name=ipp_key value=move || query_ipp.get() />
 			<button type="submit" disabled=move || query_page.get() == 1 class=css::btn>
 				Previous
@@ -77,7 +81,7 @@ pub fn ItemsPerPage(
 		let left_i64 = i64::from(left);
 		let to_ = i64::from(right) * left_i64;
 		let from_ = to_ * left_i64;
-		
+
 		let value = row_count.get();
 		if to_ > value {
 			to.set(value);
@@ -85,7 +89,6 @@ pub fn ItemsPerPage(
 
 		from.set(from_);
 	});
-	
 
 	view! {
 		<form action=action method="get" class=css::ipp_form>
@@ -134,23 +137,26 @@ pub fn Pages(
 
 	view! {
 		<div class=css::pages>
-			{move || get_page_range().map(|page| {
-					view! {
-						<form
-							action=action.clone()
-							method="get"
-							class=if page == query_page.get() as i64 { "is_current" } else { "" }
-						>
-							<FieldBuilder hidden_fields=hidden_fields.clone() />
-							<input type="hidden" name=ipp_key value=query_ipp.get() />
-							<input type="hidden" name=page_key value=page />
-							<button type="submit" class=format!("{} input_shadow", css::btn)>
-								{page}
-							</button>
-						</form>
-					}
-				})
-				.collect_view()}
+			{move || {
+				get_page_range()
+					.map(|page| {
+						view! {
+							<form
+								action=action.clone()
+								method="get"
+								class=if page == query_page.get() as i64 { "is_current" } else { "" }
+							>
+								<FieldBuilder hidden_fields=hidden_fields.clone() />
+								<input type="hidden" name=ipp_key value=query_ipp.get() />
+								<input type="hidden" name=page_key value=page />
+								<button type="submit" class=format!("{} input_shadow", css::btn)>
+									{page}
+								</button>
+							</form>
+						}
+					})
+					.collect_view()
+			}}
 		</div>
 	}
 }

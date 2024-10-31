@@ -32,6 +32,3 @@ style/bundle.css
 # uploads
 public/upload_media/*
 !upload_media/.keep
-
-# branch remove-warning-log
-migrations/20241029172000_init.sql

@@ -31,26 +31,26 @@ pub fn Ds() -> impl IntoView {
 		<section class=css::section>
 			<h2>Logos</h2>
 			<div class=css::grid>
-				<CultureLogo/>
-				<FlaskLogo/>
-				<IncubationCabinetLogo/>
-				<VesselLogo/>
-				<EquipmentLogo/>
-				<ExperimentLogo/>
-				<PeopleLogo/>
+				<CultureLogo />
+				<FlaskLogo />
+				<IncubationCabinetLogo />
+				<VesselLogo />
+				<EquipmentLogo />
+				<ExperimentLogo />
+				<PeopleLogo />
 			</div>
 		</section>
 
 		<section class=css::section>
 			<h2>Icons</h2>
 			<div class=css::grid>
-				<Culture/>
-				<Flask/>
-				<IncubationCabinet/>
-				<Vessel/>
-				<Equipment/>
-				<Experiment/>
-				<People/>
+				<Culture />
+				<Flask />
+				<IncubationCabinet />
+				<Vessel />
+				<Equipment />
+				<Experiment />
+				<People />
 			</div>
 		</section>
 
@@ -74,32 +74,32 @@ pub fn Ds() -> impl IntoView {
 		<section class=css::section>
 			<h2>Text Inputs</h2>
 			<div class=css::stack_inline>
-				<Input placeholder="Text input" value=create_rw_signal(String::from(""))/>
-				<Input value=create_rw_signal(String::from("Text input"))/>
+				<Input placeholder="Text input" value=create_rw_signal(String::from("")) />
+				<Input value=create_rw_signal(String::from("Text input")) />
 				<Input
 					placeholder="Text input"
 					value=create_rw_signal(String::from(""))
 					disabled=create_rw_signal(true)
 				/>
-				<Input value=create_rw_signal(String::from("Text input")) disabled=create_rw_signal(true)/>
+				<Input value=create_rw_signal(String::from("Text input")) disabled=create_rw_signal(true) />
 			</div>
 		</section>
 
 		<section class=css::section>
 			<h2>Money Inputs</h2>
 			<div class=css::stack_inline>
-				<MoneyInput value=create_rw_signal(String::from(""))/>
-				<MoneyInput value=create_rw_signal(String::from("1234.56"))/>
-				<MoneyInput value=create_rw_signal(String::from("")) disabled=create_rw_signal(true)/>
-				<MoneyInput value=create_rw_signal(String::from("1234.56")) disabled=create_rw_signal(true)/>
+				<MoneyInput value=create_rw_signal(String::from("")) />
+				<MoneyInput value=create_rw_signal(String::from("1234.56")) />
+				<MoneyInput value=create_rw_signal(String::from("")) disabled=create_rw_signal(true) />
+				<MoneyInput value=create_rw_signal(String::from("1234.56")) disabled=create_rw_signal(true) />
 			</div>
 		</section>
 
 		<section class=css::section>
 			<h2>Multiline Inputs</h2>
 			<div class=css::stack_inline>
-				<TextArea value=create_rw_signal(String::from("")) placeholder="Textarea"/>
-				<TextArea value=create_rw_signal(String::from("Multiline Input")) placeholder="Textarea"/>
+				<TextArea value=create_rw_signal(String::from("")) placeholder="Textarea" />
+				<TextArea value=create_rw_signal(String::from("Multiline Input")) placeholder="Textarea" />
 				<TextArea
 					value=create_rw_signal(String::from(""))
 					placeholder="Textarea"
@@ -241,7 +241,7 @@ pub fn Ds() -> impl IntoView {
 		<section class=css::section>
 			<h2>FileInput</h2>
 			<div class=css::stack_inline>
-				<FileInput name="media1" value=create_rw_signal(String::new())/>
+				<FileInput name="media1" value=create_rw_signal(String::new()) />
 			</div>
 		</section>
 
@@ -289,14 +289,14 @@ pub fn Ds() -> impl IntoView {
 		<section class=css::section>
 			<h2>Datepicker</h2>
 			<div class=css::stack_inline>
-				<DatePicker value=create_rw_signal(Some(Local::now().date_naive()))/>
+				<DatePicker value=create_rw_signal(Some(Local::now().date_naive())) />
 			</div>
 		</section>
 
 		<section class=css::section>
 			<h2>Switch</h2>
 			<div class=css::stack_inline>
-				<Switch value=create_rw_signal(false)/>
+				<Switch value=create_rw_signal(false) />
 			</div>
 		</section>
 
@@ -306,9 +306,9 @@ pub fn Ds() -> impl IntoView {
 				<CheckboxGroup value=create_rw_signal(
 					vec![String::from("b")].into_iter().collect::<std::collections::HashSet<String>>(),
 				)>
-					<CheckboxItem label="Option A" key=String::from("a")/>
-					<CheckboxItem label="Option B" key=String::from("b")/>
-					<CheckboxItem label="Option C" key=String::from("c")/>
+					<CheckboxItem label="Option A" key=String::from("a") />
+					<CheckboxItem label="Option B" key=String::from("b") />
+					<CheckboxItem label="Option C" key=String::from("c") />
 				</CheckboxGroup>
 			</div>
 
@@ -338,9 +338,9 @@ pub fn Ds() -> impl IntoView {
 					<DropdownTrigger slot>
 						<Button variant=ButtonVariant::Outlined>"Click"</Button>
 					</DropdownTrigger>
-					<DropdownItem key="foo" label="Option A"/>
-					<DropdownItem key="bar" label="Option B"/>
-					<DropdownItem key="disabled" disabled=true label="Option C"/>
+					<DropdownItem key="foo" label="Option A" />
+					<DropdownItem key="bar" label="Option B" />
+					<DropdownItem key="disabled" disabled=true label="Option C" />
 				</Dropdown>
 			</div>
 		</section>

@@ -20,7 +20,7 @@ stylance::import_style!(css, "equipment.module.css");
 pub fn Equipment() -> impl IntoView {
 	// let delete_equipment = create_server_action::<DeleteEquipment>();
 	let query = use_query_map();
-	
+
 	let query_field = create_rw_signal(String::from("id"));
 	let query_order = create_rw_signal(String::from("asc"));
 	let query_page = create_rw_signal(1_u16);
@@ -67,12 +67,12 @@ pub fn Equipment() -> impl IntoView {
 
 	view! {
 		<Heading>
-			<EquipmentLogo/>
+			<EquipmentLogo />
 			" Equipment"
 		</Heading>
 		<Suspense fallback=move || view! { <p>Loading equipment...</p> }>
 			<ErrorBoundary fallback=|errors| {
-				view! { <ErrorTemplate errors/> }
+				view! { <ErrorTemplate errors /> }
 			}>
 				{move || {
 					view! {
@@ -81,7 +81,7 @@ pub fn Equipment() -> impl IntoView {
 							.map(move |data| match data {
 								Err(error) => {
 									if error.to_string().contains("User not authenticated") {
-										view! { <Login redirect="/equipment"/> }
+										view! { <Login redirect="/equipment" /> }
 									} else {
 										view! { <pre class="error">Server Error: {error.to_string()}</pre> }.into_view()
 									}
@@ -128,10 +128,10 @@ pub fn Equipment() -> impl IntoView {
 
 												All
 											</Button> <form action="/equipment" method="get" class=css::filter_switch>
-												<input type="hidden" name="field" value=query_field.get()/>
-												<input type="hidden" name="order" value=query_order.get()/>
-												<input type="hidden" name="page" value=query_page.get()/>
-												<input type="hidden" name="items_per_page" value=query_ipp.get()/>
+												<input type="hidden" name="field" value=query_field.get() />
+												<input type="hidden" name="order" value=query_order.get() />
+												<input type="hidden" name="page" value=query_page.get() />
+												<input type="hidden" name="items_per_page" value=query_ipp.get() />
 												<input
 													type="hidden"
 													name="archive"
@@ -160,7 +160,7 @@ pub fn Equipment() -> impl IntoView {
 															query_order
 															field_filter
 														>
-															<input type="hidden" name="page" value=query_page.get()/>
+															<input type="hidden" name="page" value=query_page.get() />
 															<input
 																type="hidden"
 																name="items_per_page"
@@ -184,7 +184,7 @@ pub fn Equipment() -> impl IntoView {
 														}
 															.into_view()
 													} else {
-														view! { <Row equipment field_filter/> }.into_view()
+														view! { <Row equipment field_filter /> }.into_view()
 													}}
 
 												</tbody>

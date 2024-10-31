@@ -72,7 +72,6 @@ pub fn EquipmentDetail() -> impl IntoView {
 		if id.get().is_empty() || go_to_listing.get() {
 			navigate("/equipment", Default::default());
 		}
-
 	});
 
 	let login_action = use_context::<LoginAction>().expect("No login action found in context");
