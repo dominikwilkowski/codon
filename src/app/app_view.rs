@@ -69,7 +69,6 @@ pub fn App() -> impl IntoView {
 			_ => user_signal.set(None),
 		};
 	});
-
 	provide_context::<UserSignal>(user_signal);
 
 	view! {
@@ -89,7 +88,6 @@ pub fn App() -> impl IntoView {
 						view! { <ErrorTemplate outside_errors /> }.into_view()
 					}
 				>
-
 					<Header />
 					<main class=format!("{} frame", css::main)>
 						<Routes>

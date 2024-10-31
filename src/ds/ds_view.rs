@@ -68,7 +68,6 @@ pub fn Ds() -> impl IntoView {
 					(String::from("order"), String::from("asc")),
 				]
 			/>
-
 		</section>
 
 		<section class=css::section>
@@ -198,7 +197,6 @@ pub fn Ds() -> impl IntoView {
 							);
 					}
 				>
-
 					Success toast
 				</Button>
 				<Button
@@ -215,7 +213,6 @@ pub fn Ds() -> impl IntoView {
 							);
 					}
 				>
-
 					Warning toast
 				</Button>
 				<Button
@@ -232,7 +229,6 @@ pub fn Ds() -> impl IntoView {
 							);
 					}
 				>
-
 					Error toast
 				</Button>
 			</div>
@@ -282,7 +278,6 @@ pub fn Ds() -> impl IntoView {
 						],
 					)
 				/>
-
 			</div>
 		</section>
 

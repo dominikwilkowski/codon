@@ -70,24 +70,16 @@ pub fn ItemsPerPage(
 	row_count: i64,
 	hidden_fields: Vec<(String, String)>,
 ) -> impl IntoView {
-	let to = create_rw_signal(0_i64);
-	let from = create_rw_signal(0_i64);
-	let (row_count, _) = create_signal(row_count);
+	let to = create_rw_signal::<i64>(0);
+	let from = create_rw_signal::<i64>(0);
+	let row_count = create_rw_signal(row_count);
 
 	create_effect(move |_| {
-		let right = query_page.get();
-		let left = query_ipp.get();
-		// i64 is greather than u16 and u8, so it's safe
-		let left_i64 = i64::from(left);
-		let to_ = i64::from(right) * left_i64;
-		let from_ = to_ * left_i64;
-
-		let value = row_count.get();
-		if to_ > value {
-			to.set(value);
+		to.set(query_page.get() as i64 * query_ipp.get() as i64);
+		from.set(to.get() - query_ipp.get() as i64);
+		if to.get() > row_count.get() {
+			to.set(row_count.get());
 		}
-
-		from.set(from_);
 	});
 
 	view! {
@@ -123,22 +115,17 @@ pub fn Pages(
 	row_count: i64,
 	hidden_fields: Vec<(String, String)>,
 ) -> impl IntoView {
-	let pages = create_rw_signal(1_i64);
+	let pages = create_rw_signal::<i64>(1);
 
 	create_effect(move |_| {
-		let right = query_ipp.get();
-		let ipp = i64::from(right);
-		let pages_ = (row_count + ipp - 1) / ipp;
-
-		pages.set(pages_);
+		let ipp = query_ipp.get() as i64;
+		pages.set((row_count + ipp - 1) / ipp);
 	});
-
-	let get_page_range = move || get_page_range(pages.get() as i64, query_page.get() as i64);
 
 	view! {
 		<div class=css::pages>
 			{move || {
-				get_page_range()
+				get_page_range(pages.get(), query_page.get() as i64)
 					.map(|page| {
 						view! {
 							<form
