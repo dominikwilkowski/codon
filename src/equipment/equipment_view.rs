@@ -19,32 +19,31 @@ stylance::import_style!(css, "equipment.module.css");
 #[component]
 pub fn Equipment() -> impl IntoView {
 	// let delete_equipment = create_server_action::<DeleteEquipment>();
+
 	let query = use_query_map();
 
 	let query_field = create_rw_signal(String::from("id"));
 	let query_order = create_rw_signal(String::from("asc"));
-	let query_page = create_rw_signal(1_u16);
-	let query_ipp = create_rw_signal(25_u8);
+	let query_page = create_rw_signal::<u16>(1);
+	let query_ipp = create_rw_signal::<u8>(25);
 	let query_archived = create_rw_signal(false);
 
 	create_effect(move |_| {
-		//? the server does not have a router context (??), run on client side
-		let (qf_, qo_, qp_, qi_, qa_) = query.with(|pm| {
-			let f = pm.get("field").cloned().unwrap_or(String::from("id"));
-			let o = pm.get("order").cloned().unwrap_or(String::from("asc"));
-			let p = pm.get("page").cloned().unwrap_or(String::from("1")).parse::<u16>().unwrap_or(1);
-			let i = pm.get("items_per_page").cloned().unwrap_or(String::from("25")).parse::<u8>().unwrap_or(25);
-			let a = pm.get("archive").cloned().unwrap_or(String::from("false")).parse::<bool>().unwrap_or_default();
+		let (field, order, page, ipp, archive) = query.with(|p| {
+			let field = p.get("field").cloned().unwrap_or(String::from("id"));
+			let order = p.get("order").cloned().unwrap_or(String::from("asc"));
+			let page = p.get("page").cloned().unwrap_or(String::from("1")).parse::<u16>().unwrap_or(1);
+			let ipp = p.get("items_per_page").cloned().unwrap_or(String::from("25")).parse::<u8>().unwrap_or(25);
+			let archive = p.get("archive").cloned().unwrap_or(String::from("false")).parse::<bool>().unwrap_or_default();
 
-			// TODO: check if p & i gt 0
-			(f, o, p, i, a)
+			(field, order, page, ipp, archive)
 		});
 
-		query_field.set(qf_);
-		query_order.set(qo_);
-		query_page.set(qp_);
-		query_ipp.set(qi_);
-		query_archived.set(qa_);
+		query_field.set(field);
+		query_order.set(order);
+		query_page.set(if page > 0 { page } else { 1 });
+		query_ipp.set(if ipp > 0 { ipp } else { 1 });
+		query_archived.set(archive);
 	});
 
 	let field_filter = create_rw_signal(vec![
@@ -59,7 +58,16 @@ pub fn Equipment() -> impl IntoView {
 	let login_action = use_context::<LoginAction>().expect("No login action found in context");
 
 	let equipment_data = create_resource(
-		move || (/*delete_equipment.version().get(),*/login_action.version().get()),
+		move || {
+			(
+				/*delete_equipment.version().get(),*/ login_action.version().get(),
+				query_field.get(),
+				query_order.get(),
+				query_page.get(),
+				query_ipp.get(),
+				query_archived.get(),
+			)
+		},
 		move |_| {
 			get_equipment_data(query_field.get(), query_order.get(), query_page.get(), query_ipp.get(), query_archived.get())
 		},
@@ -125,7 +133,6 @@ pub fn Equipment() -> impl IntoView {
 														);
 												}
 											>
-
 												All
 											</Button> <form action="/equipment" method="get" class=css::filter_switch>
 												<input type="hidden" name="field" value=query_field.get() />
@@ -186,7 +193,6 @@ pub fn Equipment() -> impl IntoView {
 													} else {
 														view! { <Row equipment field_filter /> }.into_view()
 													}}
-
 												</tbody>
 											</table>
 										</div>
@@ -206,7 +212,6 @@ pub fn Equipment() -> impl IntoView {
 							.unwrap_or_default()}
 					}
 				}}
-
 			</ErrorBoundary>
 		</Suspense>
 	}

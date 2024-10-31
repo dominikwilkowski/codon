@@ -101,7 +101,7 @@ pub fn TextArea(
 			disabled=disabled
 			required=required
 		>
-			{value.get()}
+			{move || value.get()}
 		</textarea>
 	}
 }

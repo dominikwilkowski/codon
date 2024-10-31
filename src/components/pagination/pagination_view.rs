@@ -53,7 +53,7 @@ pub fn PaginationNext(
 				value=move || { if !is_last_page() { query_page.get() + 1 } else { query_page.get() } }
 			/>
 			<input type="hidden" name=ipp_key value=move || query_ipp.get() />
-			<button type="submit" disabled=move || is_last_page() class=css::btn>
+			<button type="submit" disabled=is_last_page class=css::btn>
 				Next
 			</button>
 		</form>
