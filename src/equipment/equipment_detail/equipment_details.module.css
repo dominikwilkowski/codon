@@ -26,10 +26,6 @@
 	gap: 0.5rem;
 }
 
-.success {
-	animation: 0.5s ease 5s forwards fading;
-}
-
 .list dd,
 .list dt {
 	padding: 0.5rem;
@@ -82,8 +78,9 @@
 	width: 100%;
 }
 
-.edit_form button {
-	justify-self: end;
+.edit_form .btns {
+	display: flex;
+	gap: 0.5rem;
 }
 
 .edit_form .notes {
