@@ -62,7 +62,7 @@ pub fn App() -> impl IntoView {
 	provide_context::<LogoutAction>(logout);
 
 	let user_signal: UserSignal = create_rw_signal(None);
-	let user = create_resource(move || (login.version().get(), logout.version().get()), move |_| get_user());
+	let user = create_local_resource(move || (login.version().get(), logout.version().get()), move |_| get_user());
 	create_effect(move |_| {
 		match user.get() {
 			Some(Ok(Some(user))) => user_signal.set(Some(user)),
