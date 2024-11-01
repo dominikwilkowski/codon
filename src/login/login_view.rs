@@ -45,7 +45,6 @@ pub fn Login(redirect: impl Into<Cow<'static, str>>) -> impl IntoView {
 					view! {}.into_view()
 				}
 			}}
-
 		</div>
 	}
 }

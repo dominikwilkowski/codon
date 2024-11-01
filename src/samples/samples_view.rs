@@ -91,7 +91,6 @@ pub fn Samples() -> impl IntoView {
 						};
 						view! { <ul class=css::outer_ul>{existing_todos}</ul> }
 					}}
-
 				</ErrorBoundary>
 			</Suspense>
 		</div>
@@ -123,7 +122,6 @@ pub fn SampleItem(
 							show_edit.set(false);
 						}
 					>
-
 						<input type="hidden" name="id" value=id />
 						<input type="text" name="sample_type" value=sample_type_edit node_ref=input_ref />
 						<input type="text" name="analyst" value=analyst_edit />

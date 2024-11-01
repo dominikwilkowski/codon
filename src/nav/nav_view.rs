@@ -45,7 +45,6 @@ pub fn Nav() -> impl IntoView {
 								}
 							}
 						}}
-
 					</Suspense>
 				</li>
 			</ul>
