@@ -151,7 +151,7 @@ pub fn Equipment() -> impl IntoView {
 														css::fake_switch,
 														query_archive.get().to_string(),
 													)>
-														<div></div>
+														<div />
 													</div>
 												</button>
 											</form>
