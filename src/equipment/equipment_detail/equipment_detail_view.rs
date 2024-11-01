@@ -32,7 +32,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 	let params = use_params_map();
 	let query = use_query_map();
 
-	let id = create_rw_signal(params.with(|p| p.get("id").cloned().unwrap_or_default()));
+	let id = create_rw_signal(String::new());
 	let refetch_resources = create_rw_signal(0);
 	let notes_query_page = create_rw_signal::<u16>(1);
 	let notes_query_ipp = create_rw_signal::<u8>(25);
@@ -40,9 +40,9 @@ pub fn EquipmentDetail() -> impl IntoView {
 	let log_query_ipp = create_rw_signal::<u8>(25);
 	let tab_query = create_rw_signal(String::from("notes"));
 
-	// create_effect(move |_| {
-	// 	id.set(params.with(|p| p.get("id").cloned().unwrap_or_default()));
-	// });
+	create_effect(move |_| {
+		id.set(params.with(|p| p.get("id").cloned().unwrap_or_default()));
+	});
 
 	create_effect(move |_| {
 		let (notes_page, notes_ipp, log_page, log_ipp, tab) = query.with(|p| {
@@ -81,13 +81,15 @@ pub fn EquipmentDetail() -> impl IntoView {
 	let notes_action = create_server_action::<EditNotes>();
 
 	let equipment_data = create_resource(
-		move || (login_action.version().get(), id.get(), refetch_resources.get()),
-		move |_| get_equipment_data_by_id(id.get()),
+		move || {
+			(login_action.version().get(), params.with(|p| p.get("id").cloned().unwrap_or_default()), refetch_resources.get())
+		},
+		move |(_, id, _)| get_equipment_data_by_id(id),
 	);
 
 	let log_data: LogAction = create_resource(
-		move || (id.get(), refetch_resources.get()),
-		move |_| get_log_for_equipment(id.get(), log_query_page.get(), log_query_ipp.get()),
+		move || (params.with(|p| p.get("id").cloned().unwrap_or_default()), refetch_resources.get()),
+		move |(id, _)| get_log_for_equipment(id, log_query_page.get(), log_query_ipp.get()),
 	);
 
 	view! {
