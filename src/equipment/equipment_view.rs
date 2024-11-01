@@ -307,7 +307,7 @@ pub async fn get_equipment_data(
 	let equipment_data: Vec<EquipmentData> = equipment_sql_data.into_iter().map(Into::into).collect();
 
 	let row_count: i64 =
-		sqlx::query_scalar(&format!("SELECT COUNT(*) FROM equipment WHERE id IS NOT NULL {status_where}"))
+		sqlx::query_scalar(&format!("SELECT COUNT(*) FROM equipment WHERE id IS NOT NULL {status_where} {auth_query}"))
 			.fetch_one(&pool)
 			.await?;
 

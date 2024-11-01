@@ -1,7 +1,6 @@
 use crate::icons::Logo;
 
 use leptos::*;
-// use leptos_router::*;
 
 stylance::import_style!(css, "footer.module.css");
 

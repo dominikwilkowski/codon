@@ -81,7 +81,7 @@ pub fn App() -> impl IntoView {
 		<ThemeProvider theme>
 			<MessageProvider>
 				<Router
-					trailing_slash=TrailingSlash::Redirect
+					trailing_slash=TrailingSlash::Drop
 					fallback=|| {
 						let mut outside_errors = Errors::default();
 						outside_errors.insert_with_default_key(AppError::NotFound);
