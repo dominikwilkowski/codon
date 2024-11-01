@@ -16,6 +16,7 @@ use crate::{
 };
 
 use leptos::*;
+use leptos_router::*;
 use server_fn::codec::{MultipartData, MultipartFormData};
 #[cfg(feature = "ssr")]
 use sqlx::FromRow;
@@ -32,6 +33,8 @@ pub fn Notes(
 	log_query_ipp: RwSignal<u8>,
 	tab_query: RwSignal<String>,
 ) -> impl IntoView {
+	let params = use_params_map();
+
 	let login_action = use_context::<LoginAction>().expect("No login action found in context");
 
 	let notes_upload_action = create_action(|data: &FormData| save_notes(data.clone().into()));
@@ -41,14 +44,14 @@ pub fn Notes(
 	let notes_data = create_resource(
 		move || {
 			(
+				params.with(|p| p.get("id").cloned().unwrap_or_default()),
 				login_action.version().get(),
 				notes_upload_action.version().get(),
-				id.get(),
 				edit_note_action.version().get(),
 				delete_note_action.version().get(),
 			)
 		},
-		move |_| get_notes_for_equipment(id.get(), notes_query_page.get(), notes_query_ipp.get()),
+		move |(id, _, _, _, _)| get_notes_for_equipment(id, notes_query_page.get(), notes_query_ipp.get()),
 	);
 
 	view! {

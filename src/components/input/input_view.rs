@@ -32,10 +32,18 @@ pub fn MoneyInput(
 	#[prop(optional)] required: bool,
 	#[prop(optional)] placeholder: &'static str,
 ) -> impl IntoView {
-	let dis_class = if disabled.get() { css::money_input_disabled } else { "" };
+	let dis_class = create_rw_signal("");
+
+	create_effect(move |_| {
+		if disabled.get() {
+			dis_class.set(css::money_input_disabled)
+		} else {
+			dis_class.set("")
+		};
+	});
 
 	view! {
-		<div class=format!("{} {} {dis_class}", css::input, css::money_input)>
+		<div class=move || format!("{} {} {}", css::input, css::money_input, dis_class.get())>
 			<span class=css::money_symbol>$</span>
 			<input
 				type="number"
@@ -100,8 +108,7 @@ pub fn TextArea(
 			placeholder=placeholder
 			disabled=disabled
 			required=required
-		>
-			{value.get()}
-		</textarea>
+			prop:value=value
+		/>
 	}
 }

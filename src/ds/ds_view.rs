@@ -333,9 +333,9 @@ pub fn Ds() -> impl IntoView {
 					<DropdownTrigger slot>
 						<Button variant=ButtonVariant::Outlined>"Click"</Button>
 					</DropdownTrigger>
-					<DropdownItem key="foo" label="Option A"></DropdownItem>
-					<DropdownItem key="bar" label="Option B"></DropdownItem>
-					<DropdownItem key="disabled" disabled=true label="Option C"></DropdownItem>
+					<DropdownItem key="foo" label="Option A" />
+					<DropdownItem key="bar" label="Option B" />
+					<DropdownItem key="disabled" disabled=true label="Option C" />
 				</Dropdown>
 			</div>
 		</section>

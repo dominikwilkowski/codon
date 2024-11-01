@@ -21,27 +21,29 @@ pub fn Equipment() -> impl IntoView {
 	// let delete_equipment = create_server_action::<DeleteEquipment>();
 
 	let query = use_query_map();
-	let query_field = create_rw_signal(query.with(|p| p.get("field").cloned().unwrap_or(String::from("id"))));
-	let query_order = create_rw_signal(query.with(|p| p.get("order").cloned().unwrap_or(String::from("asc"))));
-	let query_page = create_rw_signal({
-		let page = query.with(|p| p.get("page").cloned().unwrap_or(String::from("1"))).parse::<u16>().unwrap_or(1);
-		if page > 0 {
-			page
-		} else {
-			1
-		}
-	});
-	let query_ipp = create_rw_signal({
-		let ipp =
-			query.with(|p| p.get("items_per_page").cloned().unwrap_or(String::from("25"))).parse::<u8>().unwrap_or(25);
-		if ipp > 0 {
-			ipp
-		} else {
-			1
-		}
-	});
-	let query_archived = create_rw_signal({
-		query.with(|p| p.get("archive").cloned().unwrap_or(String::from("false"))).parse::<bool>().unwrap_or(false)
+
+	let query_field = create_rw_signal(String::from("id"));
+	let query_order = create_rw_signal(String::from("asc"));
+	let query_page = create_rw_signal::<u16>(1);
+	let query_ipp = create_rw_signal::<u8>(25);
+	let query_archive = create_rw_signal(false);
+
+	create_effect(move |_| {
+		let (field, order, page, ipp, archive) = query.with(|p| {
+			let field = p.get("field").cloned().unwrap_or(String::from("id"));
+			let order = p.get("order").cloned().unwrap_or(String::from("asc"));
+			let page = p.get("page").cloned().unwrap_or(String::from("1")).parse::<u16>().unwrap_or(1);
+			let ipp = p.get("items_per_page").cloned().unwrap_or(String::from("25")).parse::<u8>().unwrap_or(25);
+			let archive = p.get("archive").cloned().unwrap_or(String::from("false")).parse::<bool>().unwrap_or_default();
+
+			(field, order, page, ipp, archive)
+		});
+
+		query_field.set(field);
+		query_order.set(order);
+		query_page.set(if page > 0 { page } else { 1 });
+		query_ipp.set(if ipp > 0 { ipp } else { 1 });
+		query_archive.set(archive);
 	});
 
 	let field_filter = create_rw_signal(vec![
@@ -56,10 +58,19 @@ pub fn Equipment() -> impl IntoView {
 	let login_action = use_context::<LoginAction>().expect("No login action found in context");
 
 	let equipment_data = create_resource(
-		move || (/*delete_equipment.version().get(),*/login_action.version().get()),
-		move |_| {
-			get_equipment_data(query_field.get(), query_order.get(), query_page.get(), query_ipp.get(), query_archived.get())
+		move || {
+			let (field, order, page, ipp, archive) = query.with(|p| {
+				let field = p.get("field").cloned().unwrap_or(String::from("id"));
+				let order = p.get("order").cloned().unwrap_or(String::from("asc"));
+				let page = p.get("page").cloned().unwrap_or(String::from("1")).parse::<u16>().unwrap_or(1);
+				let ipp = p.get("items_per_page").cloned().unwrap_or(String::from("25")).parse::<u8>().unwrap_or(25);
+				let archive = p.get("archive").cloned().unwrap_or(String::from("false")).parse::<bool>().unwrap_or_default();
+
+				(field, order, page, ipp, archive)
+			});
+			(/*delete_equipment.version().get(),*/ login_action.version().get(), field, order, page, ipp, archive)
 		},
+		move |(_, field, order, page, ipp, archive)| get_equipment_data(field, order, page, ipp, archive),
 	);
 
 	view! {
@@ -87,7 +98,7 @@ pub fn Equipment() -> impl IntoView {
 									let hidden_fields = vec![
 										(String::from("field"), query_field.get()),
 										(String::from("order"), query_order.get()),
-										(String::from("archive"), query_archived.get().to_string()),
+										(String::from("archive"), query_archive.get().to_string()),
 									];
 									view! {
 										<Pagination
@@ -131,14 +142,14 @@ pub fn Equipment() -> impl IntoView {
 												<input
 													type="hidden"
 													name="archive"
-													value=(!query_archived.get()).to_string()
+													value=(!query_archive.get()).to_string()
 												/>
 												<button type="submit">
 													Archived:
 													<div class=format!(
 														"input_shadow {} fake_switch-{}",
 														css::fake_switch,
-														query_archived.get().to_string(),
+														query_archive.get().to_string(),
 													)>
 														<div />
 													</div>
@@ -165,7 +176,7 @@ pub fn Equipment() -> impl IntoView {
 															<input
 																type="hidden"
 																name="archive"
-																value=query_archived.get().to_string()
+																value=query_archive.get().to_string()
 															/>
 														</THead>
 													</tr>

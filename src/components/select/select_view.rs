@@ -12,13 +12,18 @@ pub fn Select(
 	#[prop(optional)] required: bool,
 	children: Children,
 ) -> impl IntoView {
-	let class = match disabled.get() {
-		true => css::select_disabled,
-		false => "",
-	};
+	let class = create_rw_signal("");
+
+	create_effect(move |_| {
+		if disabled.get() {
+			class.set(css::select_disabled)
+		} else {
+			class.set("")
+		};
+	});
 
 	view! {
-		<label class=format!("{} {}", css::select_wrapper, class)>
+		<label class=move || format!("{} {}", css::select_wrapper, class.get())>
 			<select class=css::select name=name disabled=disabled required=required>
 				{children()}
 			</select>

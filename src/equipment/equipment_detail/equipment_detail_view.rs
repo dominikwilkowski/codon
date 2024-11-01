@@ -31,62 +31,39 @@ pub type LogAction = Resource<(String, usize), Result<(Vec<EquipmentLogData>, i6
 pub fn EquipmentDetail() -> impl IntoView {
 	let params = use_params_map();
 	let query = use_query_map();
-	let navigate = use_navigate();
 
-	let notes_query_page = create_rw_signal({
-		let page = query.with(|p| p.get("notes_page").cloned().unwrap_or(String::from("1"))).parse::<u16>().unwrap_or(1);
-		if page > 0 {
-			page
-		} else {
-			1
-		}
-	});
-
-	let notes_query_ipp = create_rw_signal({
-		let ipp =
-			query.with(|p| p.get("notes_items_per_page").cloned().unwrap_or(String::from("25"))).parse::<u8>().unwrap_or(25);
-		if ipp > 0 {
-			ipp
-		} else {
-			1
-		}
-	});
-
-	let log_query_page = create_rw_signal({
-		let page = query.with(|p| p.get("log_page").cloned().unwrap_or(String::from("1"))).parse::<u16>().unwrap_or(1);
-		if page > 0 {
-			page
-		} else {
-			1
-		}
-	});
-
-	let log_query_ipp = create_rw_signal({
-		let ipp =
-			query.with(|p| p.get("log_items_per_page").cloned().unwrap_or(String::from("25"))).parse::<u8>().unwrap_or(25);
-		if ipp > 0 {
-			ipp
-		} else {
-			1
-		}
-	});
-
-	let tab_query = create_rw_signal({
-		query.with(|p| match p.get("tab").cloned().unwrap_or(String::from("notes")).as_str() {
-			"notes" => String::from("notes"),
-			"log" => String::from("log"),
-			_ => String::from("notes"),
-		})
-	});
-
-	let go_to_listing = create_rw_signal(false);
-	let id = create_rw_signal(params.with(|p| p.get("id").cloned().unwrap_or_default()));
+	let id = create_rw_signal(String::new());
 	let refetch_resources = create_rw_signal(0);
+	let notes_query_page = create_rw_signal::<u16>(1);
+	let notes_query_ipp = create_rw_signal::<u8>(25);
+	let log_query_page = create_rw_signal::<u16>(1);
+	let log_query_ipp = create_rw_signal::<u8>(25);
+	let tab_query = create_rw_signal(String::from("notes"));
 
 	create_effect(move |_| {
-		if id.get().is_empty() || go_to_listing.get() {
-			navigate("/equipment", Default::default());
-		}
+		id.set(params.with(|p| p.get("id").cloned().unwrap_or_default()));
+	});
+
+	create_effect(move |_| {
+		let (notes_page, notes_ipp, log_page, log_ipp, tab) = query.with(|p| {
+			let notes_page = p.get("notes_page").cloned().unwrap_or(String::from("1")).parse::<u16>().unwrap_or(1);
+			let notes_ipp = p.get("notes_items_per_page").cloned().unwrap_or(String::from("25")).parse::<u8>().unwrap_or(25);
+			let log_page = p.get("log_page").cloned().unwrap_or(String::from("1")).parse::<u16>().unwrap_or(1);
+			let log_ipp = p.get("log_items_per_page").cloned().unwrap_or(String::from("25")).parse::<u8>().unwrap_or(25);
+			let tab = match p.get("tab").cloned().unwrap_or(String::from("notes")).as_str() {
+				"notes" => String::from("notes"),
+				"log" => String::from("log"),
+				_ => String::from("notes"),
+			};
+
+			(notes_page, notes_ipp, log_page, log_ipp, tab)
+		});
+
+		notes_query_page.set(if notes_page > 0 { notes_page } else { 1 });
+		notes_query_ipp.set(if notes_ipp > 0 { notes_ipp } else { 1 });
+		log_query_page.set(if log_page > 0 { log_page } else { 1 });
+		log_query_ipp.set(if log_ipp > 0 { log_ipp } else { 1 });
+		tab_query.set(tab);
 	});
 
 	let login_action = use_context::<LoginAction>().expect("No login action found in context");
@@ -104,13 +81,15 @@ pub fn EquipmentDetail() -> impl IntoView {
 	let notes_action = create_server_action::<EditNotes>();
 
 	let equipment_data = create_resource(
-		move || (login_action.version().get(), id.get(), refetch_resources.get()),
-		move |_| get_equipment_data_by_id(id.get()),
+		move || {
+			(login_action.version().get(), params.with(|p| p.get("id").cloned().unwrap_or_default()), refetch_resources.get())
+		},
+		move |(_, id, _)| get_equipment_data_by_id(id),
 	);
 
 	let log_data: LogAction = create_resource(
-		move || (id.get(), refetch_resources.get()),
-		move |_| get_log_for_equipment(id.get(), log_query_page.get(), log_query_ipp.get()),
+		move || (params.with(|p| p.get("id").cloned().unwrap_or_default()), refetch_resources.get()),
+		move |(id, _)| get_log_for_equipment(id, log_query_page.get(), log_query_ipp.get()),
 	);
 
 	view! {
@@ -128,7 +107,6 @@ pub fn EquipmentDetail() -> impl IntoView {
 										if error.contains("User not authenticated") {
 											view! { <Login redirect=format!("/equipment/{}", id.get()) /> }
 										} else {
-											go_to_listing.set(true);
 											view! { <pre class="error">Server Error: {error}</pre> }.into_view()
 										}
 									}
