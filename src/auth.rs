@@ -82,6 +82,7 @@ impl Default for User {
 #[cfg(feature = "ssr")]
 pub mod ssr {
 	pub use super::{User, UserPasshash, UserSQL};
+
 	pub use argon2::{
 		self,
 		password_hash::{PasswordHash, PasswordHasher, PasswordVerifier, SaltString},

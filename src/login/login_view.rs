@@ -14,6 +14,8 @@ pub fn Login(redirect: impl Into<Cow<'static, str>>) -> impl IntoView {
 	let login_action = use_context::<LoginAction>().expect("No login action found in context");
 	let redirect: Cow<'static, str> = redirect.into();
 
+	// TODO: make the input a password field
+
 	view! {
 		<div>
 			<ActionForm action=login_action class=css::login_form>
