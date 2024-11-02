@@ -25,7 +25,12 @@ pub fn Login(redirect: impl Into<Cow<'static, str>>) -> impl IntoView {
 				</label>
 				<label class=css::label>
 					<span>Password:</span>
-					<Input kind="password" name="password" placeholder="Password" value=create_rw_signal(String::new()) />
+					<Input
+						kind="password"
+						name="password"
+						placeholder="Password"
+						value=create_rw_signal(String::new())
+					/>
 				</label>
 				<div class=css::footer>
 					<Checkbox attr::name="remember">Remember me</Checkbox>
