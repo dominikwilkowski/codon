@@ -112,6 +112,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 									}
 									Ok(equipment) => {
 										let is_archived = equipment.status == EquipmentStatus::Archived;
+										let is_dirty = equipment.status == EquipmentStatus::Dirty;
 										let title = equipment.name.clone();
 										view! {
 											<div class=css::details>
@@ -154,6 +155,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 																				if let Some(responds) = name_action.value().get() {
 																					match responds {
 																						Ok(_) => {
+																							name_action.value().set(None);
 																							refetch_resources.update(|version| *version += 1);
 																							view! {}.into_view()
 																						}
@@ -223,6 +225,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 																				{
 																					match responds {
 																						Ok(_) => {
+																							equipment_type_action.value().set(None);
 																							refetch_resources.update(|version| *version += 1);
 																							view! {}.into_view()
 																						}
@@ -358,6 +361,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 																						loading.set(false);
 																						match responds {
 																							Ok(_) => {
+																								status_action.value().set(None);
 																								refetch_resources.update(|version| *version += 1);
 																								view! {}.into_view()
 																							}
@@ -392,6 +396,20 @@ pub fn EquipmentDetail() -> impl IntoView {
 																					}
 																				>
 																					Archive
+																				</Button>
+																			</Show>
+																			<Show when=move || !is_dirty>
+																				<Button
+																					kind="submit"
+																					variant=ButtonVariant::Outlined
+																					loading
+																					on:click=move |_| {
+																						if let Some(action_element) = action_ref.get() {
+																							let _ = action_element.set_attribute("value", "dirty");
+																						}
+																					}
+																				>
+																					Mark as Dirty
 																				</Button>
 																			</Show>
 																			<Button
@@ -452,6 +470,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 																				if let Some(responds) = manufacturer_action.value().get() {
 																					match responds {
 																						Ok(_) => {
+																							manufacturer_action.value().set(None);
 																							refetch_resources.update(|version| *version += 1);
 																							view! {}.into_view()
 																						}
@@ -512,6 +531,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 																				if let Some(responds) = purchase_date_action.value().get() {
 																					match responds {
 																						Ok(_) => {
+																							purchase_date_action.value().set(None);
 																							refetch_resources.update(|version| *version += 1);
 																							view! {}.into_view()
 																						}
@@ -566,6 +586,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 																				if let Some(responds) = vendor_action.value().get() {
 																					match responds {
 																						Ok(_) => {
+																							vendor_action.value().set(None);
 																							refetch_resources.update(|version| *version += 1);
 																							view! {}.into_view()
 																						}
@@ -622,6 +643,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 																				if let Some(responds) = cost_in_cent_action.value().get() {
 																					match responds {
 																						Ok(_) => {
+																							cost_in_cent_action.value().set(None);
 																							refetch_resources.update(|version| *version += 1);
 																							view! {}.into_view()
 																						}
@@ -690,6 +712,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 																				{
 																					match responds {
 																						Ok(_) => {
+																							warranty_expiration_date_action.value().set(None);
 																							refetch_resources.update(|version| *version += 1);
 																							view! {}.into_view()
 																						}
@@ -744,6 +767,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 																				if let Some(responds) = location_action.value().get() {
 																					match responds {
 																						Ok(_) => {
+																							location_action.value().set(None);
 																							refetch_resources.update(|version| *version += 1);
 																							view! {}.into_view()
 																						}
@@ -801,6 +825,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 																				if let Some(responds) = notes_action.value().get() {
 																					match responds {
 																						Ok(_) => {
+																							notes_action.value().set(None);
 																							refetch_resources.update(|version| *version += 1);
 																							view! {}.into_view()
 																						}
@@ -966,7 +991,6 @@ pub fn EquipmentFormToggle<T: EquipmentCellView + Clone + 'static>(
 	children: ChildrenFn,
 ) -> impl IntoView {
 	let toggle = create_rw_signal(false);
-
 	view! {
 		<Show when=move || toggle.get() fallback=move || view! { <EquipmentCell cell=item.clone() /> }>
 			{children()}
@@ -1192,6 +1216,8 @@ pub async fn edit_status(data: MultipartData) -> Result<(), ServerFnError> {
 			.await?;
 	let next_status = if action == "next_status" {
 		EquipmentStatus::get_next_status(EquipmentStatus::parse(old_status.clone()), EquipmentType::parse(equipment_type))
+	} else if action == "dirty" {
+		EquipmentStatus::Dirty
 	} else {
 		EquipmentStatus::Archived
 	};
