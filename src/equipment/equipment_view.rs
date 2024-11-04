@@ -24,29 +24,7 @@ pub fn Equipment() -> impl IntoView {
 
 	let query_field = create_rw_signal(String::from("id"));
 	let query_order = create_rw_signal(String::from("asc"));
-	let query_page = create_rw_signal::<u16>(1);
-	let query_ipp = create_rw_signal::<u8>(25);
-	let query_archive = create_rw_signal(false);
-
-	create_effect(move |_| {
-		let (field, order, page, ipp, archive) = query.with(|p| {
-			let field = p.get("field").cloned().unwrap_or(String::from("id"));
-			let order = p.get("order").cloned().unwrap_or(String::from("asc"));
-			let page = p.get("page").cloned().unwrap_or(String::from("1")).parse::<u16>().unwrap_or(1);
-			let ipp = p.get("items_per_page").cloned().unwrap_or(String::from("25")).parse::<u8>().unwrap_or(25);
-			let archive = p.get("archive").cloned().unwrap_or(String::from("false")).parse::<bool>().unwrap_or_default();
-
-			(field, order, page, ipp, archive)
-		});
-
-		query_field.set(field);
-		query_order.set(order);
-		query_page.set(if page > 0 { page } else { 1 });
-		query_ipp.set(if ipp > 0 { ipp } else { 1 });
-		query_archive.set(archive);
-	});
-
-	let field_filter = create_rw_signal(vec![
+	let query_filter = create_rw_signal(vec![
 		String::from("id"),
 		String::from("equipment_type"),
 		String::from("name"),
@@ -54,6 +32,35 @@ pub fn Equipment() -> impl IntoView {
 		String::from("location"),
 		String::from("notes"),
 	]);
+	let query_page = create_rw_signal::<u16>(1);
+	let query_ipp = create_rw_signal::<u8>(25);
+	let query_archive = create_rw_signal(false);
+
+	create_effect(move |_| {
+		let (field, order, filter, page, ipp, archive) = query.with(|p| {
+			let field = p.get("field").cloned().unwrap_or(String::from("id"));
+			let order = p.get("order").cloned().unwrap_or(String::from("asc"));
+			let filter = p
+				.get("filter")
+				.cloned()
+				.unwrap_or(String::from("id,equipment_type,name,status,location,notes"))
+				.split(",")
+				.map(String::from)
+				.collect::<Vec<String>>();
+			let page = p.get("page").cloned().unwrap_or(String::from("1")).parse::<u16>().unwrap_or(1);
+			let ipp = p.get("items_per_page").cloned().unwrap_or(String::from("25")).parse::<u8>().unwrap_or(25);
+			let archive = p.get("archive").cloned().unwrap_or(String::from("false")).parse::<bool>().unwrap_or_default();
+
+			(field, order, filter, page, ipp, archive)
+		});
+
+		query_field.set(field);
+		query_order.set(order);
+		query_filter.set(filter);
+		query_page.set(if page > 0 { page } else { 1 });
+		query_ipp.set(if ipp > 0 { ipp } else { 1 });
+		query_archive.set(archive);
+	});
 
 	let login_action = use_context::<LoginAction>().expect("No login action found in context");
 
@@ -98,6 +105,7 @@ pub fn Equipment() -> impl IntoView {
 									let hidden_fields = vec![
 										(String::from("field"), query_field.get()),
 										(String::from("order"), query_order.get()),
+										(String::from("filter"), query_filter.get().join(",")),
 										(String::from("archive"), query_archive.get().to_string()),
 									];
 									view! {
@@ -113,7 +121,7 @@ pub fn Equipment() -> impl IntoView {
 										<div class=css::filter>
 											"Columns: "
 											<MultiSelect
-												value=field_filter
+												value=query_filter
 												options=create_rw_signal(
 													EquipmentData::get_fields()
 														.into_iter()
@@ -124,7 +132,7 @@ pub fn Equipment() -> impl IntoView {
 											<Button
 												variant=ButtonVariant::Outlined
 												on_click=move |_| {
-													field_filter
+													query_filter
 														.set(
 															EquipmentData::get_fields()
 																.into_iter()
@@ -165,13 +173,18 @@ pub fn Equipment() -> impl IntoView {
 															items=EquipmentData::get_fields()
 															query_field
 															query_order
-															field_filter
+															query_filter
 														>
 															<input type="hidden" name="page" value=query_page.get() />
 															<input
 																type="hidden"
 																name="items_per_page"
 																value=query_ipp.get()
+															/>
+															<input
+																type="hidden"
+																name="filter"
+																value=query_filter.get().join(",")
 															/>
 															<input
 																type="hidden"
@@ -191,7 +204,7 @@ pub fn Equipment() -> impl IntoView {
 														}
 															.into_view()
 													} else {
-														view! { <Row equipment field_filter /> }.into_view()
+														view! { <Row equipment query_filter /> }.into_view()
 													}}
 												</tbody>
 											</table>
@@ -254,7 +267,6 @@ pub async fn get_equipment_data(
 	let field_sanitized = match field.to_lowercase().as_str() {
 		f @ "id"
 		| f @ "equipment_type"
-		| f @ "person"
 		| f @ "qrcode"
 		| f @ "create_date"
 		| f @ "name"
@@ -266,6 +278,7 @@ pub async fn get_equipment_data(
 		| f @ "warranty_expiration_date"
 		| f @ "location"
 		| f @ "notes" => String::from(f),
+		"person" => String::from("person_preferred_name"),
 		_ => String::from("id"),
 	};
 

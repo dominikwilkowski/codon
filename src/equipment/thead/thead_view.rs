@@ -8,7 +8,7 @@ pub fn THead(
 	items: Vec<(String, String)>,
 	query_field: RwSignal<String>,
 	query_order: RwSignal<String>,
-	field_filter: RwSignal<Vec<String>>,
+	query_filter: RwSignal<Vec<String>>,
 	children: ChildrenFn,
 ) -> impl IntoView {
 	let order = move |id: String| {
@@ -42,7 +42,7 @@ pub fn THead(
 				let children = children.clone();
 				let id_value = id.clone();
 				view! {
-					<Show when=move || field_filter.get().contains(&id)>
+					<Show when=move || query_filter.get().contains(&id)>
 						<th class=format!("{} {}", id_value.clone(), css::th)>
 							<div class=css::thead>
 								{name.clone()} <form action=action method="get" class=css::sort_form>
