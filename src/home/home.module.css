@@ -1,0 +1,26 @@
+.stats {
+	display: inline-grid;
+	grid-template-columns: 1fr auto;
+	gap: 0.5rem;
+}
+
+.stats dd {
+	margin: 0;
+}
+
+.stats dd,
+.stats dt {
+	padding: 0.5rem;
+	align-content: center;
+}
+
+.stats svg {
+	vertical-align: middle;
+}
+
+.stats dt:nth-child(4n - 1) {
+	background-color: var(--bg-alt);
+}
+
+.code {
+}

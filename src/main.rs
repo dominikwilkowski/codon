@@ -33,7 +33,6 @@ pub mod login;
 pub mod nav;
 pub mod permission;
 pub mod qrcode;
-pub mod samples;
 pub mod utils;
 
 #[cfg(feature = "ssr")]

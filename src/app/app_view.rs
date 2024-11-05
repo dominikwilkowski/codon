@@ -7,7 +7,6 @@ use crate::{
 	header::Header,
 	home::Home,
 	login::Login,
-	samples::Samples,
 };
 
 use leptos::*;
@@ -94,7 +93,6 @@ pub fn App() -> impl IntoView {
 							<Route path="" view=Home />
 							<Route path="/ds" view=Ds />
 							<Route path="/login" view=move || view! { <Login redirect="/" /> } />
-							<Route path="/samples" view=Samples />
 							<Route path="/equipment" view=Equipment />
 							<Route path="/equipment/add" view=EquipmentAdd />
 							<Route path="/equipment/:id" view=EquipmentDetail />

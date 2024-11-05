@@ -17,10 +17,7 @@ pub fn Nav() -> impl IntoView {
 		<nav class=css::nav>
 			<ul>
 				<li>
-					<A href="/">Homepage</A>
-				</li>
-				<li>
-					<A href="/samples">Samples</A>
+					<A href="/">Home</A>
 				</li>
 				<li>
 					<A href="/equipment">Equipment</A>
