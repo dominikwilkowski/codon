@@ -8,8 +8,12 @@ pub use equipment_view::*;
 
 pub mod equipment_detail {
 	pub mod equipment_detail_view;
+	pub mod equipment_form_toggle_view;
+	pub mod name_edit_view;
 }
 pub use equipment_detail::equipment_detail_view::*;
+pub use equipment_detail::equipment_form_toggle_view::*;
+pub use equipment_detail::name_edit_view::*;
 
 pub mod notes_form {
 	pub mod notes_form_view;

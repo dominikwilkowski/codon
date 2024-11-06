@@ -9,13 +9,12 @@ use crate::{
 		timezone_offset::Timezone,
 	},
 	equipment::{
-		get_log_for_equipment, EquipmentCell, EquipmentCellView, EquipmentData, EquipmentLogData, EquipmentStatus,
-		EquipmentType, Heading, Log, Notes,
+		get_log_for_equipment, EquipmentCell, EquipmentData, EquipmentFormToggle, EquipmentLogData, EquipmentStatus,
+		EquipmentType, Heading, Log, NameEdit, Notes,
 	},
 	error_template::ErrorTemplate,
 	icons::{FlaskLogo, IncubationCabinetLogo, VesselLogo},
 	login::Login,
-	permission::Permissions,
 };
 
 use leptos::*;
@@ -69,7 +68,6 @@ pub fn EquipmentDetail() -> impl IntoView {
 	let login_action = use_context::<LoginAction>().expect("No login action found in context");
 	let user_signal = use_context::<UserSignal>().expect("No user signal found in context");
 
-	let name_action = create_server_action::<EditName>();
 	let equipment_type_action = create_server_action::<EditType>();
 	let status_action = create_action(|data: &FormData| edit_status(data.clone().into()));
 	let manufacturer_action = create_server_action::<EditManufacturer>();
@@ -134,54 +132,11 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Name</dt>
 													<dd class=css::edit>
-														<EquipmentFormToggle
-															user_id=equipment.person.id
-															id=equipment.id
-															user_signal=user_signal
-															item=equipment.name.clone()
-														>
-															{
-																let name_clone = equipment.name.clone();
-																view! {
-																	<ActionForm action=name_action class=css::edit_form>
-																		<input type="hidden" name="id" value=equipment.id />
-																		<Input name="name" value=create_rw_signal(name_clone) />
-																		<TextArea
-																			name="note"
-																			placeholder="Add a note why you made this change"
-																		/>
-																		<div class=css::btns>
-																			{move || {
-																				if let Some(responds) = name_action.value().get() {
-																					match responds {
-																						Ok(_) => {
-																							name_action.value().set(None);
-																							refetch_resources.update(|version| *version += 1);
-																							view! {}.into_view()
-																						}
-																						Err(error) => {
-																							view! {
-																								<span>
-																									{error
-																										.to_string()
-																										.replace(
-																											"error reaching server to call server function: ",
-																											"",
-																										)}
-																								</span>
-																							}
-																								.into_view()
-																						}
-																					}
-																				} else {
-																					view! {}.into_view()
-																				}
-																			}} <Button kind="submit">Save</Button>
-																		</div>
-																	</ActionForm>
-																}
-															}
-														</EquipmentFormToggle>
+														<NameEdit
+															equipment=equipment.clone()
+															user_signal
+															refetch_resources
+														/>
 													</dd>
 
 													<dt>Equipment Type</dt>
@@ -980,106 +935,6 @@ pub fn EquipmentDetail() -> impl IntoView {
 			</ErrorBoundary>
 		</Suspense>
 	}
-}
-
-#[component]
-pub fn EquipmentFormToggle<T: EquipmentCellView + Clone + 'static>(
-	user_signal: UserSignal,
-	user_id: i32,
-	id: i32,
-	item: T,
-	children: ChildrenFn,
-) -> impl IntoView {
-	let toggle = create_rw_signal(false);
-	view! {
-		<Show when=move || toggle.get() fallback=move || view! { <EquipmentCell cell=item.clone() /> }>
-			{children()}
-		</Show>
-
-		<Suspense fallback=move || {
-			view! { <A href="/login">"Login"</A> }
-		}>
-			{move || {
-				match user_signal.get() {
-					None => view! { <span /> }.into_view(),
-					Some(user) => {
-						let Permissions::All { read: _, write: perm, create: _ } = user.permission_equipment;
-						view! {
-							<Show when=move || perm.has_permission("write", id, user_id)>
-								<Button
-									variant=ButtonVariant::Text
-									on_click=move |_| toggle.update(|toggle| *toggle = !*toggle)
-								>
-									{move || if toggle.get() { "Cancel" } else { "Edit" }}
-								</Button>
-							</Show>
-						}
-							.into_view()
-					}
-				}
-			}}
-		</Suspense>
-	}
-}
-
-#[server(prefix = "/api")]
-pub async fn edit_name(id: String, name: String, note: String) -> Result<(), ServerFnError> {
-	use crate::{auth::get_user, permission::Permissions};
-
-	use sqlx::PgPool;
-
-	let pool = use_context::<PgPool>()
-		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
-	let user = get_user().await?;
-
-	let id = match id.parse::<i32>() {
-		Ok(value) => value,
-		Err(_) => return Err(ServerFnError::Request(String::from("Invalid ID"))),
-	};
-
-	let user_id;
-	match user {
-		Some(user) => {
-			let Permissions::All {
-				read: _,
-				write: perm,
-				create: _,
-			} = user.permission_equipment;
-			user_id = user.id;
-
-			let person: i32 =
-				sqlx::query_scalar("SELECT person FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
-			if !perm.has_permission("write", id, person) {
-				return Err(ServerFnError::Request(String::from("User not authenticated")));
-			}
-		},
-		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
-	};
-
-	let old_value: String =
-		sqlx::query_scalar("SELECT name FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
-
-	sqlx::query(
-		r#"
-		INSERT INTO equipment_log
-		(log_type, equipment, person, notes, field, old_value, new_value)
-		VALUES
-		($1, $2, $3, $4, $5, $6, $7)"#,
-	)
-	.bind("edit")
-	.bind(id)
-	.bind(user_id)
-	.bind(note)
-	.bind("name")
-	.bind(old_value)
-	.bind(name.clone())
-	.execute(&pool)
-	.await
-	.map_err::<ServerFnError, _>(|error| ServerFnError::ServerError(error.to_string()))?;
-
-	sqlx::query("UPDATE equipment SET name = $1 WHERE id = $2").bind(name).bind(id).execute(&pool).await.map(|_| ())?;
-
-	Ok(())
 }
 
 #[server(prefix = "/api")]

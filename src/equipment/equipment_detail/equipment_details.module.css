@@ -71,7 +71,7 @@
 		background: var(--bg-alt);
 	}
 }
-
+/* TODO: remove .edit_form and .btns from this file */
 .edit_form {
 	display: grid;
 	gap: 0.5rem;
