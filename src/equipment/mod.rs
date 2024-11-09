@@ -11,6 +11,7 @@ pub mod equipment_detail {
 	pub mod equipment_form_toggle_view;
 	pub mod manufacturer_edit_view;
 	pub mod name_edit_view;
+	pub mod purchase_date_edit_view;
 	pub mod status_edit_view;
 	pub mod type_edit_view;
 }
@@ -18,6 +19,7 @@ pub use equipment_detail::equipment_detail_view::*;
 pub use equipment_detail::equipment_form_toggle_view::*;
 pub use equipment_detail::manufacturer_edit_view::*;
 pub use equipment_detail::name_edit_view::*;
+pub use equipment_detail::purchase_date_edit_view::*;
 pub use equipment_detail::status_edit_view::*;
 pub use equipment_detail::type_edit_view::*;
 
