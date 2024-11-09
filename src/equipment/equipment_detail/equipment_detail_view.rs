@@ -151,7 +151,7 @@ pub fn EquipmentDetail() -> impl IntoView {
 
 													<dt>Create Date</dt>
 													<dd>
-														<EquipmentCell cell=equipment.create_date.clone() />
+														<EquipmentCell cell=equipment.create_date />
 													</dd>
 
 													<dt>Status</dt>
