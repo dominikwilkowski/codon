@@ -59,8 +59,8 @@ pub fn StatusEdit(
 							let form_data = match FormData::new_with_form(&form) {
 								Ok(fd) => fd,
 								Err(error) => {
-									logging::log!("Failed to create FormData");
-									logging::log!("{error:?}");
+									logging::error!("Failed to create FormData");
+									logging::error!("{error:?}");
 									return;
 								}
 							};
