@@ -7,6 +7,7 @@ pub mod equipment_view;
 pub use equipment_view::*;
 
 pub mod equipment_detail {
+	pub mod cost_edit_view;
 	pub mod equipment_detail_view;
 	pub mod equipment_form_toggle_view;
 	pub mod manufacturer_edit_view;
@@ -16,6 +17,7 @@ pub mod equipment_detail {
 	pub mod type_edit_view;
 	pub mod vendor_edit_view;
 }
+pub use equipment_detail::cost_edit_view::*;
 pub use equipment_detail::equipment_detail_view::*;
 pub use equipment_detail::equipment_form_toggle_view::*;
 pub use equipment_detail::manufacturer_edit_view::*;
