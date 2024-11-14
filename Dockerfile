@@ -6,14 +6,14 @@ RUN apt update && apt install -y bash curl npm libc-dev binaryen \
 
 RUN rustup target add wasm32-unknown-unknown
 RUN cargo install cargo-generate
-RUN cargo install --locked cargo-leptos
+RUN cargo install --locked cargo-leptos --version 0.2.19
 RUN cargo install stylance-cli
 
 WORKDIR /work
 COPY . .
 
 RUN stylance --output-file ./style/bundle.css ./
-RUN cargo install -f wasm-bindgen-cli --version 0.2.93
+
 RUN cargo leptos build --release
 
 FROM rustlang/rust:nightly as runner
