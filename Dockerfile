@@ -13,6 +13,7 @@ COPY . .
 
 RUN stylance --output-file ./style/bundle.css ./
 ARG DATABASE_URL
+ARG UPLOAD_ROOT
 RUN cargo leptos build --release
 
 FROM debian:bookworm-slim as runtime
