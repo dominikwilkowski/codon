@@ -1,5 +1,4 @@
 FROM rustlang/rust:nightly as builder
-
 RUN apt update && apt install -y bash curl npm libc-dev binaryen \
     protobuf-compiler libssl-dev libprotobuf-dev gcc git g++ libc-dev \
     make binaryen perl
@@ -16,15 +15,22 @@ RUN stylance --output-file ./style/bundle.css ./
 ARG DATABASE_URL
 RUN cargo leptos build --release
 
-FROM rustlang/rust:nightly as runner
-
+FROM rustlang/rust:nightly as runtime
 WORKDIR /app
+RUN apt-get update -y \
+  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && apt-get autoremove -y \
+  && apt-get clean -y \
+  && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /work/target/release/codon /app/
 COPY --from=builder /work/target/site /app/site
 COPY --from=builder /work/Cargo.toml /app/
 
-EXPOSE $PORT
+ENV RUST_LOG="info"
+ENV LEPTOS_SITE_ADDR="0.0.0.0:$PORT"
 ENV LEPTOS_SITE_ROOT=./site
+EXPOSE $PORT
 
+# Run the server
 CMD ["/app/codon"]
