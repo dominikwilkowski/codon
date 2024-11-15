@@ -62,7 +62,7 @@ pub async fn move_file(from: String, to: &str) -> Result<Option<String>, std::io
 		Ok(None)
 	} else {
 		let new_path = from.replace("temp/", to);
-		rename(format!("public{from}"), format!("public{new_path}")).await?;
+		rename(format!("{}public{from}", env!("UPLOAD_ROOT")), format!("{}public{new_path}", env!("UPLOAD_ROOT"))).await?;
 		Ok(Some(new_path))
 	}
 }

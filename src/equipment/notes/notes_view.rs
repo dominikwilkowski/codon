@@ -500,7 +500,7 @@ pub async fn edit_note(data: MultipartData) -> Result<(), ServerFnError> {
 				new_medias.push(media);
 			} else {
 				// Removing files marked for removal
-				let file_path = PathBuf::from(format!("{}/public/{}", env!("CARGO_MANIFEST_DIR"), media));
+				let file_path = PathBuf::from(format!("{}/public/{media}", env!("CARGO_MANIFEST_DIR")));
 				if file_path.exists() {
 					match fs::remove_file(&file_path) {
 						Ok(_) => {},
@@ -626,7 +626,7 @@ pub async fn delete_note(id: i32) -> Result<(), ServerFnError> {
 		medias.media10,
 	];
 	for media in media_fields.into_iter().flatten() {
-		let file_path = PathBuf::from(format!("{}/public/{}", env!("CARGO_MANIFEST_DIR"), media));
+		let file_path = PathBuf::from(format!("{}/public/{media}", env!("CARGO_MANIFEST_DIR")));
 		if file_path.exists() {
 			match fs::remove_file(&file_path) {
 				Ok(_) => {},
