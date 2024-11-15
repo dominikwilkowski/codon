@@ -28,9 +28,9 @@ COPY --from=builder /work/target/site /app/site
 COPY --from=builder /work/Cargo.toml /app/
 
 ENV RUST_LOG="info"
-ENV LEPTOS_SITE_ADDR="0.0.0.0:$PORT"
+ENV LEPTOS_SITE_ADDR="0.0.0.0:3000"
 ENV LEPTOS_SITE_ROOT=./site
-EXPOSE $PORT
+EXPOSE 3000
 
 # Run the server
 CMD ["/app/codon"]
