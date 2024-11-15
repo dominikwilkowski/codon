@@ -13,7 +13,7 @@ WORKDIR /work
 COPY . .
 
 RUN stylance --output-file ./style/bundle.css ./
-
+ARG DATABASE_URL
 RUN cargo leptos build --release
 
 FROM rustlang/rust:nightly as runner
