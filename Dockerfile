@@ -5,7 +5,7 @@ RUN apt update && apt install -y bash curl npm libc-dev binaryen \
 
 RUN rustup target add wasm32-unknown-unknown
 RUN cargo install cargo-generate
-RUN cargo install --locked cargo-leptos --version 0.2.19
+RUN cargo install --locked cargo-leptos --version 0.2.21
 RUN cargo install stylance-cli
 
 WORKDIR /work
