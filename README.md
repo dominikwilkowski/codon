@@ -12,7 +12,7 @@ You need to install:
 1. `rustup toolchain install nightly --allow-downgrade` – make sure you have Rust nightly
 2. `rustup target add wasm32-unknown-unknown` – add the ability to compile Rust to WebAssembly
 3. `cargo install cargo-generate` – install `cargo-generate` binary
-4. `cargo install --locked cargo-leptos --version 0.2.21` – install the leptos build tool
+4. `cargo install --locked cargo-leptos --version 0.2.20` – install the leptos build tool
 5. `cargo install leptosfmt` – install the formatter for the `view!` macros
 6. `cargo install stylance-cli` - install the stylance cli tool to watch for changes in our css modules
 

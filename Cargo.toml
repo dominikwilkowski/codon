@@ -34,7 +34,7 @@ leptos_router = { version = "0.6", features = ["nightly"] }
 tokio = { version = "1", features = ["rt-multi-thread", "fs"], optional = true }
 tower = { version = "0.4", features = ["util"], optional = true }
 tower-http = { version = "0.5", features = ["fs"], optional = true }
-wasm-bindgen = "=0.2.95"
+wasm-bindgen = "=0.2.93"
 thiserror = "1"
 tracing = { version = "0.1", optional = true }
 http = "1"
@@ -102,10 +102,6 @@ opt-level = 'z'
 lto = true
 codegen-units = 1
 panic = "abort"
-
-# fixed a change in rust with wasm flags
-[target.wasm32-unknown-unknown]
-rustflags = ["-C", "target-feature=+bulk-memory"]
 
 [package.metadata.leptos]
 # The name used by wasm-bindgen/cargo-leptos for the JS/WASM bundle. Defaults to the crate name
