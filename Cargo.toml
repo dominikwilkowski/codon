@@ -103,6 +103,10 @@ lto = true
 codegen-units = 1
 panic = "abort"
 
+# fixed a change in rust with wasm flags
+[target.wasm32-unknown-unknown]
+rustflags = ["-C", "target-feature=+bulk-memory"]
+
 [package.metadata.leptos]
 # The name used by wasm-bindgen/cargo-leptos for the JS/WASM bundle. Defaults to the crate name
 output-name = "codon"
