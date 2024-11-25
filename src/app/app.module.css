@@ -73,6 +73,8 @@ body {
 	font-weight: 400;
 	font-style: normal;
 	background: var(--bg);
+	background: url(/bg.jpg);
+	background-size: 50%;
 	color: var(--fg);
 	-webkit-font-smoothing: antialiased;
 	-moz-font-smoothing: antialiased;
