@@ -18,14 +18,6 @@
 	gap: 0.5rem;
 }
 
-.list dd .btns {
-	display: flex;
-	justify-content: end;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 0.5rem;
-}
-
 .list dd,
 .list dt {
 	padding: 0.5rem;
@@ -70,21 +62,6 @@
 	.list dt:nth-child(4n - 1) {
 		background: var(--bg-alt);
 	}
-}
-/* TODO: remove .edit_form and .btns from this file */
-.edit_form {
-	display: grid;
-	gap: 0.5rem;
-	width: 100%;
-}
-
-.edit_form .btns {
-	display: flex;
-	gap: 0.5rem;
-}
-
-.edit_form .notes {
-	height: 12.5rem;
 }
 
 .tab {
