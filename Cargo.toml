@@ -212,3 +212,6 @@ hash_len = 7
 # [hash] will be replaced with the hash of css module file path.
 # defaults to "[name]-[hash]"
 class_name_pattern = "codon-[name]-[hash]"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(wasm_bindgen_unstable_test_coverage)'] }
