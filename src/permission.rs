@@ -265,7 +265,9 @@ mod tests {
 			})
 		);
 		assert_eq!(
-			Permission::parse(String::from("READ(equipment[1],equipment[2],equipment[4564],equipment[789])|WRITE(equipment[1],equipment[2],equipment[3],equipment[4])|CREATE(false)")),
+			Permission::parse(String::from(
+				"READ(equipment[1],equipment[2],equipment[4564],equipment[789])|WRITE(equipment[1],equipment[2],equipment[3],equipment[4])|CREATE(false)"
+			)),
 			Ok(Permissions::All {
 				read: Permission::Read(vec![
 					Scope::Equipment(1),
@@ -275,7 +277,12 @@ mod tests {
 					Scope::Equipment(3),
 					Scope::Equipment(4),
 				]),
-				write: Permission::Write(vec![Scope::Equipment(1), Scope::Equipment(2), Scope::Equipment(3), Scope::Equipment(4)]),
+				write: Permission::Write(vec![
+					Scope::Equipment(1),
+					Scope::Equipment(2),
+					Scope::Equipment(3),
+					Scope::Equipment(4)
+				]),
 				create: Permission::Create(false),
 			})
 		);

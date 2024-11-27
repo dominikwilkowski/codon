@@ -1,7 +1,7 @@
 #[cfg(feature = "ssr")]
 pub mod ssr {
 	use dotenvy::dotenv;
-	use sqlx::{postgres::PgPoolOptions, PgPool, Pool, Postgres};
+	use sqlx::{PgPool, Pool, Postgres, postgres::PgPoolOptions};
 
 	static DB: std::sync::OnceLock<PgPool> = std::sync::OnceLock::new();
 

@@ -10,7 +10,7 @@ use crate::{
 		multiline::MultiLine,
 		pagination::Pagination,
 	},
-	equipment::{save_notes, EquipmentNotesData, NotesForm},
+	equipment::{EquipmentNotesData, NotesForm, save_notes},
 	error_template::ErrorTemplate,
 	permission::Permissions,
 };

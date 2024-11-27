@@ -1,5 +1,5 @@
 use crate::{
-	auth::{get_user, Login, Logout, User},
+	auth::{Login, Logout, User, get_user},
 	ds::Ds,
 	equipment::{Equipment, EquipmentAdd, EquipmentDetail},
 	error_template::{AppError, ErrorTemplate},

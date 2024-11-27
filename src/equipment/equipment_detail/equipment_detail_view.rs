@@ -1,9 +1,9 @@
 use crate::{
 	app::{LoginAction, UserSignal},
 	equipment::{
-		get_log_for_equipment, CostEdit, EquipmentCell, EquipmentData, EquipmentLogData, EquipmentNoteEdit, EquipmentType,
-		Heading, LocationEdit, Log, ManufacturerEdit, NameEdit, Notes, PurchaseDateEdit, StatusEdit, TypeEdit, VendorEdit,
-		WarrantyExpirationDateEdit,
+		CostEdit, EquipmentCell, EquipmentData, EquipmentLogData, EquipmentNoteEdit, EquipmentType, Heading, LocationEdit,
+		Log, ManufacturerEdit, NameEdit, Notes, PurchaseDateEdit, StatusEdit, TypeEdit, VendorEdit,
+		WarrantyExpirationDateEdit, get_log_for_equipment,
 	},
 	error_template::ErrorTemplate,
 	icons::{FlaskLogo, IncubationCabinetLogo, VesselLogo},

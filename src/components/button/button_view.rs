@@ -2,7 +2,7 @@ use leptos::*;
 
 stylance::import_style!(css, "button.module.css");
 
-pub use thaw::{use_message, MessageOptions, MessageVariant};
+pub use thaw::{MessageOptions, MessageVariant, use_message};
 
 #[derive(Debug, Default)]
 pub enum ButtonVariant {

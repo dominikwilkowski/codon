@@ -84,9 +84,8 @@ pub mod ssr {
 	pub use super::{User, UserPasshash, UserSQL};
 
 	pub use argon2::{
-		self,
+		self, Argon2,
 		password_hash::{PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
-		Argon2,
 	};
 	pub use async_trait::async_trait;
 	pub use axum_session_auth::{Authentication, HasPermission};

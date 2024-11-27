@@ -1,6 +1,6 @@
 use crate::{
 	components::{
-		button::{use_message, Button, ButtonVariant, MessageOptions, MessageVariant},
+		button::{Button, ButtonVariant, MessageOptions, MessageVariant, use_message},
 		checkbox::{Checkbox, CheckboxGroup, CheckboxItem},
 		datepicker::DatePicker,
 		dropdown::{Dropdown, DropdownItem, DropdownTrigger},

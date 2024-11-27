@@ -41,18 +41,18 @@ pub mod fileserv;
 #[cfg(feature = "ssr")]
 use crate::{
 	app::App,
-	auth::{ssr::AuthSession, User},
+	auth::{User, ssr::AuthSession},
 	fileserv::file_and_error_handler,
 };
 
 #[cfg(feature = "ssr")]
 use axum::{
+	Router,
 	body::Body as AxumBody,
 	extract::{FromRef, Path, State},
 	http::Request,
 	response::{IntoResponse, Response},
 	routing::get,
-	Router,
 };
 #[cfg(feature = "ssr")]
 use axum_session::{SessionConfig, SessionLayer, SessionStore};
@@ -62,11 +62,11 @@ use axum_session_auth::{AuthConfig, AuthSessionLayer};
 pub use axum_session_sqlx::SessionPgPool;
 use leptos::*;
 #[cfg(feature = "ssr")]
-use leptos_axum::{generate_route_list, handle_server_fns_with_context, render_route_with_context, LeptosRoutes};
+use leptos_axum::{LeptosRoutes, generate_route_list, handle_server_fns_with_context, render_route_with_context};
 #[cfg(feature = "ssr")]
 use leptos_router::RouteListing;
 #[cfg(feature = "ssr")]
-use sqlx::{migrate::Migrator, PgPool};
+use sqlx::{PgPool, migrate::Migrator};
 
 #[cfg_attr(feature = "ssr", derive(FromRef, Debug, Clone))]
 pub struct AppState {

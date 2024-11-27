@@ -16,10 +16,13 @@ pub fn FileInput(value: RwSignal<String>, name: &'static str) -> impl IntoView {
 				name=name
 				on:change=move |_| {
 					let input = input_ref.get().unwrap();
-					if let Some(file) = input.files().and_then(|files| files.item(0)) {
-						value.set(file.name());
-					} else {
-						value.set(String::new());
+					match input.files().and_then(|files| files.item(0)) {
+						Some(file) => {
+							value.set(file.name());
+						}
+						_ => {
+							value.set(String::new());
+						}
 					}
 				}
 			/>

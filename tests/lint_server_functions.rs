@@ -1,13 +1,13 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 use syn::{
-	visit::Visit,
 	Attribute,
 	Expr::{Lit, Path as ExprPath},
 	ExprCall, ExprLit,
 	Item::Fn,
 	Lit::Str,
 	Meta::{List, NameValue, Path as MetaPath},
+	visit::Visit,
 };
 
 struct GetUserCallVisitor {
@@ -16,12 +16,16 @@ struct GetUserCallVisitor {
 
 impl<'ast> Visit<'ast> for GetUserCallVisitor {
 	fn visit_expr_call(&mut self, node: &'ast ExprCall) {
-		if let ExprPath(ref expr_path) = *node.func {
-			if let Some(segment) = expr_path.path.segments.last() {
-				if segment.ident == "get_user" {
-					self.found = true;
-				}
-			}
+		match *node.func {
+			ExprPath(ref expr_path) => match expr_path.path.segments.last() {
+				Some(segment) => {
+					if segment.ident == "get_user" {
+						self.found = true;
+					}
+				},
+				_ => {},
+			},
+			_ => {},
 		}
 	}
 }
@@ -37,20 +41,18 @@ fn is_server_function(attrs: &[Attribute]) -> bool {
 fn has_doc_comment(attrs: &[Attribute], comment: &str) -> bool {
 	attrs
 		.iter()
-		.filter_map(|attr| {
-			if let NameValue(meta) = &attr.meta {
+		.filter_map(|attr| match &attr.meta {
+			NameValue(meta) => {
 				if meta.path.is_ident("doc") {
-					if let Lit(ExprLit { lit: Str(lit_str), .. }) = &meta.value {
-						Some(lit_str.value())
-					} else {
-						None
+					match &meta.value {
+						Lit(ExprLit { lit: Str(lit_str), .. }) => Some(lit_str.value()),
+						_ => None,
 					}
 				} else {
 					None
 				}
-			} else {
-				None
-			}
+			},
+			_ => None,
 		})
 		.any(|doc_string| doc_string.contains(comment))
 }
@@ -83,17 +85,20 @@ fn all_server_functions_call_get_user() {
 		let syntax = syn::parse_file(&src).expect("Failed to parse file");
 
 		for item in syntax.items {
-			if let Fn(ref func) = item {
-				if is_server_function(&func.attrs) {
-					let mut visitor = GetUserCallVisitor { found: false };
-					visitor.visit_item_fn(func);
+			match item {
+				Fn(ref func) => {
+					if is_server_function(&func.attrs) {
+						let mut visitor = GetUserCallVisitor { found: false };
+						visitor.visit_item_fn(func);
 
-					let opt_out = has_doc_comment(&func.attrs, "![allow_no_get_user]");
+						let opt_out = has_doc_comment(&func.attrs, "![allow_no_get_user]");
 
-					if !visitor.found && !opt_out {
-						server_functions_missing_get_user.push(format!("{} in file {:?}", func.sig.ident, file_path));
+						if !visitor.found && !opt_out {
+							server_functions_missing_get_user.push(format!("{} in file {:?}", func.sig.ident, file_path));
+						}
 					}
-				}
+				},
+				_ => {},
 			}
 		}
 	}
