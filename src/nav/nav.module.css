@@ -1,7 +1,28 @@
 .nav {
 	display: inline-block;
-	justify-self: end;
-	align-self: end;
+	justify-self: center;
+	align-self: center;
+	background-color: var(--content-bg);
+	box-shadow:
+		inset 0 0 0 1px hsla(0, 0%, 100%, 0.05),
+		0 0 0 1px hsla(0, 0%, 0%, 0.05),
+		0 0.3px 0.4px hsla(0, 0%, 0%, 0.02),
+		0 0.9px 1.5px hsla(0, 0%, 0%, 0.045),
+		3.5px 0 12px 3px hsla(0, 0%, 0%, 0.35);
+	border-radius: var(--border-radius-lg);
+	padding: 1rem;
+	margin-top: 2rem;
+}
+
+@media (min-width: 42rem) {
+	.nav {
+		justify-self: end;
+		align-self: end;
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
+		padding: 1rem 2rem 1rem 1rem;
+		margin-top: 0;
+	}
 }
 
 .nav a[aria-current] {

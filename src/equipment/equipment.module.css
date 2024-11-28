@@ -16,11 +16,17 @@
 
 .filter {
 	display: grid;
-	grid-template-columns: auto 1fr auto auto;
+	grid-template-columns: 1fr;
 	align-items: center;
 	gap: 0.5rem;
 	margin: 1rem 0;
 	font-size: 75%;
+}
+
+.filter .btns {
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
 }
 
 .filter_switch {
@@ -66,4 +72,10 @@
 
 .fake_switch:global(.fake_switch-true) div {
 	left: 20px;
+}
+
+@media (min-width: 42rem) {
+	.filter {
+		grid-template-columns: auto 1fr auto auto;
+	}
 }

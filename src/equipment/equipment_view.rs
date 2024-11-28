@@ -128,41 +128,43 @@ pub fn Equipment() -> impl IntoView {
 														.map(|(id, name)| MultiSelectOption::new(name, id))
 														.collect::<Vec<MultiSelectOption<String>>>(),
 												)
-											/>
-											<Button
-												variant=ButtonVariant::Outlined
-												on_click=move |_| {
-													query_filter
-														.set(
-															EquipmentData::get_fields()
-																.into_iter()
-																.map(|(id, _)| id)
-																.collect::<Vec<String>>(),
-														);
-												}
-											>
-												All
-											</Button> <form action="/equipment" method="get" class=css::filter_switch>
-												<input type="hidden" name="field" value=query_field.get() />
-												<input type="hidden" name="order" value=query_order.get() />
-												<input type="hidden" name="page" value=query_page.get() />
-												<input type="hidden" name="items_per_page" value=query_ipp.get() />
-												<input
-													type="hidden"
-													name="archive"
-													value=(!query_archive.get()).to_string()
-												/>
-												<button type="submit">
-													Archived:
-													<div class=format!(
-														"input_shadow {} fake_switch-{}",
-														css::fake_switch,
-														query_archive.get().to_string(),
-													)>
-														<div />
-													</div>
-												</button>
-											</form>
+											/> <div class=css::btns>
+												<Button
+													variant=ButtonVariant::Outlined
+													on_click=move |_| {
+														query_filter
+															.set(
+																EquipmentData::get_fields()
+																	.into_iter()
+																	.map(|(id, _)| id)
+																	.collect::<Vec<String>>(),
+															);
+													}
+												>
+													All
+												</Button>
+												<form action="/equipment" method="get" class=css::filter_switch>
+													<input type="hidden" name="field" value=query_field.get() />
+													<input type="hidden" name="order" value=query_order.get() />
+													<input type="hidden" name="page" value=query_page.get() />
+													<input type="hidden" name="items_per_page" value=query_ipp.get() />
+													<input
+														type="hidden"
+														name="archive"
+														value=(!query_archive.get()).to_string()
+													/>
+													<button type="submit">
+														Archived:
+														<div class=format!(
+															"input_shadow {} fake_switch-{}",
+															css::fake_switch,
+															query_archive.get().to_string(),
+														)>
+															<div />
+														</div>
+													</button>
+												</form>
+											</div>
 										</div>
 										<div class=css::table_wrapper>
 											<table class=css::table>

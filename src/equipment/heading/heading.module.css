@@ -1,3 +1,11 @@
+.heading_wrapper {
+	display: grid;
+	grid-template-columns: 1fr;
+	align-items: end;
+	margin-bottom: 4rem;
+	gap: 2rem;
+}
+
 .heading {
 	display: flex;
 	gap: 1rem;
@@ -5,11 +13,8 @@
 	margin: 0;
 }
 
-.heading_wrapper {
-	display: grid;
-	grid-template-columns: 1fr auto;
-	align-items: end;
-	margin-bottom: 4rem;
+.heading svg {
+	width: 2.5rem;
 }
 
 .heading_wrapper .heading_btns {
@@ -17,6 +22,7 @@
 	grid-auto-flow: column;
 	gap: 2rem;
 	align-items: end;
+	order: -1;
 }
 
 .heading_wrapper .heading_btns a {
@@ -33,4 +39,19 @@
 .heading_wrapper .heading_btns button span {
 	flex-flow: column;
 	gap: 0.25rem;
+}
+
+@media (min-width: 42rem) {
+	.heading_wrapper {
+		grid-template-columns: 1fr auto;
+		gap: 1rem;
+	}
+
+	.heading svg {
+		width: 5.5rem;
+	}
+
+	.heading_wrapper .heading_btns {
+		order: unset;
+	}
 }

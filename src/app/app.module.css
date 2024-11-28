@@ -88,7 +88,7 @@ body:global(.not_scrollable) {
 }
 
 .main:global(.frame) {
-	padding: 0.5rem;
+	padding: 2rem 0.5rem;
 	max-width: 100rem;
 	margin: 2rem auto;
 	border-radius: 0;
@@ -129,6 +129,11 @@ a:hover,
 a:visited,
 a:active {
 	color: var(--action);
+}
+
+a:global(.none) {
+	color: var(--fg);
+	text-decoration: none;
 }
 
 ::selection {

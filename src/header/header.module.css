@@ -1,15 +1,22 @@
 .header {
 	display: grid;
-	grid-template-columns: 12rem auto;
+	grid-template-columns: 1fr;
 	align-items: baseline;
 	gap: 1rem;
 	padding: 1rem;
 	margin-bottom: 3rem;
 }
 
+@media (min-width: 42rem) {
+	.header {
+		padding: 1rem 0 1rem 1rem;
+		grid-template-columns: 12rem auto;
+	}
+}
+
 @media (min-width: 60rem) {
 	.header {
-		padding: 2rem;
+		padding: 2rem 0 2rem 2rem;
 		margin-bottom: 5rem;
 	}
 }
@@ -37,7 +44,7 @@ a.logo_wrapper:hover :global(.logo-codon) {
 }
 
 .logo_wrapper :global(.logo-codon) {
-	height: 4rem;
+	height: 6rem;
 	transition: color easy 1s;
 }
 
