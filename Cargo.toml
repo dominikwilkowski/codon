@@ -1,4 +1,3 @@
-cargo-features = ["edition2024"]
 [package]
 name = "codon"
 version = "1.0.0"
