@@ -10,6 +10,8 @@ stylance::import_style!(css, "notes_form.module.css");
 pub fn NotesForm(id: String, notes_upload_action: Action<FormData, Result<(), ServerFnError>>) -> impl IntoView {
 	let form_ref = create_node_ref::<html::Form>();
 
+	// TODO: check if you have permission to write to equipment
+
 	let media1 = create_rw_signal(String::new());
 	let media2 = create_rw_signal(String::new());
 	let media3 = create_rw_signal(String::new());
@@ -142,9 +144,8 @@ pub async fn save_notes(data: MultipartData) -> Result<(), ServerFnError> {
 
 	let mut notes = None;
 	for (name, value) in &result.additional_fields {
-		match name.as_str() {
-			"notes" => notes = Some(value),
-			_ => {},
+		if name.as_str() == "notes" {
+			notes = Some(value)
 		}
 	}
 

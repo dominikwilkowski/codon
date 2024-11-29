@@ -29,6 +29,7 @@ pub fn Footer() -> impl IntoView {
 
 			<div class=css::footer_logo>
 				<Logo />
+				<span class=css::footer_version>v{env!("CARGO_PKG_VERSION")}</span>
 			</div>
 		</footer>
 	}
