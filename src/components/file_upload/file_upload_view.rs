@@ -22,7 +22,9 @@ async fn move_temp_files(
 		match rename(temp_path.clone(), new_path.clone()).await {
 			Ok(_) => {},
 			Err(error) => {
-				return Err(ServerFnError::Request(format!("Moving file from {temp_path:?} to {new_path:?} failed: {error}")));
+				return Err(ServerFnError::Request(format!(
+					"Moving file from {temp_path:?} to {new_path:?} failed [1]: {error}"
+				)));
 			},
 		}
 		uploaded_files.push(

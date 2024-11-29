@@ -67,7 +67,10 @@ pub async fn move_file(from: String, to: &str) -> Result<Option<String>, std::io
 		match rename(from.clone(), to.clone()).await {
 			Ok(_) => {},
 			Err(error) => {
-				return Err(std::io::Error::new(error.kind(), format!("Moving file from {from:?} to {to:?} failed: {error}")));
+				return Err(std::io::Error::new(
+					error.kind(),
+					format!("Moving file from {from:?} to {to:?} failed [2]: {error}"),
+				));
 			},
 		}
 		Ok(Some(new_path))
