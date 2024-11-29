@@ -280,13 +280,13 @@ pub async fn add_equipment(
 		.map_err::<ServerFnError, _>(|_| ServerFnError::ServerError("Failed to generate QR code".into()))?;
 
 	let base_folder = get_equipment_base_folder(row.id);
-	tokio::fs::create_dir_all(format!("public{base_folder}")).await?;
-	let qr_path = PathBuf::from(format!("public{base_folder}qr_{}.svg", row.id));
+	tokio::fs::create_dir_all(format!("{}public{base_folder}", env!("UPLOAD_ROOT"))).await?;
+	let qr_path = PathBuf::from(format!("{}public{base_folder}qr_{}.svg", env!("UPLOAD_ROOT"), row.id));
 
 	fs::write(&qr_path, qr_svg)
 		.map_err::<ServerFnError, _>(|_| ServerFnError::ServerError("Failed to save QR code to disk".into()))?;
 
-	if let Some(stripped_path) = qr_path.to_string_lossy().strip_prefix("public") {
+	if let Some(stripped_path) = qr_path.to_string_lossy().strip_prefix(&format!("{}public", env!("UPLOAD_ROOT"))) {
 		sqlx::query!("UPDATE equipment SET qrcode = $1 WHERE id = $2", &stripped_path, row.id)
 			.execute(&pool)
 			.await

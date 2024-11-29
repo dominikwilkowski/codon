@@ -19,7 +19,12 @@ async fn move_temp_files(
 	let upload_root = std::env::var("UPLOAD_ROOT").unwrap();
 	while let Some((temp_path, file_name)) = temp_files.pop() {
 		let new_path = PathBuf::from(format!("{upload_root}/public{base_path}{file_name}"));
-		rename(temp_path, new_path.clone()).await?;
+		match rename(temp_path.clone(), new_path.clone()).await {
+			Ok(_) => {},
+			Err(error) => {
+				return Err(ServerFnError::Request(format!("Moving file from {temp_path:?} to {new_path:?} failed: {error}")));
+			},
+		}
 		uploaded_files.push(
 			new_path
 				.to_string_lossy()
@@ -77,7 +82,14 @@ pub async fn file_upload(
 					equipment_id = Some(id);
 					folder_name = Some(get_folder(id));
 
-					tokio::fs::create_dir_all(format!("{upload_root}public{}", folder_name.clone().unwrap())).await?;
+					let folder_path = format!("{upload_root}public{}", folder_name.clone().unwrap());
+					match tokio::fs::create_dir_all(folder_path.clone()).await {
+						Ok(_) => {},
+						Err(error) => {
+							return Err(ServerFnError::Request(format!("Creating folder {folder_path:?} failed: {error}")));
+						},
+					}
+
 					move_temp_files(&mut temp_files, &mut uploaded_files, &folder_name.clone().unwrap()).await?;
 				},
 				"media1" | "media2" | "media3" | "media4" | "media5" | "media6" | "media7" | "media8" | "media9"
@@ -104,13 +116,33 @@ pub async fn file_upload(
 							};
 
 							if let Some(parent) = file_path.parent() {
-								tokio::fs::create_dir_all(parent).await?;
+								match tokio::fs::create_dir_all(parent).await {
+									Ok(_) => {},
+									Err(error) => {
+										return Err(ServerFnError::Request(format!("Creating folder {parent:?} failed: {error}")));
+									},
+								}
 							}
 
-							let mut file = File::create(file_path.clone()).await?;
-							file.write_all(&chunk).await?;
+							let mut file = match File::create(file_path.clone()).await {
+								Ok(file) => file,
+								Err(error) => {
+									return Err(ServerFnError::Request(format!("Creating file {file_path:?} failed: {error}")));
+								},
+							};
+							match file.write_all(&chunk).await {
+								Ok(_) => {},
+								Err(error) => {
+									return Err(ServerFnError::Request(format!("Writing to file {file:?} failed [1]: {error}")));
+								},
+							}
 							while let Ok(Some(chunk)) = field.chunk().await {
-								file.write_all(&chunk).await?;
+								match file.write_all(&chunk).await {
+									Ok(_) => {},
+									Err(error) => {
+										return Err(ServerFnError::Request(format!("Writing to file {file:?} failed [2]: {error}")));
+									},
+								}
 							}
 						} else {
 							// empty chunk means the input field had no data in it
@@ -215,7 +247,7 @@ pub async fn remove_temp_files(result: FileUploadResult) -> Result<(), ServerFnE
 		if file_path.exists() {
 			match fs::remove_file(&file_path) {
 				Ok(_) => {},
-				Err(_) => return Err(ServerFnError::Request(format!("Could not delete temp file {file_path:?}"))),
+				Err(error) => return Err(ServerFnError::Request(format!("Could not delete temp file {file_path:?}: {error}"))),
 			}
 		}
 	}

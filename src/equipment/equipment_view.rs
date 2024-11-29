@@ -360,7 +360,7 @@ pub async fn get_equipment_data(
 // 		sqlx::query_scalar("SELECT qrcode FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
 // 	// TODO: delete all logs and notes as well
 
-// 	let file_path = PathBuf::from(format!("{}/public/qrcodes/{qrcode_path}", env!("CARGO_MANIFEST_DIR")));
+// 	let file_path = PathBuf::from(format!("{}/public/qrcodes/{qrcode_path}", env!("UPLOAD_ROOT")));
 
 // 	if file_path.exists() {
 // 		fs::remove_file(&file_path).map_err(|error| ServerFnError::<NoCustomError>::ServerError(error.to_string()))?;
