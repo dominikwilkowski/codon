@@ -45,7 +45,6 @@ pub fn NotesForm(id: String, notes_upload_action: Action<FormData, Result<(), Se
 		>
 			<h3>Add a Note</h3>
 			<input type="hidden" name="id" value=id />
-			<input type="hidden" name="person" value=12 />
 			<TextArea name="notes" value=create_rw_signal(String::from("")) placeholder="Your note" required=true />
 			<div class=css::file_inputs>
 				<Show when=move || !media9.get().is_empty()>
@@ -122,6 +121,7 @@ pub async fn save_notes(data: MultipartData) -> Result<(), ServerFnError> {
 		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
+	let user_id;
 	match user {
 		Some(user) => {
 			let Permissions::All {
@@ -129,6 +129,8 @@ pub async fn save_notes(data: MultipartData) -> Result<(), ServerFnError> {
 				write: _,
 				create: perm,
 			} = user.permission_equipment;
+			user_id = user.id;
+
 			if perm != Permission::Create(true) {
 				return Err(ServerFnError::Request(String::from("User not authenticated")));
 			}
@@ -138,20 +140,9 @@ pub async fn save_notes(data: MultipartData) -> Result<(), ServerFnError> {
 
 	let result = file_upload(data, |id| format!("{}temp/", get_equipment_base_folder(id))).await?;
 
-	let mut person = None;
 	let mut notes = None;
-
 	for (name, value) in &result.additional_fields {
 		match name.as_str() {
-			"person" => {
-				person = {
-					let value = match value.parse::<i32>() {
-						Ok(value) => value,
-						Err(_) => return Err(ServerFnError::Request(String::from("Invalid person ID"))),
-					};
-					Some(value)
-				}
-			},
 			"notes" => notes = Some(value),
 			_ => {},
 		}
@@ -160,7 +151,7 @@ pub async fn save_notes(data: MultipartData) -> Result<(), ServerFnError> {
 	let note = sqlx::query!(
 		r#"INSERT INTO equipment_notes (equipment, person, notes) VALUES ($1, $2, $3) RETURNING id"#,
 		result.id,
-		person,
+		user_id,
 		notes,
 	)
 	.fetch_one(&pool)

@@ -36,6 +36,9 @@ pub mod qrcode;
 pub mod utils;
 
 #[cfg(feature = "ssr")]
+use dotenvy::dotenv;
+
+#[cfg(feature = "ssr")]
 pub mod fileserv;
 
 #[cfg(feature = "ssr")]
@@ -116,6 +119,7 @@ async fn leptos_routes_handler(
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
+	dotenv().ok();
 	use crate::db::ssr::{get_db, init_db};
 
 	// Init the Postgres pool into static

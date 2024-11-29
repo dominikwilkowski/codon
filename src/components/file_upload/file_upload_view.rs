@@ -16,11 +16,16 @@ async fn move_temp_files(
 	uploaded_files: &mut Vec<String>,
 	base_path: &String,
 ) -> Result<(), ServerFnError> {
+	let upload_root = std::env::var("UPLOAD_ROOT").unwrap();
 	while let Some((temp_path, file_name)) = temp_files.pop() {
-		let new_path = PathBuf::from(format!("/public{base_path}{file_name}"));
+		let new_path = PathBuf::from(format!("{upload_root}/public{base_path}{file_name}"));
 		rename(temp_path, new_path.clone()).await?;
 		uploaded_files.push(
-			new_path.to_string_lossy().strip_prefix("/public").unwrap_or(new_path.to_string_lossy().as_ref()).to_string(),
+			new_path
+				.to_string_lossy()
+				.strip_prefix(&format!("{upload_root}/public"))
+				.unwrap_or(new_path.to_string_lossy().as_ref())
+				.to_string(),
 		);
 	}
 	Ok(())
@@ -58,6 +63,7 @@ pub async fn file_upload(
 	let mut files_to_upload = 0;
 	let mut temp_files: Vec<(PathBuf, String)> = Vec::new();
 	let mut additional_fields: Vec<(String, String)> = Vec::new();
+	let upload_root = std::env::var("UPLOAD_ROOT").unwrap();
 
 	while let Ok(Some(mut field)) = data.next_field().await {
 		if let Some(name) = field.name() {
@@ -71,7 +77,7 @@ pub async fn file_upload(
 					equipment_id = Some(id);
 					folder_name = Some(get_folder(id));
 
-					tokio::fs::create_dir_all(format!("public{}", folder_name.clone().unwrap())).await?;
+					tokio::fs::create_dir_all(format!("{upload_root}public{}", folder_name.clone().unwrap())).await?;
 					move_temp_files(&mut temp_files, &mut uploaded_files, &folder_name.clone().unwrap()).await?;
 				},
 				"media1" | "media2" | "media3" | "media4" | "media5" | "media6" | "media7" | "media8" | "media9"
@@ -87,12 +93,12 @@ pub async fn file_upload(
 							let file_path = if let Some(ref folder_name) = folder_name {
 								move_temp_files(&mut temp_files, &mut uploaded_files, folder_name).await?;
 
-								let final_path = PathBuf::from(format!("public{folder_name}")).join(&name);
+								let final_path = PathBuf::from(format!("{upload_root}public{folder_name}")).join(&name);
 								uploaded_files.push(format!("{}", PathBuf::from(folder_name).join(&name).to_string_lossy()));
 								final_path
 							} else {
 								// ID has not been processed yet so we store the files in a temp folder until it is
-								let temp_path = PathBuf::from("public/upload_media/temp/").join(&name);
+								let temp_path = PathBuf::from("{upload_root}public/upload_media/temp/").join(&name);
 								temp_files.push((temp_path.clone(), name));
 								temp_path
 							};
@@ -150,6 +156,7 @@ pub async fn file_upload(
 
 #[cfg(feature = "ssr")]
 pub async fn remove_temp_files(result: FileUploadResult) -> Result<(), ServerFnError> {
+	let upload_root = std::env::var("UPLOAD_ROOT").unwrap();
 	let media_fields = [
 		if result.media1.is_empty() {
 			None
@@ -204,7 +211,7 @@ pub async fn remove_temp_files(result: FileUploadResult) -> Result<(), ServerFnE
 	];
 
 	for media in media_fields.into_iter().flatten() {
-		let file_path = PathBuf::from(format!("{}/public{media}", env!("CARGO_MANIFEST_DIR")));
+		let file_path = PathBuf::from(format!("{upload_root}/public{media}"));
 		if file_path.exists() {
 			match fs::remove_file(&file_path) {
 				Ok(_) => {},

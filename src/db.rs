@@ -1,13 +1,10 @@
 #[cfg(feature = "ssr")]
 pub mod ssr {
-	use dotenvy::dotenv;
 	use sqlx::{PgPool, Pool, Postgres, postgres::PgPoolOptions};
 
 	static DB: std::sync::OnceLock<PgPool> = std::sync::OnceLock::new();
 
 	async fn create_pool() -> PgPool {
-		dotenv().ok();
-
 		let database_url = std::env::var("DATABASE_URL").expect("No database url found in environment");
 		PgPoolOptions::new().max_connections(5).connect(database_url.as_str()).await.expect("Unable to connect to database")
 	}
