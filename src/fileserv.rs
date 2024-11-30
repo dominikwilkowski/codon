@@ -29,7 +29,7 @@ pub async fn file_and_error_handler(
 
 	let accept_encoding = req.headers().get(ACCEPT_ENCODING).and_then(|value| value.to_str().ok()).unwrap_or("");
 
-	match get_static_file(uri.clone(), &root, &uploads_dir, accept_encoding).await {
+	match get_static_file(uri.clone(), &root, uploads_dir, accept_encoding).await {
 		Ok(res) => res.into_response(),
 		Err((status, msg)) => {
 			eprintln!("Unable to serve static file: {} - {}", uri.path(), msg);
@@ -90,7 +90,7 @@ async fn serve_file(path: &Path, accept_encoding: &str) -> Result<Response<Body>
 				(StatusCode::INTERNAL_SERVER_ERROR, "Internal server error".to_string())
 			})?;
 
-			let mime_type = get_mime_type(&path);
+			let mime_type = get_mime_type(path);
 			let (body, encoding) = if accept_encoding.contains("br") {
 				// Compress the contents using Brotli
 				let mut compressed_data = Vec::new();
