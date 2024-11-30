@@ -25,7 +25,7 @@ pub async fn file_and_error_handler(
 	req: Request<Body>,
 ) -> AxumResponse {
 	let root = options.site_root.clone();
-	let uploads_dir = &format!("{}public/upload_media", env!("UPLOAD_ROOT"));
+	let uploads_dir = &format!("{}public", env!("UPLOAD_ROOT"));
 
 	let accept_encoding = req.headers().get(ACCEPT_ENCODING).and_then(|value| value.to_str().ok()).unwrap_or("");
 
