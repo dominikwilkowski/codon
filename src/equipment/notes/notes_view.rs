@@ -186,7 +186,7 @@ pub fn Note(
 										</DropdownTrigger>
 										<DropdownItem key="edit" label="Edit" />
 										<button
-											class=css::text_btn
+											class="dropdown_btn"
 											on:click=move |_| {
 												if web_sys::window()
 													.unwrap()

@@ -35,6 +35,7 @@
 	margin: 0;
 	padding: 0;
 	text-align: center;
+	align-items: center;
 }
 
 .nav li {
@@ -50,21 +51,4 @@
 	display: inline-flex;
 	gap: 1.5rem;
 	align-items: end;
-}
-
-.nav li.person button {
-	appearance: none;
-	padding: 0;
-	margin: 0;
-	border: none;
-	box-shadow: none;
-	background: transparent;
-	color: var(--action);
-	line-height: 1.15;
-	text-decoration: underline;
-}
-
-.nav li.person button:focus-visible {
-	border-radius: var(--border-radius-sm);
-	outline-offset: 6px;
 }

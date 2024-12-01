@@ -1,6 +1,9 @@
 use crate::{
 	app::{LogoutAction, UserSignal},
-	components::avatar::Avatar,
+	components::{
+		avatar::Avatar,
+		dropdown::{Dropdown, DropdownPlacement, DropdownTrigger},
+	},
 };
 
 use leptos::*;
@@ -31,12 +34,19 @@ pub fn Nav() -> impl IntoView {
 								None => view! { <A href="/login">"Login"</A> }.into_view(),
 								Some(user) => {
 									view! {
-										<Avatar data=user.into() tiny=true />
-										<ActionForm action=logout_action>
-											<button type="submit" class="button">
-												"Log Out"
-											</button>
-										</ActionForm>
+										<Dropdown placement=DropdownPlacement::BottomEnd on_select=move |_| {}>
+											<DropdownTrigger slot>
+												<Avatar data=user.into() />
+											</DropdownTrigger>
+											<A href="/profile" class="dropdown_btn">
+												Profile
+											</A>
+											<ActionForm action=logout_action>
+												<button type="submit" class="dropdown_btn">
+													"Log Out"
+												</button>
+											</ActionForm>
+										</Dropdown>
 									}
 										.into_view()
 								}

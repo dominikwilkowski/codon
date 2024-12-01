@@ -32,6 +32,7 @@ pub mod icons;
 pub mod login;
 pub mod nav;
 pub mod permission;
+pub mod profile;
 pub mod qrcode;
 pub mod utils;
 

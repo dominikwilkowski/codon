@@ -26,29 +26,12 @@
 
 .notes_item .menu {
 	height: 1.5rem;
-	cursor: pointer;
 }
 
 .dropdown_btn {
 	all: unset;
 	border-radius: var(--border-radius-md);
 	line-height: 0;
-}
-
-.text_btn {
-	appearance: none;
-	border: none;
-	box-shadow: none;
-	background: transparent;
-	color: var(--text);
-	padding: 6px 5px;
-	margin: 0;
-	border-radius: 2px;
-	cursor: pointer;
-}
-
-.text_btn:hover {
-	background: #ffffff17;
 }
 
 .edit_form {
