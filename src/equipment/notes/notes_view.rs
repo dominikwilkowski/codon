@@ -65,7 +65,7 @@ pub fn Notes(
 							Err(error) => {
 								view! { <pre class="error">Notes Server Error: {error.to_string()}</pre> }.into_view()
 							}
-							Ok((notes, count)) => {
+							Ok((notes, person_id, count)) => {
 								let hidden_fields = vec![
 									(String::from("log_page"), log_query_page.get().to_string()),
 									(String::from("log_items_per_page"), log_query_ipp.get().to_string()),
@@ -73,7 +73,11 @@ pub fn Notes(
 								];
 								view! {
 									<div class=css::notes_list id="equipment_notes">
-										<NotesForm id=id.get() notes_upload_action=notes_upload_action />
+										<NotesForm
+											id=id.get()
+											person_id=person_id
+											notes_upload_action=notes_upload_action
+										/>
 										<Pagination
 											action=format!("/equipment/{}#equipment_notes", id.get())
 											page_key="notes_page"
@@ -644,7 +648,7 @@ pub async fn get_notes_for_equipment(
 	id: String,
 	page: u16,
 	items_per_page: u8,
-) -> Result<(Vec<EquipmentNotesData>, i64), ServerFnError> {
+) -> Result<(Vec<EquipmentNotesData>, i32, i64), ServerFnError> {
 	use crate::{auth::get_user, equipment::EquipmentNotesSQLData, permission::Permissions};
 
 	use sqlx::PgPool;
@@ -699,11 +703,14 @@ pub async fn get_notes_for_equipment(
 
 	let notes_data: Vec<EquipmentNotesData> = notes_sql_data.into_iter().map(Into::into).collect();
 
+	let person_id: i32 =
+		sqlx::query_scalar("SELECT person FROM equipment WHERE id = $1").bind(id).fetch_one(&pool).await?;
+
 	let row_count: i64 =
 		sqlx::query_scalar(&format!("SELECT COUNT(*) FROM equipment_notes WHERE equipment = $1 {auth_query}"))
 			.bind(id)
 			.fetch_one(&pool)
 			.await?;
 
-	Ok((notes_data, row_count))
+	Ok((notes_data, person_id, row_count))
 }

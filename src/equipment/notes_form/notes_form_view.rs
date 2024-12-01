@@ -1,4 +1,8 @@
-use crate::components::{button::Button, file_input::FileInput, input::TextArea};
+use crate::{
+	app::UserSignal,
+	components::{button::Button, file_input::FileInput, input::TextArea},
+	permission::Permissions,
+};
 
 use leptos::*;
 use server_fn::codec::{MultipartData, MultipartFormData};
@@ -7,10 +11,14 @@ use web_sys::{FormData, SubmitEvent};
 stylance::import_style!(css, "notes_form.module.css");
 
 #[component]
-pub fn NotesForm(id: String, notes_upload_action: Action<FormData, Result<(), ServerFnError>>) -> impl IntoView {
-	let form_ref = create_node_ref::<html::Form>();
+pub fn NotesForm(
+	id: String,
+	person_id: i32,
+	notes_upload_action: Action<FormData, Result<(), ServerFnError>>,
+) -> impl IntoView {
+	let user_signal = use_context::<UserSignal>().expect("No user signal found in context");
 
-	// TODO: check if you have permission to write to equipment
+	let form_ref = create_node_ref::<html::Form>();
 
 	let media1 = create_rw_signal(String::new());
 	let media2 = create_rw_signal(String::new());
@@ -23,88 +31,117 @@ pub fn NotesForm(id: String, notes_upload_action: Action<FormData, Result<(), Se
 	let media9 = create_rw_signal(String::new());
 	let media10 = create_rw_signal(String::new());
 	let loading = create_rw_signal(false);
+	let id = create_rw_signal(id);
 
 	view! {
-		<form
-			ref=form_ref
-			class=css::form
-			method="post"
-			action="#"
-			enctype="multipart/form-data"
-			on:submit=move |event: SubmitEvent| {
-				event.prevent_default();
-				let form = form_ref.get().unwrap();
-				let form_data = match FormData::new_with_form(&form) {
-					Ok(fd) => fd,
-					Err(error) => {
-						logging::log!("Failed to create FormData");
-						logging::log!("{error:?}");
-						return;
-					}
-				};
-				notes_upload_action.dispatch(form_data);
-			}
-		>
-			<h3>Add a Note</h3>
-			<input type="hidden" name="id" value=id />
-			<TextArea name="notes" value=create_rw_signal(String::from("")) placeholder="Your note" required=true />
-			<div class=css::file_inputs>
-				<Show when=move || !media9.get().is_empty()>
-					<FileInput name="media10" value=media10 />
-				</Show>
-				<Show when=move || !media8.get().is_empty()>
-					<FileInput name="media9" value=media9 />
-				</Show>
-				<Show when=move || !media7.get().is_empty()>
-					<FileInput name="media8" value=media8 />
-				</Show>
-				<Show when=move || !media6.get().is_empty()>
-					<FileInput name="media7" value=media7 />
-				</Show>
-				<Show when=move || !media5.get().is_empty()>
-					<FileInput name="media6" value=media6 />
-				</Show>
-				<Show when=move || !media4.get().is_empty()>
-					<FileInput name="media5" value=media5 />
-				</Show>
-				<Show when=move || !media3.get().is_empty()>
-					<FileInput name="media4" value=media4 />
-				</Show>
-				<Show when=move || !media2.get().is_empty()>
-					<FileInput name="media3" value=media3 />
-				</Show>
-				<Show when=move || !media1.get().is_empty()>
-					<FileInput name="media2" value=media2 />
-				</Show>
-				<FileInput name="media1" value=media1 />
-			</div>
-			<div class=css::btn_line>
-				<Button kind="submit" loading>
-					Save
-				</Button>
-				<span>
-					{move || {
-						if notes_upload_action.input().get().is_none() && notes_upload_action.value().get().is_none() {
-							view! {}.into_view()
-						} else if notes_upload_action.pending().get() {
-							loading.set(true);
-							view! {}.into_view()
-						} else if let Some(Ok(_)) = notes_upload_action.value().get() {
-							loading.set(false);
-							view! { <span class=css::success>Saved successfully</span> }.into_view()
+		<Suspense fallback=move || {
+			view! { <span /> }
+		}>
+			{move || {
+				match user_signal.get() {
+					None => view! { <span /> }.into_view(),
+					Some(user) => {
+						let Permissions::All { read: _, write: perm, create: _ } = user.permission_equipment;
+						let id_num = id.get().parse::<i32>().unwrap_or(-1);
+						if !perm.has_permission("write", id_num, person_id) {
+							view! { <span /> }.into_view()
 						} else {
-							loading.set(false);
 							view! {
-								<span class=css::error>
-									{format!("Error: {:?}", notes_upload_action.value().get())}
-								</span>
+								<form
+									ref=form_ref
+									class=css::form
+									method="post"
+									action="#"
+									enctype="multipart/form-data"
+									on:submit=move |event: SubmitEvent| {
+										event.prevent_default();
+										let form = form_ref.get().unwrap();
+										let form_data = match FormData::new_with_form(&form) {
+											Ok(fd) => fd,
+											Err(error) => {
+												logging::log!("Failed to create FormData");
+												logging::log!("{error:?}");
+												return;
+											}
+										};
+										notes_upload_action.dispatch(form_data);
+									}
+								>
+									<h3>Add a Note</h3>
+									<input type="hidden" name="id" value=id.get() />
+									<TextArea
+										name="notes"
+										value=create_rw_signal(String::from(""))
+										placeholder="Your note"
+										required=true
+									/>
+									<div class=css::file_inputs>
+										<Show when=move || !media9.get().is_empty()>
+											<FileInput name="media10" value=media10 />
+										</Show>
+										<Show when=move || !media8.get().is_empty()>
+											<FileInput name="media9" value=media9 />
+										</Show>
+										<Show when=move || !media7.get().is_empty()>
+											<FileInput name="media8" value=media8 />
+										</Show>
+										<Show when=move || !media6.get().is_empty()>
+											<FileInput name="media7" value=media7 />
+										</Show>
+										<Show when=move || !media5.get().is_empty()>
+											<FileInput name="media6" value=media6 />
+										</Show>
+										<Show when=move || !media4.get().is_empty()>
+											<FileInput name="media5" value=media5 />
+										</Show>
+										<Show when=move || !media3.get().is_empty()>
+											<FileInput name="media4" value=media4 />
+										</Show>
+										<Show when=move || !media2.get().is_empty()>
+											<FileInput name="media3" value=media3 />
+										</Show>
+										<Show when=move || !media1.get().is_empty()>
+											<FileInput name="media2" value=media2 />
+										</Show>
+										<FileInput name="media1" value=media1 />
+									</div>
+									<div class=css::btn_line>
+										<Button kind="submit" loading>
+											Save
+										</Button>
+										<span>
+											{move || {
+												if notes_upload_action.input().get().is_none()
+													&& notes_upload_action.value().get().is_none()
+												{
+													view! {}.into_view()
+												} else if notes_upload_action.pending().get() {
+													loading.set(true);
+													view! {}.into_view()
+												} else if let Some(Ok(_)) = notes_upload_action.value().get() {
+													loading.set(false);
+													view! { <span class=css::success>Saved successfully</span> }
+														.into_view()
+												} else {
+													loading.set(false);
+													view! {
+														<span class=css::error>
+															{format!("Error: {:?}", notes_upload_action.value().get())}
+														</span>
+													}
+														.into_view()
+												}
+											}}
+										</span>
+									</div>
+								</form>
 							}
 								.into_view()
 						}
-					}}
-				</span>
-			</div>
-		</form>
+					}
+				}
+			}}
+		</Suspense>
 	}
 }
 
@@ -112,8 +149,8 @@ pub fn NotesForm(id: String, notes_upload_action: Action<FormData, Result<(), Se
 pub async fn save_notes(data: MultipartData) -> Result<(), ServerFnError> {
 	use crate::{
 		auth::get_user,
-		components::file_upload::file_upload,
-		permission::{Permission, Permissions},
+		components::file_upload::{file_upload, remove_temp_files},
+		permission::Permissions,
 		utils::{get_equipment_base_folder, get_equipment_notes_folder, move_file},
 	};
 
@@ -123,24 +160,30 @@ pub async fn save_notes(data: MultipartData) -> Result<(), ServerFnError> {
 		.ok_or_else::<ServerFnError, _>(|| ServerFnError::ServerError(String::from("Database not initialized")))?;
 	let user = get_user().await?;
 
+	let result = file_upload(data, |id| format!("{}temp/", get_equipment_base_folder(id))).await?;
+
 	let user_id;
 	match user {
 		Some(user) => {
 			let Permissions::All {
 				read: _,
-				write: _,
-				create: perm,
+				write: perm,
+				create: _,
 			} = user.permission_equipment;
 			user_id = user.id;
 
-			if perm != Permission::Create(true) {
+			let person: i32 =
+				sqlx::query_scalar("SELECT person FROM equipment WHERE id = $1").bind(result.id).fetch_one(&pool).await?;
+			if !perm.has_permission("write", result.id, person) {
+				remove_temp_files(result).await?;
 				return Err(ServerFnError::Request(String::from("User not authenticated")));
 			}
 		},
-		None => return Err(ServerFnError::Request(String::from("User not authenticated"))),
+		None => {
+			remove_temp_files(result).await?;
+			return Err(ServerFnError::Request(String::from("User not authenticated")));
+		},
 	};
-
-	let result = file_upload(data, |id| format!("{}temp/", get_equipment_base_folder(id))).await?;
 
 	let mut notes = None;
 	for (name, value) in &result.additional_fields {
