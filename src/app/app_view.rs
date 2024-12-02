@@ -94,11 +94,7 @@ pub fn App() -> impl IntoView {
 						format!(
 							"{} frame{}",
 							css::main,
-							if location.pathname.get() == "/equipment" {
-								" large"
-							} else {
-								""
-							}
+							if location.pathname.get() == "/equipment" { " large" } else { "" },
 						)
 					}>
 						<Routes>

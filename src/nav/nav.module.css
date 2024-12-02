@@ -20,8 +20,13 @@
 		align-self: end;
 		border-top-right-radius: 0;
 		border-bottom-right-radius: 0;
-		padding: 1rem 2rem 1rem 1rem;
 		margin-top: 0;
+	}
+}
+
+@media (min-width: 100rem) {
+	.nav {
+		border-radius: var(--border-radius-lg);
 	}
 }
 
@@ -36,6 +41,10 @@
 	padding: 0;
 	text-align: center;
 	align-items: center;
+	height: 1rem;
+}
+.nav ul figcaption {
+	display: none;
 }
 
 .nav li {
