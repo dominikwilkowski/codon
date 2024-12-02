@@ -94,6 +94,13 @@ body:global(.not_scrollable) {
 	border-radius: 0;
 }
 
+.main:global(.large) {
+	display: table;
+	width: auto;
+	min-width: 100rem;
+	max-width: 200rem;
+}
+
 @media (min-width: 42rem) {
 	.main:global(.frame) {
 		padding: 2rem;

@@ -89,7 +89,18 @@ pub fn App() -> impl IntoView {
 					}
 				>
 					<Header />
-					<main class=format!("{} frame", css::main)>
+					<main class=move || {
+						let location = use_location();
+						format!(
+							"{} frame{}",
+							css::main,
+							if location.pathname.get() == "/equipment" {
+								" large"
+							} else {
+								""
+							}
+						)
+					}>
 						<Routes>
 							<Route path="" view=Home />
 							<Route path="/ds" view=Ds />

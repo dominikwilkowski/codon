@@ -1,8 +1,9 @@
 .footer {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	margin: 17rem 0 2rem 0;
+	margin: 17rem auto 2rem auto;
 	padding: 0 3rem;
+	max-width: 100rem;
 }
 
 .footer_name {
