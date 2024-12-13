@@ -37,36 +37,38 @@ pub fn Profile() -> impl IntoView {
 								view! {
 									<div>
 										<h1>Your profile</h1>
-										- employee_id =
-										{profile.employee_id}
-										- status =
-										{format!("{:?}", profile.status)}
-										- first_name =
-										{profile.first_name}
-										- last_name =
-										{profile.last_name}
-										- preferred_name =
-										{profile.preferred_name}
-										- email =
-										{profile.email}
-										- phone_number =
-										{profile.phone_number}
-										- department =
-										{profile.department}
-										- role =
-										{profile.role}
-										- hire_date =
-										{format!("{:?}", profile.hire_date)}
-										- emergency_contact =
-										{profile.emergency_contact}
-										- certifications =
-										{profile.certifications}
-										- specializations =
-										{profile.specializations}
-										- picture =
-										{profile.picture}
-										- bio =
-										{profile.bio}
+										<dl>
+											<dt>Employee ID</dt>
+											<dd>{profile.employee_id}</dd>
+										</dl>
+										<dt>status</dt>
+										<dd>{format!("{:?}", profile.status)}</dd>
+										<dt>First Name</dt>
+										<dd>{profile.first_name}</dd>
+										<dt>Last Name</dt>
+										<dd>{profile.last_name}</dd>
+										<dt>Preferred Name</dt>
+										<dd>{profile.preferred_name}</dd>
+										<dt>eMail</dt>
+										<dd>{profile.email}</dd>
+										<dt>Phone Number</dt>
+										<dd>{profile.phone_number}</dd>
+										<dt>Department</dt>
+										<dd>{profile.department}</dd>
+										<dt>Role</dt>
+										<dd>{profile.role}</dd>
+										<dt>Hire Date</dt>
+										<dd>{format!("{:?}", profile.hire_date)}</dd>
+										<dt>Emergency Contact</dt>
+										<dd>{profile.emergency_contact}</dd>
+										<dt>Certifications</dt>
+										<dd>{profile.certifications}</dd>
+										<dt>Specializations</dt>
+										<dd>{profile.specializations}</dd>
+										<dt>Picture</dt>
+										<dd>{profile.picture}</dd>
+										<dt>Bio</dt>
+										<dd>{profile.bio}</dd>
 									</div>
 								}
 									.into_view()
