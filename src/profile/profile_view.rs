@@ -40,35 +40,35 @@ pub fn Profile() -> impl IntoView {
 										<dl>
 											<dt>Employee ID</dt>
 											<dd>{profile.employee_id}</dd>
+											<dt>status</dt>
+											<dd>{format!("{:?}", profile.status)}</dd>
+											<dt>First Name</dt>
+											<dd>{profile.first_name}</dd>
+											<dt>Last Name</dt>
+											<dd>{profile.last_name}</dd>
+											<dt>Preferred Name</dt>
+											<dd>{profile.preferred_name}</dd>
+											<dt>eMail</dt>
+											<dd>{profile.email}</dd>
+											<dt>Phone Number</dt>
+											<dd>{profile.phone_number}</dd>
+											<dt>Department</dt>
+											<dd>{profile.department}</dd>
+											<dt>Role</dt>
+											<dd>{profile.role}</dd>
+											<dt>Hire Date</dt>
+											<dd>{format!("{:?}", profile.hire_date)}</dd>
+											<dt>Emergency Contact</dt>
+											<dd>{profile.emergency_contact}</dd>
+											<dt>Certifications</dt>
+											<dd>{profile.certifications}</dd>
+											<dt>Specializations</dt>
+											<dd>{profile.specializations}</dd>
+											<dt>Picture</dt>
+											<dd>{profile.picture}</dd>
+											<dt>Bio</dt>
+											<dd>{profile.bio}</dd>
 										</dl>
-										<dt>status</dt>
-										<dd>{format!("{:?}", profile.status)}</dd>
-										<dt>First Name</dt>
-										<dd>{profile.first_name}</dd>
-										<dt>Last Name</dt>
-										<dd>{profile.last_name}</dd>
-										<dt>Preferred Name</dt>
-										<dd>{profile.preferred_name}</dd>
-										<dt>eMail</dt>
-										<dd>{profile.email}</dd>
-										<dt>Phone Number</dt>
-										<dd>{profile.phone_number}</dd>
-										<dt>Department</dt>
-										<dd>{profile.department}</dd>
-										<dt>Role</dt>
-										<dd>{profile.role}</dd>
-										<dt>Hire Date</dt>
-										<dd>{format!("{:?}", profile.hire_date)}</dd>
-										<dt>Emergency Contact</dt>
-										<dd>{profile.emergency_contact}</dd>
-										<dt>Certifications</dt>
-										<dd>{profile.certifications}</dd>
-										<dt>Specializations</dt>
-										<dd>{profile.specializations}</dd>
-										<dt>Picture</dt>
-										<dd>{profile.picture}</dd>
-										<dt>Bio</dt>
-										<dd>{profile.bio}</dd>
 									</div>
 								}
 									.into_view()
