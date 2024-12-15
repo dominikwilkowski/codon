@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
 use sqlx::FromRow;
 
-#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub enum PeopleStatus {
 	#[default]
 	Active,

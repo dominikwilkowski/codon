@@ -1,6 +1,7 @@
 use crate::{
 	app::{LoginAction, LogoutAction},
-	equipment::PeopleData,
+	components::avatar::Avatar,
+	equipment::{AvatarData, PeopleData},
 	error_template::ErrorTemplate,
 	login::Login,
 };
@@ -38,6 +39,12 @@ pub fn Profile() -> impl IntoView {
 									<div>
 										<h1>Your profile</h1>
 										<dl>
+											<Avatar data=AvatarData {
+												id: profile.id,
+												picture: profile.picture.clone(),
+												preferred_name: profile.preferred_name.clone(),
+												status: profile.status,
+											} />
 											<dt>Employee ID</dt>
 											<dd>{profile.employee_id}</dd>
 											<dt>status</dt>
